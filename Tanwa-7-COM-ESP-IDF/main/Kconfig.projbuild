@@ -1,0 +1,70 @@
+menu "TANWA +7 COM board config ESP32"
+
+    menu "Board GPIO pinout"
+
+        config A_CAN
+            int "A_CAN pin number"
+            default 1
+            help
+                GPIO pin number for A_CAN
+
+    endmenu
+
+    menu "ADC configuration"
+
+        config A_CAN_CHANNEL
+            int "A_CAN ESP32 channel"
+            default 0
+            help
+                ADC channel number for A_CAN
+        
+        config A_VBAT_CHANNEL
+            int "A_VBAT ESP32 channel"
+            default 1
+            help
+                ADC Channel number for A_VBAT
+        
+    endmenu
+
+    menu "SPI configuration"
+
+        config SPI_HOST
+            int "Port Number"
+            default 0
+            help
+                Port number for SPI device.
+
+        config SPI_FREQUENCY
+            int "Master Frequency"
+            default 100000
+            help
+                SPI clock frequency device.
+    endmenu
+
+    menu "I2C Master configuration"
+
+        config I2C_MASTER_PORT_NUM
+            int "Port Number"
+            default 0
+            help
+                Port number for I2C Master device.
+
+        config I2C_MASTER_FREQUENCY
+            int "Master Frequency"
+            default 100000
+            help
+                I2C frequency of Master device.
+
+    endmenu
+
+    menu "ROSALIA flags configuration"
+        
+        config SN65HVD230_LISTEN_ONLY
+            int "SN65HVD230 listen only mode (low power mode) hardware config"
+            default 1
+            help
+                In case SN65HVD230 is configured in low power mode, it will only work as listen only
+
+    endmenu
+
+endmenu
