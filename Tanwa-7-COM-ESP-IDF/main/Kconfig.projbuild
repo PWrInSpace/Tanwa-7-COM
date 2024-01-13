@@ -2,21 +2,129 @@ menu "TANWA +7 COM board config ESP32"
 
     menu "Board GPIO pinout"
 
-        config A_CAN
-            int "A_CAN pin number"
-            default 1
+        config LED
+            int "LED pin number"
+            default 2
             help
-                GPIO pin number for A_CAN
+                GPIO pin number for LED
+
+        config LORA_RS
+            int "LORA RS pin number"
+            default 4
+            help
+                GPIO pin number for LORA RS
+
+        config LORA_CS
+            int "LORA CS pin number"
+            default 5
+            help
+                GPIO pin number for LORA CS
+
+        config GPIO_RS
+            int "GPIO RESET pin number"
+            default 13
+            help
+                GPIO pin number for GPIO expander RESET
+        
+        config CAN_RX
+            int "CAN RX pin number"
+            default 16
+            help
+                GPIO pin number for CAN RX
+
+        config CAN_TX
+            int "CAN TX pin number"
+            default 17
+            help
+                GPIO pin number for CAN TX
+
+        config SPI_SCK
+            int "SPI SCK pin number"
+            default 18
+            help
+                GPIO pin number for SPI SCK
+        
+        config SPI_MISO
+            int "SPI MISO pin number"
+            default 19
+            help
+                GPIO pin number for SPI MISO
+
+        config I2C_SDA
+            int "I2C SDA pin number"
+            default 21
+            help
+                GPIO pin number for I2C SDA
+
+        config I2C_SCL
+            int "I2C SCL pin number"
+            default 22
+            help
+                GPIO pin number for I2C SCL
+
+        config SPI_MOSI
+            int "SPI MOSI pin number"
+            default 23
+            help
+                GPIO pin number for SPI MOSI
+
+        config BUZZER
+            int "BUZZER pin number"
+            default 25
+            help
+                GPIO pin number for BUZZER
+        
+        config IGNIT_FIRE_2
+            int "FIRE_2 pin number"
+            default 26
+            help
+                GPIO pin number for Igniter Fire 2
+
+        config IGNIT_FIRE_1
+            int "FIRE_1 pin number"
+            default 27
+            help
+                GPIO pin number for Igniter Fire 1
+        
+        config ARM
+            int "ARM pin number"
+            default 32
+            help
+                GPIO pin number for ARM
+
+        config SD_CS
+            int "SD CS pin number"
+            default 33
+            help
+                GPIO pin number for SD CS
+                
+        config IGNIT_CONT_1
+            int "IGNIT_CONT_1 pin number"
+            default 34
+            help
+                GPIO pin number for Igniter Continuity 1
+
+        config IGNIT_CONT_2
+            int "IGNIT_CONT_2 pin number"
+            default 35
+            help
+                GPIO pin number for Igniter Continuity 2
+        
+        config A_VBAT
+            int "A_VBAT pin number"
+            default 36
+            help
+                GPIO pin number for A_VBAT
+        
+        config LORA_D0
+            int "LORA D0 pin number"
+            default 39
+            help
+                GPIO pin number for LORA D0
 
     endmenu
 
     menu "ADC configuration"
-
-        config A_CAN_CHANNEL
-            int "A_CAN ESP32 channel"
-            default 0
-            help
-                ADC channel number for A_CAN
         
         config A_VBAT_CHANNEL
             int "A_VBAT ESP32 channel"
@@ -54,16 +162,6 @@ menu "TANWA +7 COM board config ESP32"
             default 100000
             help
                 I2C frequency of Master device.
-
-    endmenu
-
-    menu "ROSALIA flags configuration"
-        
-        config SN65HVD230_LISTEN_ONLY
-            int "SN65HVD230 listen only mode (low power mode) hardware config"
-            default 1
-            help
-                In case SN65HVD230 is configured in low power mode, it will only work as listen only
 
     endmenu
 
