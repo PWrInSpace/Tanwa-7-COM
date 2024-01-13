@@ -3,5 +3,5 @@
 #include "slave_com.h"
 
 void slave_com_task(void* pvParameters) {
-  ROSALIA_devices_t* devices_config = (ROSALIA_devices_t*)pvParameters;
+  TANWA_devices_t* devices_config = (TANWA_devices_t*)pvParameters;
 }

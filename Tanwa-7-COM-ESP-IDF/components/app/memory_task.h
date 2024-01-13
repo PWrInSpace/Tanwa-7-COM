@@ -10,7 +10,6 @@
 #include "freertos/semphr.h"
 #include "freertos/task.h"
 #include "sdcard.h"
-#include "usb_msc_api.h"
 
 /*!
  * \brief Memory task

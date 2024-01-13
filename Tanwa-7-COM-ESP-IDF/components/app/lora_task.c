@@ -5,7 +5,7 @@
 #define TAG "LORA_TASK"
 
 void lora_task(void* pvParameters) {
-  ROSALIA_devices_t* devices_config = (ROSALIA_devices_t*)pvParameters;
+  TANWA_devices_t* devices_config = (TANWA_devices_t*)pvParameters;
   const char* lora_packet = "TEST;";
   ESP_LOGI(TAG, "LORA_TASK");
   ESP_LOGI(TAG, "Reading LoRa registers");

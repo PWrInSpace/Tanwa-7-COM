@@ -22,7 +22,7 @@
     .oneshot_chan_cfg =                                    \
         {                                                  \
             .bitwidth = ADC_BITWIDTH_12,                   \
-            .atten = ADC_ATTEN_DB_11,                      \
+            .atten = ADC_ATTEN_DB_12,                      \
         },                                                 \
     .oneshot_unit_cfg = {                                  \
       .unit_id = ADC_UNIT_1,                               \

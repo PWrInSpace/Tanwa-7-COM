@@ -18,7 +18,7 @@
 
 #define MCU_TWAI_DEFAULT_CONFIG()                                     \
   {                                                                   \
-    .tx_gpio_num = CONFIG_UART_1_RX, .rx_gpio_num = CONFIG_UART_1_TX, \
+    .tx_gpio_num = CONFIG_CAN_RX, .rx_gpio_num = CONFIG_CAN_TX,       \
     .mode = TWAI_MODE_NORMAL                                          \
   }
 

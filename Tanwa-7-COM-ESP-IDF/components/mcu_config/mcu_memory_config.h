@@ -12,14 +12,17 @@
   {                                                            \
     .card = &sdmmc_card, .spi_host = SPI2_HOST,                \
     .mount_point = SDCARD_MOUNT_POINT, .cs_pin = CONFIG_SD_CS, \
-    .card_detect_pin = CONFIG_SD_CD, .mounted = false,         \
   }
+  //.card_detect_pin = SD, .mounted = false,
+  //}
 
 #define SD_CARD_CONFIG_DEFAULT_CONFIG()                       \
   {                                                           \
     .spi_host = SPI2_HOST, .mount_point = SDCARD_MOUNT_POINT, \
-    .cs_pin = CONFIG_SD_CS, .cd_pin = CONFIG_SD_CD,           \
+    .cs_pin = CONFIG_SD_CS,                                   \
   }
+  //.cd_pin = CONFIG_SD_CD,
+  //}
 
 typedef struct {
   sd_card_config_t* sd_card_config;
