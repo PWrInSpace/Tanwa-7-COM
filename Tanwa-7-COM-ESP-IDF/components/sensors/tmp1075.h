@@ -19,7 +19,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <driver/i2c.h>
 
 /* TMP1075 REGISTERS */
 #define TMP1075_REG_TEMP 0x00

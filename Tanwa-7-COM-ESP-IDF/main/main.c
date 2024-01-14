@@ -14,6 +14,7 @@
 #include "esp_flash.h"
 #include "driver/i2c.h"
 #include "tmp1075.h"
+#include "mcp23018.h"
 
 #define I2C_MASTER_SCL_IO           CONFIG_I2C_SCL              /*!< GPIO number used for I2C master clock */
 #define I2C_MASTER_SDA_IO           CONFIG_I2C_SDA              /*!< GPIO number used for I2C master data  */
@@ -25,11 +26,16 @@
 
 #define TS1_ADDR 0x4E
 #define TS2_ADDR 0x4F
+#define MCP23018_ADDR 0x21
+
+#define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
 bool _tmp1075_I2C_write_TS1(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 bool _tmp1075_I2C_read_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 bool _tmp1075_I2C_write_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 bool _tmp1075_I2C_read_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool _mcp23018_I2C_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool _mcp23018_I2C_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 
 bool _tmp1075_I2C_write_TS1(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
     esp_err_t ret;
@@ -62,6 +68,23 @@ bool _tmp1075_I2C_write_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t
 bool _tmp1075_I2C_read_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
     esp_err_t ret;
     ret = i2c_master_write_read_device(I2C_MASTER_NUM, TS2_ADDR, &reg, 1, data, len, I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
+    return (bool)(ret == ESP_OK);
+}
+
+bool _mcp23018_I2C_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
+    esp_err_t ret;
+    // dynamically create a buffer to hold the data to be written
+    uint8_t *write_buf = malloc(len + 1);
+    write_buf[0] = reg;
+    memcpy(write_buf + 1, data, len);
+    ret = i2c_master_write_to_device(I2C_MASTER_NUM, MCP23018_ADDR, write_buf, sizeof(write_buf), I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
+    free(write_buf);
+    return (bool)(ret == ESP_OK);
+}
+
+bool _mcp23018_I2C_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
+    esp_err_t ret;
+    ret = i2c_master_write_read_device(I2C_MASTER_NUM, MCP23018_ADDR, &reg, 1, data, len, I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
     return (bool)(ret == ESP_OK);
 }
 
@@ -131,8 +154,28 @@ void app_main(void)
         .config_register = 0,
     };
 
+    mcp23018_I2C mcp23018 = {
+        ._i2c_write = _mcp23018_I2C_write,
+        ._i2c_read = _mcp23018_I2C_read,
+        .i2c_address = MCP23018_ADDR,
+        .iocon = 0,
+        .dirRegisters = {0, 0},
+        .polRegisters = {0, 0},
+        .pullupRegisters = {0, 0},
+        .ports = {0, 0},
+    };
+
     tmp1075_init(&tmp1075_1);
     tmp1075_init(&tmp1075_2);
+    mcp23018_init(&mcp23018, IOEXP_MODE);
+
+    // set all pins to output
+    mcp23018_set_port_mode(&mcp23018, PORT_A, ALL_OUTPUT);
+    mcp23018_set_port_mode(&mcp23018, PORT_B, ALL_OUTPUT);
+
+    // set all pins to low
+    mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
+    mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
 
     while (1) {
         int16_t raw;
@@ -143,6 +186,11 @@ void app_main(void)
         tmp1075_get_temp_raw(&tmp1075_2, &raw);
         tmp1075_get_temp_celsius(&tmp1075_2, &temp);
         printf("#TS2=> raw: %d, temp: %f\n", raw, temp);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_HIGH);
+        mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_HIGH);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+        mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
+        mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }
