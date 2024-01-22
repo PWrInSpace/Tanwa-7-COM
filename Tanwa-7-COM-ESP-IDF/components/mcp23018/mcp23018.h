@@ -149,37 +149,31 @@ typedef struct {
 	uint8_t ports[2];
 } mcp23018_struct_t;
 
-mcp23018_status_t mcp23018_init(mcp23018_I2C *mcp23018, uint8_t mode);
+mcp23018_status_t mcp23018_init(mcp23018_struct_t *mcp23018, uint8_t mode);
 
-mcp23018_status_t mcp23018_write_reg_8b(mcp23018_I2C *mcp23018, const uint8_t reg, uint8_t val);
-mcp23018_status_t mcp23018_write_reg_16b(mcp23018_I2C *mcp23018, const uint8_t reg, uint16_t val);
+mcp23018_status_t mcp23018_digital_write(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_value_ctrl_t value);
+mcp23018_status_t mcp23018_digital_write_port(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t value);
 
-mcp23018_status_t mcp23018_read_reg_8b(mcp23018_I2C *mcp23018, const uint8_t reg, uint8_t *val);
-mcp23018_status_t mcp23018_read_reg_16b(mcp23018_I2C *mcp23018, const uint8_t reg, uint16_t *val);
+mcp23018_status_t mcp23018_digital_read(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_value_ctrl_t *value);
+mcp23018_status_t mcp23018_digital_read_port(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t *value);
 
-mcp23018_status_t mcp23018_digital_write(mcp23018_I2C *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_value_ctrl_t value);
-mcp23018_status_t mcp23018_digital_write_port(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t value);
+mcp23018_status_t mcp23018_get_pin_mode(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_mode_ctrl_t *mode);
+mcp23018_status_t mcp23018_set_pin_mode(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_mode_ctrl_t mode);
 
-mcp23018_status_t mcp23018_digital_read(mcp23018_I2C *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_value_ctrl_t *value);
-mcp23018_status_t mcp23018_digital_read_port(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t *value);
+mcp23018_status_t mcp23018_get_port_mode(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t *mode);
+mcp23018_status_t mcp23018_set_port_mode(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t mode);
 
-mcp23018_status_t mcp23018_get_pin_mode(mcp23018_I2C *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_mode_ctrl_t *mode);
-mcp23018_status_t mcp23018_set_pin_mode(mcp23018_I2C *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_mode_ctrl_t mode);
+mcp23018_status_t mcp23018_get_pin_polarity(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_polarity_ctrl_t *polarity);
+mcp23018_status_t mcp23018_set_pin_polarity(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_polarity_ctrl_t polarity);
 
-mcp23018_status_t mcp23018_get_port_mode(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t *mode);
-mcp23018_status_t mcp23018_set_port_mode(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t mode);
+mcp23018_status_t mcp23018_get_port_polarity(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t *polarity);
+mcp23018_status_t mcp23018_set_port_polarity(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t polarity);
 
-mcp23018_status_t mcp23018_get_pin_polarity(mcp23018_I2C *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_polarity_ctrl_t *polarity);
-mcp23018_status_t mcp23018_set_pin_polarity(mcp23018_I2C *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_polarity_ctrl_t polarity);
+mcp23018_status_t mcp23018_get_pin_pullup(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_pullup_ctrl_t *pullup);
+mcp23018_status_t mcp23018_set_pin_pullup(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_pullup_ctrl_t pullup);
 
-mcp23018_status_t mcp23018_get_port_polarity(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t *polarity);
-mcp23018_status_t mcp23018_set_port_polarity(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t polarity);
-
-mcp23018_status_t mcp23018_get_pin_pullup(mcp23018_I2C *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_pullup_ctrl_t *pullup);
-mcp23018_status_t mcp23018_set_pin_pullup(mcp23018_I2C *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_pullup_ctrl_t pullup);
-
-mcp23018_status_t mcp23018_get_port_pullup(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t *pullup);
-mcp23018_status_t mcp23018_set_port_pullup(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t pullup);
+mcp23018_status_t mcp23018_get_port_pullup(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t *pullup);
+mcp23018_status_t mcp23018_set_port_pullup(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t pullup);
 
 #ifdef __cplusplus
 }

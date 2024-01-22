@@ -35,7 +35,7 @@ tmp1075_struct_t tmp1075_2 = {
     .config_register = 0,
 };
 
-mcp23018_I2C mcp23018 = {
+mcp23018_struct_t mcp23018 = {
     ._i2c_write = _mcp23018_I2C_write,
     ._i2c_read = _mcp23018_I2C_read,
     .i2c_address = CONFIG_I2C_MCP23018_ADDR,

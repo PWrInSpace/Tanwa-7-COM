@@ -60,12 +60,6 @@ typedef struct {
 
 sensor_status_t tmp1075_init(tmp1075_struct_t *tmp1075);
 
-sensor_status_t tmp1075_write_reg_8b(tmp1075_struct_t *tmp1075, const uint8_t reg, uint8_t val);
-
-sensor_status_t tmp1075_write_reg_16b(tmp1075_struct_t *tmp1075, const uint8_t reg, uint16_t val);
-
-sensor_status_t tmp1075_read_reg_16b(tmp1075_struct_t *tmp1075, const uint8_t reg, uint16_t *val);
-
 sensor_status_t tmp1075_get_temp_raw(tmp1075_struct_t *tmp1075, int16_t *raw);
 
 sensor_status_t tmp1075_get_temp_celsius(tmp1075_struct_t *tmp1075, float *temp);

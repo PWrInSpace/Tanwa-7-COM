@@ -115,6 +115,7 @@ typedef enum {
     ADS1115_INIT_ERR,
     ADS1115_READ_ERR,
     ADS1115_WRITE_ERR,
+    ADS1115_NULL_ARG,
 } ads1115_status_t;
 
 // I2C access functions
@@ -126,16 +127,6 @@ typedef struct {
     ads1115_I2C_read _i2c_read;
     uint8_t i2c_address;
 } ads1115_struct_t;
-
-/**
- * @brief Initialize ADS1115 device
- *
- * @param ads1115 device instance pointer
- * @return `ads1115_status_t`
- * @retval `ADS1115_OK` on success
- * @retval `ADS1115_INIT_ERR` on error
- */
-ads1115_status_t ads1115_init(ads1115_struct_t *ads1115);
 
 /**
  * @brief Get device operational status
