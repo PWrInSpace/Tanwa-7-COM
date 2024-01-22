@@ -1,6 +1,16 @@
-// Copyright 2023 PWr in Space, Krzysztof Gliwiński
+///===-----------------------------------------------------------------------------------------===//
+///
+/// Copyright (c) PWr in Space. All rights reserved.
+/// Created: 22.01.2024 by Michał Kos
+///
+///===-----------------------------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains the configuration of the I2C peripheral for the MCU.
+///===-----------------------------------------------------------------------------------------===//
 
-#pragma once
+#ifndef PWRINSPACE_TANWA_7_MCU_I2C_CONFIG_H_
+#define PWRINSPACE_TANWA_7_MCU_I2C_CONFIG_H_
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -11,10 +21,10 @@
 #include "freertos/task.h"
 #include "sdkconfig.h"
 
-#define MCU_I2C_DEFAULT_CONFIG()                                     \
-  {                                                                  \
-    .port = I2C_NUM_0, .sda = CONFIG_I2C_SDA, .scl = CONFIG_I2C_SCL, \
-    .clk_speed = I2C_MASTER_FREQ_HZ, .i2c_init_flag = false,         \
+#define MCU_I2C_DEFAULT_CONFIG()                                                      \
+  {                                                                                   \
+    .port = CONFIG_I2C_MASTER_PORT_NUM, .sda = CONFIG_I2C_SDA, .scl = CONFIG_I2C_SCL, \
+    .clk_speed = CONFIG_I2C_MASTER_FREQUENCY, .i2c_init_flag = false,                 \
   }
 
 typedef struct {
@@ -34,3 +44,12 @@ typedef struct {
  * \note This function will initiate I2C peripheral.
  */
 esp_err_t i2c_init(mcu_i2c_config_t *i2c);
+
+bool _tmp1075_I2C_write_TS1(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool _tmp1075_I2C_read_TS1(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool _tmp1075_I2C_write_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool _tmp1075_I2C_read_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool _mcp23018_I2C_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool _mcp23018_I2C_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+
+#endif // PWRINSPACE_TANWA_7_MCU_I2C_CONFIG_H_

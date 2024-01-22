@@ -149,7 +149,7 @@ menu "TANWA +7 COM board config ESP32"
                 SPI clock frequency device.
     endmenu
 
-    menu "I2C Master configuration"
+    menu "I2C configuration"
 
         config I2C_MASTER_PORT_NUM
             int "Port Number"
@@ -162,6 +162,42 @@ menu "TANWA +7 COM board config ESP32"
             default 100000
             help
                 I2C frequency of Master device.
+
+        config I2C_MASTER_TIMEOUT_MS
+            int "Master Timeout"
+            default 1000
+            help
+                Timeout of I2C Master device.
+
+        config I2C_PCA9574_ADDR
+            int "PCA9574 I2C address 0x20"
+            default 32
+            help
+                I2C address of PCA9574 device.
+
+        config I2C_MCP23018_ADDR
+            int "MCP23018 I2C address 0x21"
+            default 33
+            help
+                I2C address of MCP23018 device.
+
+        config I2C_ADS1115_ADDR
+            int "ADS1115 I2C address 0x49"
+            default 73
+            help
+                I2C address of ADS1115 device.
+
+        config I2C_TMP1075_TS1_ADDR
+            int "TMP1075 TS1 I2C address 0x4E"
+            default 78
+            help
+                I2C address of TMP1075 TS1 device.
+
+        config I2C_TMP1075_TS2_ADDR
+            int "TMP1075 TS2 I2C address 0x4F"
+            default 79
+            help
+                I2C address of TMP1075 TS2 device.
 
     endmenu
 

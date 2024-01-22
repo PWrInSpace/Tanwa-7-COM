@@ -1,6 +1,12 @@
-// Copyright 2023 PWr in Space, Krzysztof Gliwiński
+///===-----------------------------------------------------------------------------------------===//
+///
+/// Copyright (c) PWr in Space. All rights reserved.
+/// Created: 22.01.2024 by Michał Kos
+///
+///===-----------------------------------------------------------------------------------------===//
 
 #include "mcu_i2c_config.h"
+#include <string.h>
 
 #define I2C_TAG "I2C_CONFIG"
 
@@ -23,4 +29,55 @@ esp_err_t i2c_init(mcu_i2c_config_t *i2c) {
     i2c->i2c_init_flag = true;
   }
   return ESP_OK;
+}
+
+bool _tmp1075_I2C_write_TS1(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
+    esp_err_t ret;
+    // dynamically create a buffer to hold the data to be written
+    uint8_t *write_buf = malloc(len + 1);
+    write_buf[0] = reg;
+    memcpy(write_buf + 1, data, len);
+    ret = i2c_master_write_to_device(CONFIG_I2C_MASTER_PORT_NUM, CONFIG_I2C_TMP1075_TS1_ADDR, write_buf, sizeof(write_buf), CONFIG_I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
+    free(write_buf);
+    return (bool)(ret == ESP_OK);
+}
+
+bool _tmp1075_I2C_read_TS1(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
+    esp_err_t ret;
+    ret = i2c_master_write_read_device(CONFIG_I2C_MASTER_PORT_NUM, CONFIG_I2C_TMP1075_TS1_ADDR, &reg, 1, data, len, CONFIG_I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
+    return (bool)(ret == ESP_OK);
+}
+
+bool _tmp1075_I2C_write_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
+    esp_err_t ret;
+    // dynamically create a buffer to hold the data to be written
+    uint8_t *write_buf = malloc(len + 1);
+    write_buf[0] = reg;
+    memcpy(write_buf + 1, data, len);
+    ret = i2c_master_write_to_device(CONFIG_I2C_MASTER_PORT_NUM, CONFIG_I2C_TMP1075_TS2_ADDR, write_buf, sizeof(write_buf), CONFIG_I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
+    free(write_buf);
+    return (bool)(ret == ESP_OK);
+}
+
+bool _tmp1075_I2C_read_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
+    esp_err_t ret;
+    ret = i2c_master_write_read_device(CONFIG_I2C_MASTER_PORT_NUM, CONFIG_I2C_TMP1075_TS2_ADDR, &reg, 1, data, len, CONFIG_I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
+    return (bool)(ret == ESP_OK);
+}
+
+bool _mcp23018_I2C_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
+    esp_err_t ret;
+    // dynamically create a buffer to hold the data to be written
+    uint8_t *write_buf = malloc(len + 1);
+    write_buf[0] = reg;
+    memcpy(write_buf + 1, data, len);
+    ret = i2c_master_write_to_device(CONFIG_I2C_MASTER_PORT_NUM, CONFIG_I2C_MCP23018_ADDR, write_buf, sizeof(write_buf), CONFIG_I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
+    free(write_buf);
+    return (bool)(ret == ESP_OK);
+}
+
+bool _mcp23018_I2C_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
+    esp_err_t ret;
+    ret = i2c_master_write_read_device(CONFIG_I2C_MASTER_PORT_NUM, CONFIG_I2C_MCP23018_ADDR, &reg, 1, data, len, CONFIG_I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
+    return (bool)(ret == ESP_OK);
 }
