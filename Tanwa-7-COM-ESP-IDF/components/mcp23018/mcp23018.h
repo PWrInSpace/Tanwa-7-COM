@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define MCP23018_CTRL_ID     0x20
 
 // Register addresses for IOCON.BANK = 0 which is
@@ -143,7 +147,7 @@ typedef struct {
 	uint8_t polRegisters[2];
 	uint8_t pullupRegisters[2];
 	uint8_t ports[2];
-} mcp23018_I2C;
+} mcp23018_struct_t;
 
 mcp23018_status_t mcp23018_init(mcp23018_I2C *mcp23018, uint8_t mode);
 
@@ -176,5 +180,9 @@ mcp23018_status_t mcp23018_set_pin_pullup(mcp23018_I2C *mcp23018, mcp23018_port_
 
 mcp23018_status_t mcp23018_get_port_pullup(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t *pullup);
 mcp23018_status_t mcp23018_set_port_pullup(mcp23018_I2C *mcp23018, mcp23018_port_t port, uint8_t pullup);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PWRINSPACE_MCP23018_H_ */
