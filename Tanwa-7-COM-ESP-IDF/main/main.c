@@ -17,6 +17,7 @@
 #include "tmp1075.h"
 #include "mcp23018.h"
 #include "ads1115.h"
+#include "pca9574.h"
 
 #define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
@@ -51,6 +52,12 @@ ads1115_struct_t ads1115 = {
     ._i2c_write = _I2C_write,
     ._i2c_read = _I2C_read,
     .i2c_address = CONFIG_I2C_ADS1115_ADDR,
+};
+
+pca9574_struct_t pca9574 = {
+    ._i2c_write = _I2C_write,
+    ._i2c_read = _I2C_read,
+    .i2c_address = CONFIG_I2C_PCA9574_ADDR,
 };
 
 void app_main(void)
@@ -95,21 +102,26 @@ void app_main(void)
 
     tmp1075_init(&tmp1075_1);
     tmp1075_init(&tmp1075_2);
-    // mcp23018_init(&mcp23018, IOEXP_MODE);
+    mcp23018_init(&mcp23018, IOEXP_MODE);
+    pca9574_init(&pca9574);
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
-    // // set all pins to output
-    // mcp23018_set_port_mode(&mcp23018, PORT_A, ALL_OUTPUT);
-    // mcp23018_set_port_mode(&mcp23018, PORT_B, ALL_OUTPUT);
+    // set all pins to output
+    mcp23018_set_port_mode(&mcp23018, PORT_A, ALL_OUTPUT);
+    mcp23018_set_port_mode(&mcp23018, PORT_B, ALL_OUTPUT);
 
-    // // set all pins to low
-    // mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
-    // mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
+    // set all pins to low
+    mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
+    mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
 
     ads1115_set_mode(&ads1115, ADS1115_MODE_CONTINUOUS);
     ads1115_set_data_rate(&ads1115, ADS1115_DATA_RATE_32);
     ads1115_set_input_mux(&ads1115, ADS1115_MUX_1_GND);
     ads1115_set_gain(&ads1115, ADS1115_GAIN_4V096);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
+
+    pca9574_set_mode(&pca9574, PCA9574_OUTPUT);
+    pca9574_set_level(&pca9574, PCA9574_HIGH);
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
     while (1) {
@@ -126,11 +138,11 @@ void app_main(void)
         float voltage = ads1115_gain_values[ADS1115_GAIN_4V096] / ADS1115_MAX_VALUE * raw;
         printf("#ADC=> raw: %d, voltage: %f\n", raw, voltage);
         vTaskDelay(500 / portTICK_PERIOD_MS);
-        // mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_HIGH);
-        // mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_HIGH);
-        // vTaskDelay(2000 / portTICK_PERIOD_MS);
-        // mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
-        // mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
+        mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_HIGH);
+        mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_HIGH);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+        mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
+        mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }

@@ -1,3 +1,15 @@
+///===-----------------------------------------------------------------------------------------===//
+///
+/// Copyright (c) PWr in Space. All rights reserved.
+/// Created: 27.01.2024 by Michał Kos
+///
+///===-----------------------------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains declaration of ADS1115 driver. It is used to read data from ADS1115 analog 
+/// to digital converter.
+///===-----------------------------------------------------------------------------------------===//
+
 #ifndef PWRINSPACE_ADS1115_H_
 #define PWRINSPACE_ADS1115_H_
 
