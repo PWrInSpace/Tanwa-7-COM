@@ -2,7 +2,7 @@ menu "TANWA +7 COM board config ESP32"
 
     menu "Board GPIO pinout"
 
-        config LED
+        config GPIO_LED
             int "LED pin number"
             default 2
             help

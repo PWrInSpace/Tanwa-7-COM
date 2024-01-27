@@ -1,76 +1,56 @@
-// Copyright 2023 PWr in Space, Krzysztof Gliwiński
-#pragma once
+///===-----------------------------------------------------------------------------------------===//
+///
+/// Copyright (c) PWr in Space. All rights reserved.
+/// Created: 27.01.2024 by Michał Kos
+///
+///===-----------------------------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains declaration of the simple LED driver that can be used to control both 
+/// positive and negative driven LEDs. 
+///===-----------------------------------------------------------------------------------------===//
+
+#ifndef PWRINSPACE_LED_DRIVER_H_
+#define PWRINSPACE_LED_DRIVER_H_
 
 #include <stdint.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdbool.h>
 
-#include "driver/ledc.h"
-#include "esp_err.h"
-#include "esp_log.h"
-#include "stdbool.h"
-
-/*!
- * \file led_driver.h
- * \brief LED driver for ESP32
- */
-
-/*!
- * \brief LED state enum
- */
 typedef enum {
-  LED_OFF = 0,
-  LED_ON = 1,
+    LED_STATE_OFF = 0,
+    LED_STATE_ON,
 } led_state_t;
 
-/*!
-    \brief Intended for LEDs that are positive voltage driven!
-    \param led_gpio_num GPIO number of LED
-    \param ledc_channel_num LEDC channel number
-    \param ledc_timer_num LEDC timer number
-    \param duty Duty cycle in range
-    \param max_duty Maximum duty cycle
-    \param toggle Toggle LED on/off
-*/
+typedef enum {
+    LED_DRIVE_POSITIVE = 0,
+    LED_DRIVE_OPEN_DRAIN,
+} led_drive_t;
+
+typedef enum {
+    LED_OK = 0,
+    LED_FAIL,
+    LED_GPIO_ERR,
+    LED_INVALID_ARG,
+    LED_NULL_ARG,
+} led_status_t;
+
+typedef bool (*led_GPIO_set_level)(uint8_t _gpio_num, uint8_t _level);
+typedef void (*led_delay)(uint32_t _ms);
+
 typedef struct {
-  ledc_mode_t ledc_mode;
-  uint8_t led_gpio_num;
-  uint8_t ledc_channel_num;
-  uint8_t ledc_timer_num;
-  uint32_t duty;
-  uint32_t max_duty;
-  led_state_t toggle;
-  bool inverted;
-} led_driver_t;
+    led_GPIO_set_level _gpio_set_level;
+    led_delay _delay;
+    uint8_t gpio_num;
+    led_drive_t drive;
+    led_state_t state;
+} led_struct_t;
 
-/*!
- * \brief Initialize LEDC timer
- * \param led_drv Pointer to led_driver_t struct
- * \param ledc_duty_res LEDC duty resolution
- * \param ledc_freq LEDC frequency
- * \return ESP_OK on success, ESP_FAIL otherwise
- */
-esp_err_t led_timer_init(led_driver_t *led_drv, ledc_timer_bit_t ledc_duty_res,
-                         uint32_t ledc_freq);
+led_status_t led_set_state(led_struct_t* led, led_state_t state);
 
-/*!
- * \brief Initialize LED driver
- * \param led_drv Pointer to led_driver_t struct
- * \return ESP_OK on success, ESP_FAIL otherwise
- */
-esp_err_t led_driver_init(led_driver_t *led_drv);
+led_status_t led_toggle(led_struct_t* led);
 
-/*!
- * \brief Update duty cycle of LED
- * \param led_drv Pointer to led_driver_t struct
- * \param duty Duty cycle in range 0-max_duty
- * \return ESP_OK on success, ESP_FAIL otherwise
- */
-esp_err_t led_update_duty_cycle(led_driver_t *led_drv, uint32_t duty);
+led_status_t led_delay_blink(led_struct_t* led, uint32_t period_ms);
 
-/*!
- * \brief Toggle LED on/off, and save toggle state to led_drv struct
- * \param led_drv Pointer to led_driver_t struct
- * \param toggle Toggle LED on/off
- * \return ESP_OK on success, ESP_FAIL otherwise
- */
-
-esp_err_t led_toggle(led_driver_t *led_drv, led_state_t toggle);
+#endif /* PWRINSPACE_LED_DRIVER_H_ */

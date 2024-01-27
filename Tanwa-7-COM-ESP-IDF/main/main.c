@@ -14,6 +14,9 @@
 #include "esp_flash.h"
 
 #include "mcu_i2c_config.h"
+#include "mcu_misc_config.h"
+
+#include "led_driver.h"
 #include "tmp1075.h"
 #include "mcp23018.h"
 #include "ads1115.h"
@@ -22,6 +25,13 @@
 #define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
 mcu_i2c_config_t i2c_config = MCU_I2C_DEFAULT_CONFIG();
+
+led_struct_t esp_led = {
+    ._gpio_set_level = _GPIO_set_level,
+    ._delay = _delay_ms,
+    .gpio_num = CONFIG_GPIO_LED,
+    .state = LED_STATE_OFF,
+};
 
 tmp1075_struct_t tmp1075_1 = {
     ._i2c_write = _I2C_write,
@@ -100,6 +110,8 @@ void app_main(void)
     i2c_init(&i2c_config);
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
+    led_GPIO_init(&esp_led);
+
     tmp1075_init(&tmp1075_1);
     tmp1075_init(&tmp1075_2);
     mcp23018_init(&mcp23018, IOEXP_MODE);
@@ -133,16 +145,20 @@ void app_main(void)
         tmp1075_get_temp_raw(&tmp1075_2, &raw);
         tmp1075_get_temp_celsius(&tmp1075_2, &temp);
         printf("#TS2=> raw: %d, temp: %f\n", raw, temp);
+        led_toggle(&esp_led);
         vTaskDelay(500 / portTICK_PERIOD_MS);
         ads1115_get_value(&ads1115, &raw);
         float voltage = ads1115_gain_values[ADS1115_GAIN_4V096] / ADS1115_MAX_VALUE * raw;
         printf("#ADC=> raw: %d, voltage: %f\n", raw, voltage);
+        led_toggle(&esp_led);
         vTaskDelay(500 / portTICK_PERIOD_MS);
         mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_HIGH);
         mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_HIGH);
+        led_toggle(&esp_led);
         vTaskDelay(2000 / portTICK_PERIOD_MS);
         mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
         mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
+        led_toggle(&esp_led);
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }

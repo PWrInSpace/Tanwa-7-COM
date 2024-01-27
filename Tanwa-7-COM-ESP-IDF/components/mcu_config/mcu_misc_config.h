@@ -2,7 +2,19 @@
 
 #pragma once
 
+#include <stdbool.h>
+#include <stdint.h>
+
+#include "driver/gpio.h"
+#include "rom/gpio.h"
+#include "soc/gpio_struct.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "sdkconfig.h"
+
 #include "buzzer_driver.h"
+#include "led_driver.h"
 
 #define BUZZER_FREQ_HZ 4000
 #define BUZZER_DUTY_RES LEDC_TIMER_13_BIT
@@ -22,3 +34,9 @@
  * \param buzzer buzzer driver
  */
 esp_err_t misc_init(buzzer_driver_t *buzzer);
+
+esp_err_t led_GPIO_init(led_struct_t *led);
+
+bool _GPIO_set_level(uint8_t gpio_num, uint8_t level);
+
+void _delay_ms(uint32_t ms);
