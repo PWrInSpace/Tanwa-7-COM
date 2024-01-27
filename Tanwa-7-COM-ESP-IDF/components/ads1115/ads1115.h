@@ -30,7 +30,7 @@ typedef enum
 /**
  * Gain amplifier values
  */
-extern const float ads111x_gain_values[];
+extern const float ads1115_gain_values[];
 
 /**
  * Input multiplexer configuration (ADS1115 only)

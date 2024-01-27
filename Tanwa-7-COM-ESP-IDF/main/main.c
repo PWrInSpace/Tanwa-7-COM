@@ -16,34 +16,41 @@
 #include "mcu_i2c_config.h"
 #include "tmp1075.h"
 #include "mcp23018.h"
+#include "ads1115.h"
 
 #define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
 mcu_i2c_config_t i2c_config = MCU_I2C_DEFAULT_CONFIG();
 
 tmp1075_struct_t tmp1075_1 = {
-    ._i2c_write = _tmp1075_I2C_write_TS1,
-    ._i2c_read = _tmp1075_I2C_read_TS1,
+    ._i2c_write = _I2C_write,
+    ._i2c_read = _I2C_read,
     .i2c_address = CONFIG_I2C_TMP1075_TS1_ADDR,
     .config_register = 0,
 };
 
 tmp1075_struct_t tmp1075_2 = {
-    ._i2c_write = _tmp1075_I2C_write_TS2,
-    ._i2c_read = _tmp1075_I2C_read_TS2,
+    ._i2c_write = _I2C_write,
+    ._i2c_read = _I2C_read,
     .i2c_address = CONFIG_I2C_TMP1075_TS2_ADDR,
     .config_register = 0,
 };
 
 mcp23018_struct_t mcp23018 = {
-    ._i2c_write = _mcp23018_I2C_write,
-    ._i2c_read = _mcp23018_I2C_read,
+    ._i2c_write = _I2C_write,
+    ._i2c_read = _I2C_read,
     .i2c_address = CONFIG_I2C_MCP23018_ADDR,
     .iocon = 0,
     .dirRegisters = {0, 0},
     .polRegisters = {0, 0},
     .pullupRegisters = {0, 0},
     .ports = {0, 0},
+};
+
+ads1115_struct_t ads1115 = {
+    ._i2c_write = _I2C_write,
+    ._i2c_read = _I2C_read,
+    .i2c_address = CONFIG_I2C_ADS1115_ADDR,
 };
 
 void app_main(void)
@@ -84,18 +91,26 @@ void app_main(void)
     // esp_restart();
 
     i2c_init(&i2c_config);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
     tmp1075_init(&tmp1075_1);
     tmp1075_init(&tmp1075_2);
-    mcp23018_init(&mcp23018, IOEXP_MODE);
+    // mcp23018_init(&mcp23018, IOEXP_MODE);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
-    // set all pins to output
-    mcp23018_set_port_mode(&mcp23018, PORT_A, ALL_OUTPUT);
-    mcp23018_set_port_mode(&mcp23018, PORT_B, ALL_OUTPUT);
+    // // set all pins to output
+    // mcp23018_set_port_mode(&mcp23018, PORT_A, ALL_OUTPUT);
+    // mcp23018_set_port_mode(&mcp23018, PORT_B, ALL_OUTPUT);
 
-    // set all pins to low
-    mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
-    mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
+    // // set all pins to low
+    // mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
+    // mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
+
+    ads1115_set_mode(&ads1115, ADS1115_MODE_CONTINUOUS);
+    ads1115_set_data_rate(&ads1115, ADS1115_DATA_RATE_32);
+    ads1115_set_input_mux(&ads1115, ADS1115_MUX_1_GND);
+    ads1115_set_gain(&ads1115, ADS1115_GAIN_4V096);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
     while (1) {
         int16_t raw;
@@ -106,11 +121,16 @@ void app_main(void)
         tmp1075_get_temp_raw(&tmp1075_2, &raw);
         tmp1075_get_temp_celsius(&tmp1075_2, &temp);
         printf("#TS2=> raw: %d, temp: %f\n", raw, temp);
-        mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_HIGH);
-        mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_HIGH);
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-        mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
-        mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        ads1115_get_value(&ads1115, &raw);
+        float voltage = ads1115_gain_values[ADS1115_GAIN_4V096] / ADS1115_MAX_VALUE * raw;
+        printf("#ADC=> raw: %d, voltage: %f\n", raw, voltage);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        // mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_HIGH);
+        // mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_HIGH);
+        // vTaskDelay(2000 / portTICK_PERIOD_MS);
+        // mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
+        // mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }

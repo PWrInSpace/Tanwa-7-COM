@@ -45,11 +45,7 @@ typedef struct {
  */
 esp_err_t i2c_init(mcu_i2c_config_t *i2c);
 
-bool _tmp1075_I2C_write_TS1(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
-bool _tmp1075_I2C_read_TS1(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
-bool _tmp1075_I2C_write_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
-bool _tmp1075_I2C_read_TS2(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
-bool _mcp23018_I2C_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
-bool _mcp23018_I2C_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool _I2C_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool _I2C_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 
 #endif // PWRINSPACE_TANWA_7_MCU_I2C_CONFIG_H_

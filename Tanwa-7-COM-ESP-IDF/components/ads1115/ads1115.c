@@ -34,17 +34,9 @@
 #define OS_OFFSET        15
 #define OS_MASK          0x01
 
-#define READ_CONFIG(OFFS, MASK, VAR) do {               \
-        CHECK_ARG(VAR);                                 \
-        uint16_t bits;                                  \
-        CHECK(read_conf_bits(dev, OFFS, MASK, &bits));  \
-        *VAR = bits;                                    \
-        return ESP_OK;                                  \
-    } while(0)
-
 ///===-----------------------------------------------------------------------------------------===//
 
-const float ads111x_gain_values[] = {
+const float ads1115_gain_values[] = {
     [ADS1115_GAIN_6V144]   = 6.144,
     [ADS1115_GAIN_4V096]   = 4.096,
     [ADS1115_GAIN_2V048]   = 2.048,
