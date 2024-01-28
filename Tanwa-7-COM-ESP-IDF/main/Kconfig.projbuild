@@ -128,10 +128,22 @@ menu "TANWA +7 COM board config ESP32"
         
         config A_VBAT_CHANNEL
             int "A_VBAT ESP32 channel"
-            default 1
+            default 0
             help
                 ADC Channel number for A_VBAT
         
+        config A_IGNIT_CONT_1_CHANNEL
+            int "A_IGNIT_CONT_1 ESP32 channel"
+            default 6
+            help
+                ADC Channel number for A_IGNIT_CONT_1
+
+        config A_IGNIT_CONT_2_CHANNEL
+            int "A_IGNIT_CONT_2 ESP32 channel"
+            default 7
+            help
+                ADC Channel number for A_IGNIT_CONT_2
+
     endmenu
 
     menu "SPI configuration"
