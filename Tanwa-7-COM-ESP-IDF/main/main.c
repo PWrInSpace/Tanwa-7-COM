@@ -118,10 +118,6 @@ void app_main(void)
     pca9574_init(&pca9574);
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
-    // set all pins to output
-    mcp23018_set_port_mode(&mcp23018, PORT_A, ALL_OUTPUT);
-    mcp23018_set_port_mode(&mcp23018, PORT_B, ALL_OUTPUT);
-
     // set all pins to low
     mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
     mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
