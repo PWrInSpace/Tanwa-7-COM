@@ -1,18 +1,31 @@
-// Copyright 2023 PWrInSpace, Krzysztof Gliwiński
+///===-----------------------------------------------------------------------------------------===//
+///
+/// Copyright (c) PWr in Space. All rights reserved.
+/// Created: 28.01.2024 by Michał Kos
+///
+///===-----------------------------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains the configuration of the ADC peripheral for the MCU.
+/// This can only be used for ADC1!
+///===-----------------------------------------------------------------------------------------===//
 
-#pragma once
+#ifndef PWRINSPACE_TANWA_7_MCU_ADC_CONFIG_H_
+#define PWRINSPACE_TANWA_7_MCU_ADC_CONFIG_H_
+
 #include <stdbool.h>
 #include <stdint.h>
 
 #include "esp_adc/adc_cali.h"
 #include "esp_adc/adc_cali_scheme.h"
 #include "esp_adc/adc_oneshot.h"
-#include "esp_log.h"
 #include "soc/adc_channel.h"
-/*!
-  \file voltage_measure.h contains structs and functions to handle
-        ESP32's ADC1 only!
-*/
+
+#include "igniter_driver.h"
+
+#define READ_ERROR_RETURN_VAL 0xFFFF
+#define VOLTAGE_READ_ERROR_RETURN_VAL -1.0f
+#define MAX_ADC_CHANNELS 8
 
 #define MCU_VOLTAGE_MEASURE_DEFAULT_CONFIG()               \
   {                                                        \
@@ -29,9 +42,19 @@
     }                                                      \
   }
 
-#define READ_ERROR_RETURN_VAL 0xFFFF
-#define VOLTAGE_READ_ERROR_RETURN_VAL -1.0f
-#define MAX_ADC_CHANNELS 8
+
+typedef enum {
+  CAN_CHANNEL = ADC_CHANNEL_0,
+  VBAT_CHANNEL = ADC_CHANNEL_1,
+  ADJV_CHANNEL = ADC_CHANNEL_3,
+} adc_chan_cfg_t;
+
+typedef enum {
+  CAN_CHANNEL_INDEX = 0,
+  VBAT_CHANNEL_INDEX,
+  ADJV_CHANNEL_INDEX,
+  MAX_CHANNEL_INDEX
+} adc_chan_index_cfg_t;
 
 /*!
  * \brief Voltage measure struct
@@ -81,3 +104,9 @@ int voltage_measure_read_raw(voltage_measure_config_t* v_mes, uint8_t adc_chan);
  */
 float voltage_measure_read_voltage(voltage_measure_config_t* v_mes,
                                    uint8_t adc_chan);
+
+esp_err_t igniter_adc_init(igniter_struct_t* igniter);
+
+bool _ADC_analog_read_raw(uint8_t _adc_channel, uint16_t* _value);
+
+#endif /* PWRINSPACE_TANWA_7_MCU_ADC_CONFIG_H_ */

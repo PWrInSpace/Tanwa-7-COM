@@ -1,9 +1,13 @@
-// Copyright 2023 PWrInSpace, Krzysztof Gliwiński
-
+///===-----------------------------------------------------------------------------------------===//
+///
+/// Copyright (c) PWr in Space. All rights reserved.
+/// Created: 28.01.2024 by Michał Kos
+///
+///===-----------------------------------------------------------------------------------------===//
 #include "mcu_adc_config.h"
+#include "esp_log.h"
 
 #define ADC_CONFIG_TAG "ADC_CONFIG"
-
 
 esp_err_t voltage_measure_init(voltage_measure_config_t* v_mes) {
   if (v_mes->adc_chan_num > MAX_ADC_CHANNELS) {
