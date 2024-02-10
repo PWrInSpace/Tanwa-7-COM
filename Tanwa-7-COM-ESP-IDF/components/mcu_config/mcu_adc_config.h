@@ -30,7 +30,7 @@
 #define MCU_VOLTAGE_MEASURE_DEFAULT_CONFIG()               \
   {                                                        \
     .adc_cal = {1.0f, 5.742f, 5.180f},                     \
-    .adc_chan = {CAN_CHANNEL, VBAT_CHANNEL, ADJV_CHANNEL}, \
+    .adc_chan = {VBAT_CHANNEL, IGNITER_1_CHANNEL, IGNITER_2_CHANNEL}, \
     .adc_chan_num = MAX_CHANNEL_INDEX,                     \
     .oneshot_chan_cfg =                                    \
         {                                                  \
@@ -42,17 +42,16 @@
     }                                                      \
   }
 
-
 typedef enum {
-  CAN_CHANNEL = ADC_CHANNEL_0,
-  VBAT_CHANNEL = ADC_CHANNEL_1,
-  ADJV_CHANNEL = ADC_CHANNEL_3,
+  VBAT_CHANNEL = ADC_CHANNEL_0,
+  IGNITER_1_CHANNEL = ADC_CHANNEL_6,
+  IGNITER_2_CHANNEL = ADC_CHANNEL_7
 } adc_chan_cfg_t;
 
 typedef enum {
-  CAN_CHANNEL_INDEX = 0,
-  VBAT_CHANNEL_INDEX,
-  ADJV_CHANNEL_INDEX,
+  VBAT_CHANNEL_INDEX = 0,
+  IGNITER_1_CHANNEL_INDEX,
+  IGNITER_2_CHANNEL_INDEX,
   MAX_CHANNEL_INDEX
 } adc_chan_index_cfg_t;
 
@@ -104,9 +103,5 @@ int voltage_measure_read_raw(voltage_measure_config_t* v_mes, uint8_t adc_chan);
  */
 float voltage_measure_read_voltage(voltage_measure_config_t* v_mes,
                                    uint8_t adc_chan);
-
-esp_err_t igniter_adc_init(igniter_struct_t* igniter);
-
-bool _ADC_analog_read_raw(uint8_t _adc_channel, uint16_t* _value);
 
 #endif /* PWRINSPACE_TANWA_7_MCU_ADC_CONFIG_H_ */

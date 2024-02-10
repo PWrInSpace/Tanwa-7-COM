@@ -14,6 +14,7 @@
 #include "esp_flash.h"
 
 #include "mcu_i2c_config.h"
+#include "mcu_adc_config.h"
 #include "mcu_misc_config.h"
 
 #include "led_driver.h"
@@ -25,6 +26,8 @@
 #define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
 mcu_i2c_config_t i2c_config = MCU_I2C_DEFAULT_CONFIG();
+
+voltage_measure_config_t voltage_measure_config = MCU_VOLTAGE_MEASURE_DEFAULT_CONFIG();
 
 led_struct_t esp_led = {
     ._gpio_set_level = _GPIO_set_level,
@@ -108,6 +111,9 @@ void app_main(void)
     // esp_restart();
 
     i2c_init(&i2c_config);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
+
+    voltage_measure_init(&voltage_measure_config);
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
     led_GPIO_init(&esp_led);
