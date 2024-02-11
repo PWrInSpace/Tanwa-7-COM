@@ -65,34 +65,34 @@ mcp23018_status_t mcp23018_init(mcp23018_struct_t *mcp23018, uint8_t mode) {
     }
     mcp23018->iocon = reg_val;
     // Default all pins to input
-    ret = mcp23018_set_port_mode(mcp23018, PORT_A, ALL_INPUT);
+    ret = mcp23018_set_port_mode(mcp23018, MCP23018_PORT_A, MCP23018_ALL_INPUT);
     if (ret != MCP23018_OK) {
         ESP_LOGE(TAG, "MCP23018 PORT A initialization failed");
         return ret;
     }
-    ret = mcp23018_set_port_mode(mcp23018, PORT_B, ALL_INPUT);
+    ret = mcp23018_set_port_mode(mcp23018, MCP23018_PORT_B, MCP23018_ALL_INPUT);
     if (ret != MCP23018_OK) {
         ESP_LOGE(TAG, "MCP23018 PORT B initialization failed");
         return ret;
     }
     // Default all pins are not inverted
-    ret = mcp23018_set_port_polarity(mcp23018, PORT_A, ALL_NORMAL);
+    ret = mcp23018_set_port_polarity(mcp23018, MCP23018_PORT_A, MCP23018_ALL_NORMAL);
     if (ret != MCP23018_OK) {
         ESP_LOGE(TAG, "MCP23018 PORT A polarity initialization failed");
         return ret;
     }
-    ret = mcp23018_set_port_polarity(mcp23018, PORT_B, ALL_NORMAL);
+    ret = mcp23018_set_port_polarity(mcp23018, MCP23018_PORT_B, MCP23018_ALL_NORMAL);
     if (ret != MCP23018_OK) {
         ESP_LOGE(TAG, "MCP23018 PORT B polarity initialization failed");
         return ret;
     }
     // Default all pins to low
-    ret = mcp23018_digital_write_port(mcp23018, PORT_A, ALL_LOW);
+    ret = mcp23018_digital_write_port(mcp23018, MCP23018_PORT_A, MCP23018_ALL_LOW);
     if (ret != MCP23018_OK) {
         ESP_LOGE(TAG, "MCP23018 PORT A digital write initialization failed");
         return ret;
     }
-    ret = mcp23018_digital_write_port(mcp23018, PORT_B, ALL_LOW);
+    ret = mcp23018_digital_write_port(mcp23018, MCP23018_PORT_B, MCP23018_ALL_LOW);
     if (ret != MCP23018_OK) {
         ESP_LOGE(TAG, "MCP23018 PORT B digital write initialization failed");
         return ret;
@@ -129,7 +129,7 @@ mcp23018_status_t mcp23018_digital_write(mcp23018_struct_t *mcp23018, mcp23018_p
         return MCP23018_FAIL;
     }
     // Set pin value
-    if (value == HIGH) {
+    if (value == MCP23018_HIGH) {
         reg_val = mcp23018->ports[port] |= (1 << pin);
     } else {
         reg_val = mcp23018->ports[port] &= ~(1 << pin);
@@ -184,9 +184,9 @@ mcp23018_status_t mcp23018_digital_read(mcp23018_struct_t *mcp23018, mcp23018_po
     }
     // Set pin value
     if (reg_val & (1 << pin)) {
-        *value = HIGH;
+        *value = MCP23018_HIGH;
     } else {
-        *value = LOW;
+        *value = MCP23018_LOW;
     }
     // Save pin value
     mcp23018->ports[port] = reg_val;
@@ -215,7 +215,7 @@ mcp23018_status_t mcp23018_digital_read_port(mcp23018_struct_t *mcp23018, mcp230
 }
 
 mcp23018_status_t mcp23018_get_pin_mode(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_mode_ctrl_t *mode) {
-    if (port == PORT_A) {
+    if (port == MCP23018_PORT_A) {
         *mode = (mcp23018_mode_ctrl_t)((mcp23018->dirRegisters[0] >> pin) & 0x01);
     } else {
         *mode = (mcp23018_mode_ctrl_t)((mcp23018->dirRegisters[1] >> pin) & 0x01);
@@ -243,7 +243,7 @@ mcp23018_status_t mcp23018_set_pin_mode(mcp23018_struct_t *mcp23018, mcp23018_po
     }
     // Set register value
     reg_val = ~(mcp23018->dirRegisters[port]);
-    if (mode == INPUT) {
+    if (mode == MCP23018_INPUT) {
         reg_val |= (1 << pin);
     } else {
         reg_val &= ~(1 << pin);
@@ -260,7 +260,7 @@ mcp23018_status_t mcp23018_set_pin_mode(mcp23018_struct_t *mcp23018, mcp23018_po
 }
 
 mcp23018_status_t mcp23018_get_port_mode(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t *mode) {
-    if (port == PORT_A) {
+    if (port == MCP23018_PORT_A) {
         *mode = (mcp23018_mode_ctrl_t)(mcp23018->dirRegisters[0]);
     } else {
         *mode = (mcp23018_mode_ctrl_t)(mcp23018->dirRegisters[1]);
@@ -286,7 +286,7 @@ mcp23018_status_t mcp23018_set_port_mode(mcp23018_struct_t *mcp23018, mcp23018_p
 }
 
 mcp23018_status_t mcp23018_get_pin_polarity(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_polarity_ctrl_t *polarity) {
-    if (port == PORT_A) {
+    if (port == MCP23018_PORT_A) {
         *polarity = (mcp23018_polarity_ctrl_t)((mcp23018->polRegisters[0] >> pin) & 0x01);
     } else {
         *polarity = (mcp23018_polarity_ctrl_t)((mcp23018->polRegisters[1] >> pin) & 0x01);
@@ -314,7 +314,7 @@ mcp23018_status_t mcp23018_set_pin_polarity(mcp23018_struct_t *mcp23018, mcp2301
     }
     // Set register value
     reg_val = ~(mcp23018->polRegisters[port]);
-    if (polarity == NORMAL) {
+    if (polarity == MCP23018_NORMAL) {
         reg_val |= (1 << pin);
     } else {
         reg_val &= ~(1 << pin);
@@ -331,7 +331,7 @@ mcp23018_status_t mcp23018_set_pin_polarity(mcp23018_struct_t *mcp23018, mcp2301
 }
 
 mcp23018_status_t mcp23018_get_port_polarity(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t *polarity) {
-    if (port == PORT_A) {
+    if (port == MCP23018_PORT_A) {
         *polarity = (mcp23018_polarity_ctrl_t)(mcp23018->polRegisters[0]);
     } else {
         *polarity = (mcp23018_polarity_ctrl_t)(mcp23018->polRegisters[1]);
@@ -358,7 +358,7 @@ mcp23018_status_t mcp23018_set_port_polarity(mcp23018_struct_t *mcp23018, mcp230
 }
 
 mcp23018_status_t mcp23018_get_pin_pullup(mcp23018_struct_t *mcp23018, mcp23018_port_t port, mcp23018_pin_t pin, mcp23018_pullup_ctrl_t *pullup) {
-    if (port == PORT_A) {
+    if (port == MCP23018_PORT_A) {
         *pullup = (mcp23018_pullup_ctrl_t)((mcp23018->pullupRegisters[0] >> pin) & 0x01);
     } else {
         *pullup = (mcp23018_pullup_ctrl_t)((mcp23018->pullupRegisters[1] >> pin) & 0x01);
@@ -386,7 +386,7 @@ mcp23018_status_t mcp23018_set_pin_pullup(mcp23018_struct_t *mcp23018, mcp23018_
     }
     // Set register value
     reg_val = ~(mcp23018->pullupRegisters[port]);
-    if (pullup == PU_ENABLE) {
+    if (pullup == MCP23018_PU_ENABLE) {
         reg_val |= (1 << pin);
     } else {
         reg_val &= ~(1 << pin);
@@ -403,7 +403,7 @@ mcp23018_status_t mcp23018_set_pin_pullup(mcp23018_struct_t *mcp23018, mcp23018_
 }
 
 mcp23018_status_t mcp23018_get_port_pullup(mcp23018_struct_t *mcp23018, mcp23018_port_t port, uint8_t *pullup) {
-    if (port == PORT_A) {
+    if (port == MCP23018_PORT_A) {
         *pullup = (mcp23018_pullup_ctrl_t)(mcp23018->pullupRegisters[0]);
     } else {
         *pullup = (mcp23018_pullup_ctrl_t)(mcp23018->pullupRegisters[1]);

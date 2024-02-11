@@ -23,6 +23,8 @@
 #include "ads1115.h"
 #include "pca9574.h"
 
+#include "led_state_display.h"
+
 #define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
 mcu_i2c_config_t i2c_config = MCU_I2C_DEFAULT_CONFIG();
@@ -73,6 +75,11 @@ pca9574_struct_t pca9574 = {
     .i2c_address = CONFIG_I2C_PCA9574_ADDR,
 };
 
+led_state_display_struct_t led_state_display = {
+    .mcp23018 = &mcp23018,
+    .state = LED_STATE_DISPLAY_STATE_NONE,
+};
+
 void app_main(void)
 {
     printf("Hello world!\n");
@@ -113,8 +120,8 @@ void app_main(void)
     i2c_init(&i2c_config);
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
-    voltage_measure_init(&voltage_measure_config);
-    vTaskDelay(50 / portTICK_PERIOD_MS);
+    // voltage_measure_init(&voltage_measure_config);
+    // vTaskDelay(50 / portTICK_PERIOD_MS);
 
     led_GPIO_init(&esp_led);
 
@@ -125,8 +132,8 @@ void app_main(void)
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
     // set all pins to low
-    mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
-    mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
+    mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
+    mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_HIGH);
 
     ads1115_set_mode(&ads1115, ADS1115_MODE_CONTINUOUS);
     ads1115_set_data_rate(&ads1115, ADS1115_DATA_RATE_32);
@@ -137,6 +144,8 @@ void app_main(void)
     pca9574_set_mode(&pca9574, PCA9574_OUTPUT);
     pca9574_set_level(&pca9574, PCA9574_HIGH);
     vTaskDelay(50 / portTICK_PERIOD_MS);
+
+    led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
 
     while (1) {
         int16_t raw;
@@ -154,13 +163,19 @@ void app_main(void)
         printf("#ADC=> raw: %d, voltage: %f\n", raw, voltage);
         led_toggle(&esp_led);
         vTaskDelay(500 / portTICK_PERIOD_MS);
-        mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_HIGH);
-        mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_HIGH);
-        led_toggle(&esp_led);
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-        mcp23018_digital_write_port(&mcp23018, PORT_A, ALL_LOW);
-        mcp23018_digital_write_port(&mcp23018, PORT_B, ALL_LOW);
-        led_toggle(&esp_led);
+        // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
+        // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_HIGH);
+        // led_toggle(&esp_led);
+        // vTaskDelay(2000 / portTICK_PERIOD_MS);
+        // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_LOW);
+        // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_LOW);
+        // led_toggle(&esp_led);
+        // vTaskDelay(2000 / portTICK_PERIOD_MS);
+        if (led_state_display.state == LED_STATE_DISPLAY_STATE_IDLE) {
+            led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_ARMED);
+        } else {
+            led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
+        }
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }

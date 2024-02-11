@@ -60,69 +60,69 @@ typedef enum {
 // Values for bit and port polarity
 typedef enum {
     // Bit polarity
-    NORMAL = 0,
-    INVERTED = 1,
+    MCP23018_NORMAL = 0,
+    MCP23018_INVERTED = 1,
     // Port polarity
-    ALL_NORMAL = 0x00,
-    ALL_INVERTED = 0xFF,
+    MCP23018_ALL_NORMAL = 0x00,
+    MCP23018_ALL_INVERTED = 0xFF,
 } mcp23018_polarity_ctrl_t;
 
 // Values for pull up resistor bit and port
 typedef enum {
     // Bit pull up
-    PU_ENABLE = 1,
-    PU_DISABLE = 0,
+    MCP23018_PU_ENABLE = 1,
+    MCP23018_PU_DISABLE = 0,
     // Port pull up
-    ALL_PU_ENABLE = 0xFF,
-    ALL_PU_DISABLE = 0x00,
+    MCP23018_ALL_PU_ENABLE = 0xFF,
+    MCP23018_ALL_PU_DISABLE = 0x00,
 } mcp23018_pullup_ctrl_t;
 
 // Values for bit and port interrupt enables
 typedef enum {
     // Bit interrupt enable
-    INTR_ENABLE = 1,
-    INTR_DISABLE = 0,
+    MCP23018_INTR_ENABLE = 1,
+    MCP23018_INTR_DISABLE = 0,
     // Port interrupt enable
-    ALL_INTR_ENABLE = 0xFF,
-    ALL_INTR_DISABLE = 0x00,
+    MCP23018_ALL_INTR_ENABLE = 0xFF,
+    MCP23018_ALL_INTR_DISABLE = 0x00,
 } mcp23018_interrupt_ctrl_t;
 
 // Values for bit and port mode 
 typedef enum {
     // Bit direction
-    INPUT = 0,
-    OUTPUT = 1,
+    MCP23018_INPUT = 0,
+    MCP23018_OUTPUT = 1,
     // Port direction
-    ALL_INPUT = 0x00,
-    ALL_OUTPUT = 0xFF,
+    MCP23018_ALL_INPUT = 0x00,
+    MCP23018_ALL_OUTPUT = 0xFF,
 } mcp23018_mode_ctrl_t;
 
 // Values for bit and port values
 typedef enum {
     // Bit value
-    LOW = 0,
-    HIGH = 1,
+    MCP23018_LOW = 0,
+    MCP23018_HIGH = 1,
     // Port value
-    ALL_LOW = 0x00,
-    ALL_HIGH = 0xFF,
+    MCP23018_ALL_LOW = 0x00,
+    MCP23018_ALL_HIGH = 0xFF,
 } mcp23018_value_ctrl_t;
 
 // Port number
 typedef enum {
-    PORT_A = 0,
-    PORT_B = 1,
+    MCP23018_PORT_A = 0,
+    MCP23018_PORT_B = 1,
 } mcp23018_port_t;
 
 // Pin number
 typedef enum {
-    PIN_0 = 0,
-    PIN_1 = 1,
-    PIN_2 = 2,
-    PIN_3 = 3,
-    PIN_4 = 4,
-    PIN_5 = 5,
-    PIN_6 = 6,
-    PIN_7 = 7,
+    MCP23018_PIN_0 = 0,
+    MCP23018_PIN_1 = 1,
+    MCP23018_PIN_2 = 2,
+    MCP23018_PIN_3 = 3,
+    MCP23018_PIN_4 = 4,
+    MCP23018_PIN_5 = 5,
+    MCP23018_PIN_6 = 6,
+    MCP23018_PIN_7 = 7,
 } mcp23018_pin_t;
 
 typedef enum {
