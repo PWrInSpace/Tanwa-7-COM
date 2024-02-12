@@ -24,6 +24,7 @@
 #include "pca9574.h"
 
 #include "led_state_display.h"
+#include "pressure_driver.h"
 
 #define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
@@ -80,6 +81,8 @@ led_state_display_struct_t led_state_display = {
     .state = LED_STATE_DISPLAY_STATE_NONE,
 };
 
+pressure_driver_struct_t pressure_driver = PRESSURE_DRIVER_DEFAULT_CONFIG();
+
 void app_main(void)
 {
     printf("Hello world!\n");
@@ -131,14 +134,12 @@ void app_main(void)
     pca9574_init(&pca9574);
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
+    pressure_driver.ads1115 = &ads1115;
+    pressure_driver_init(&pressure_driver);
+
     // set all pins to low
     mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
     mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_HIGH);
-
-    ads1115_set_mode(&ads1115, ADS1115_MODE_CONTINUOUS);
-    ads1115_set_data_rate(&ads1115, ADS1115_DATA_RATE_32);
-    ads1115_set_input_mux(&ads1115, ADS1115_MUX_1_GND);
-    ads1115_set_gain(&ads1115, ADS1115_GAIN_4V096);
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
     pca9574_set_mode(&pca9574, PCA9574_OUTPUT);
@@ -149,7 +150,7 @@ void app_main(void)
 
     while (1) {
         int16_t raw;
-        float temp;
+        float temp, voltage, pressure;
         tmp1075_get_temp_raw(&tmp1075_1, &raw);
         tmp1075_get_temp_celsius(&tmp1075_1, &temp);
         printf("#TS1=> raw: %d, temp: %f\n", raw, temp);
@@ -158,9 +159,9 @@ void app_main(void)
         printf("#TS2=> raw: %d, temp: %f\n", raw, temp);
         led_toggle(&esp_led);
         vTaskDelay(500 / portTICK_PERIOD_MS);
-        ads1115_get_value(&ads1115, &raw);
-        float voltage = ads1115_gain_values[ADS1115_GAIN_4V096] / ADS1115_MAX_VALUE * raw;
-        printf("#ADC=> raw: %d, voltage: %f\n", raw, voltage);
+        pressure_driver_read_voltage(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &voltage);
+        pressure_driver_read_pressure(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &pressure);
+        printf("#ADC=> voltage: %f, pressure: %f\n", voltage, pressure);
         led_toggle(&esp_led);
         vTaskDelay(500 / portTICK_PERIOD_MS);
         // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
