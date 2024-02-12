@@ -25,6 +25,7 @@
 
 #include "led_state_display.h"
 #include "pressure_driver.h"
+#include "solenoid_driver.h"
 
 #define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
@@ -83,6 +84,8 @@ led_state_display_struct_t led_state_display = {
 
 pressure_driver_struct_t pressure_driver = PRESSURE_DRIVER_DEFAULT_CONFIG();
 
+solenoid_driver_struct_t solenoid_driver = SOLENOID_DRIVER_DEFAULT_CONFIG();
+
 void app_main(void)
 {
     printf("Hello world!\n");
@@ -136,14 +139,15 @@ void app_main(void)
 
     pressure_driver.ads1115 = &ads1115;
     pressure_driver_init(&pressure_driver);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
+
+    solenoid_driver.pca9574 = &pca9574;
+    solenoid_driver_init(&solenoid_driver);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
     // set all pins to low
     mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
     mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_HIGH);
-    vTaskDelay(50 / portTICK_PERIOD_MS);
-
-    pca9574_set_mode(&pca9574, PCA9574_OUTPUT);
-    pca9574_set_level(&pca9574, PCA9574_HIGH);
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
     led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
@@ -162,8 +166,6 @@ void app_main(void)
         pressure_driver_read_voltage(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &voltage);
         pressure_driver_read_pressure(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &pressure);
         printf("#ADC=> voltage: %f, pressure: %f\n", voltage, pressure);
-        led_toggle(&esp_led);
-        vTaskDelay(500 / portTICK_PERIOD_MS);
         // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
         // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_HIGH);
         // led_toggle(&esp_led);
@@ -178,5 +180,10 @@ void app_main(void)
             led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
         }
         vTaskDelay(2000 / portTICK_PERIOD_MS);
+        solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
+        solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
+        solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_ADD);
+        led_toggle(&esp_led);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
     }
 }
