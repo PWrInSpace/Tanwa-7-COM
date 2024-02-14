@@ -26,7 +26,6 @@ extern "C" {
 #define CMD_BROADCAST_DEV_ID 0x00
 #define CMD_PRIVILAGE_MASK 0x01
 
-
 typedef uint32_t cmd_lora_dev_id;
 typedef uint32_t cmd_sys_dev_id;
 typedef uint32_t cmd_command_id;
@@ -57,7 +56,6 @@ typedef struct {
     cmd_device_t *devices;
     size_t number_of_devices;
 } cmd_t;
-
 
 /**
  * @brief Initialize cmd api without task
@@ -114,8 +112,6 @@ bool cmd_process_lora_command(
  * @return cmd_message_t created message
  */
 cmd_message_t cmd_create_message(uint32_t command, int32_t payload);
-
-
 
 #ifdef __cplusplus
 }
