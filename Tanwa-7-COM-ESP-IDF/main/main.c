@@ -29,10 +29,6 @@
 
 #define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
-mcu_i2c_config_t i2c_config = MCU_I2C_DEFAULT_CONFIG();
-
-voltage_measure_config_t voltage_measure_config = MCU_VOLTAGE_MEASURE_DEFAULT_CONFIG();
-
 led_struct_t esp_led = {
     ._gpio_set_level = _GPIO_set_level,
     ._delay = _delay_ms,
@@ -41,22 +37,22 @@ led_struct_t esp_led = {
 };
 
 tmp1075_struct_t tmp1075_1 = {
-    ._i2c_write = _I2C_write,
-    ._i2c_read = _I2C_read,
+    ._i2c_write = mcu_i2c_write,
+    ._i2c_read = mcu_i2c_read,
     .i2c_address = CONFIG_I2C_TMP1075_TS1_ADDR,
     .config_register = 0,
 };
 
 tmp1075_struct_t tmp1075_2 = {
-    ._i2c_write = _I2C_write,
-    ._i2c_read = _I2C_read,
+    ._i2c_write = mcu_i2c_write,
+    ._i2c_read = mcu_i2c_read,
     .i2c_address = CONFIG_I2C_TMP1075_TS2_ADDR,
     .config_register = 0,
 };
 
 mcp23018_struct_t mcp23018 = {
-    ._i2c_write = _I2C_write,
-    ._i2c_read = _I2C_read,
+    ._i2c_write = mcu_i2c_write,
+    ._i2c_read = mcu_i2c_read,
     .i2c_address = CONFIG_I2C_MCP23018_ADDR,
     .iocon = 0,
     .dirRegisters = {0, 0},
@@ -66,14 +62,14 @@ mcp23018_struct_t mcp23018 = {
 };
 
 ads1115_struct_t ads1115 = {
-    ._i2c_write = _I2C_write,
-    ._i2c_read = _I2C_read,
+    ._i2c_write = mcu_i2c_write,
+    ._i2c_read = mcu_i2c_read,
     .i2c_address = CONFIG_I2C_ADS1115_ADDR,
 };
 
 pca9574_struct_t pca9574 = {
-    ._i2c_write = _I2C_write,
-    ._i2c_read = _I2C_read,
+    ._i2c_write = mcu_i2c_write,
+    ._i2c_read = mcu_i2c_read,
     .i2c_address = CONFIG_I2C_PCA9574_ADDR,
 };
 
@@ -123,7 +119,8 @@ void app_main(void)
     // fflush(stdout);
     // esp_restart();
 
-    i2c_init(&i2c_config);
+    mcu_i2c_init();
+    mcu_adc_init();
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
     // voltage_measure_init(&voltage_measure_config);
@@ -166,14 +163,8 @@ void app_main(void)
         pressure_driver_read_voltage(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &voltage);
         pressure_driver_read_pressure(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &pressure);
         printf("#ADC=> voltage: %f, pressure: %f\n", voltage, pressure);
-        // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
-        // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_HIGH);
-        // led_toggle(&esp_led);
-        // vTaskDelay(2000 / portTICK_PERIOD_MS);
-        // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_LOW);
-        // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_LOW);
-        // led_toggle(&esp_led);
-        // vTaskDelay(2000 / portTICK_PERIOD_MS);
+        mcu_adc_read_voltage(VBAT_CHANNEL, &voltage);
+        printf("#VBAT=> voltage: %f\n", voltage);
         if (led_state_display.state == LED_STATE_DISPLAY_STATE_IDLE) {
             led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_ARMED);
         } else {

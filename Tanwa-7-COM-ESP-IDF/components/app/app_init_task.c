@@ -14,24 +14,24 @@ static sd_card_t sd_card = SD_CARD_DEFAULT_CONFIG(sdmmc_card);
 
 static sd_card_config_t sd_card_conf = SD_CARD_CONFIG_DEFAULT_CONFIG();
 
-static TANWA_devices_t devices_config = {
-    .spi = MCU_SPI_DEFAULT_CONFIG(),
-    .i2c = MCU_I2C_DEFAULT_CONFIG(),
-    .twai = MCU_TWAI_DEFAULT_CONFIG(),
-    .voltage_measure = MCU_VOLTAGE_MEASURE_DEFAULT_CONFIG(),
-    .lora = MCU_LORA_DEFAULT_CONFIG(),
-    .buzzer = MCU_BUZZER_DRIVER_DEFAULT_CONFIG(),
-    .memory =
-        {
-            .sd_card = &sd_card,
-            .sd_card_config = &sd_card_conf,
-        },
-};
+static TANWA_devices_t devices_config; // = {
+//     .spi = MCU_SPI_DEFAULT_CONFIG(),
+//     .i2c = MCU_I2C_DEFAULT_CONFIG(),
+//     .twai = MCU_TWAI_DEFAULT_CONFIG(),
+//     .voltage_measure = MCU_VOLTAGE_MEASURE_DEFAULT_CONFIG(),
+//     .lora = MCU_LORA_DEFAULT_CONFIG(),
+//     .buzzer = MCU_BUZZER_DRIVER_DEFAULT_CONFIG(),
+//     .memory =
+//         {
+//             .sd_card = &sd_card,
+//             .sd_card_config = &sd_card_conf,
+//         },
+// };
 
 void app_init_task(void* pvParameters) {
   ESP_LOGI(TAG, "Initializing devices");
 
-  devices_config.voltage_measure.oneshot_unit_handle = &adc1_handle;
+  // devices_config.voltage_measure.oneshot_unit_handle = &adc1_handle;
 
   esp_err_t ret = devices_init(&devices_config);
   if (ret != ESP_OK) {

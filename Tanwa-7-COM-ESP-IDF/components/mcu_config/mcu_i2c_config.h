@@ -43,9 +43,9 @@ typedef struct {
  * \return ESP_OK on success, ESP_FAIL otherwise
  * \note This function will initiate I2C peripheral.
  */
-esp_err_t i2c_init(mcu_i2c_config_t *i2c);
+esp_err_t mcu_i2c_init();
 
-bool _I2C_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
-bool _I2C_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool mcu_i2c_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+bool mcu_i2c_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 
 #endif // PWRINSPACE_TANWA_7_MCU_I2C_CONFIG_H_

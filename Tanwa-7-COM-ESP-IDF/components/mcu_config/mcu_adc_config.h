@@ -27,21 +27,6 @@
 #define VOLTAGE_READ_ERROR_RETURN_VAL -1.0f
 #define MAX_ADC_CHANNELS 8
 
-#define MCU_VOLTAGE_MEASURE_DEFAULT_CONFIG()               \
-  {                                                        \
-    .adc_cal = {1.0f, 5.742f, 5.180f},                     \
-    .adc_chan = {VBAT_CHANNEL, IGNITER_1_CHANNEL, IGNITER_2_CHANNEL}, \
-    .adc_chan_num = MAX_CHANNEL_INDEX,                     \
-    .oneshot_chan_cfg =                                    \
-        {                                                  \
-            .bitwidth = ADC_BITWIDTH_12,                   \
-            .atten = ADC_ATTEN_DB_12,                      \
-        },                                                 \
-    .oneshot_unit_cfg = {                                  \
-      .unit_id = ADC_UNIT_1,                               \
-    }                                                      \
-  }
-
 typedef enum {
   VBAT_CHANNEL = ADC_CHANNEL_0,
   IGNITER_1_CHANNEL = ADC_CHANNEL_6,
@@ -70,15 +55,14 @@ typedef enum {
  *     adc_chan[i] is channel number for adc_cal[i]
  * \note oneshot_unit_cfg and oneshot_chan_cfg are the same for all channels.
  */
-
 typedef struct {
-  float adc_cal[MAX_ADC_CHANNELS];
-  uint8_t adc_chan[MAX_ADC_CHANNELS];
+  float adc_cal[MAX_CHANNEL_INDEX];
+  uint8_t adc_chan[MAX_CHANNEL_INDEX];
   uint8_t adc_chan_num;
-  adc_oneshot_unit_init_cfg_t oneshot_unit_cfg;
+  adc_oneshot_unit_handle_t oneshot_unit_handle;
+  adc_oneshot_unit_init_cfg_t oneshot_unit_init_cfg;
   adc_oneshot_chan_cfg_t oneshot_chan_cfg;
-  adc_oneshot_unit_handle_t* oneshot_unit_handle;
-} voltage_measure_config_t;
+} mcu_adc_config_t;
 
 /*!
   \brief Init for a voltage measure.
@@ -87,21 +71,22 @@ typedef struct {
   \param adc_cal - calibration value to be configured.
                   voltage = rawRead * adc_cal
 */
-esp_err_t voltage_measure_init(voltage_measure_config_t* v_mes);
+esp_err_t mcu_adc_init();
 
 /*!
  * \brief Read raw value from ADC
  * \param v_mes - pointer to voltage_measure_config_t struct
  * \param adc_chan - specific channel of ADC as specified in v_mes struct
+ * \param adc_raw - pointer to raw value read from ADC
  */
-int voltage_measure_read_raw(voltage_measure_config_t* v_mes, uint8_t adc_chan);
+bool mcu_adc_read_raw(uint8_t adc_chan, uint16_t* adc_raw);
 
 /*!
  * \brief Read voltage from ADC
  * \param v_mes - pointer to voltage_measure_config_t struct
  * \param adc_chan - specific channel of ADC as specified in v_mes struct
+ * \param adc_voltage - pointer to voltage read from ADC
  */
-float voltage_measure_read_voltage(voltage_measure_config_t* v_mes,
-                                   uint8_t adc_chan);
+bool mcu_adc_read_voltage(uint8_t adc_chan, float* adc_voltage);
 
 #endif /* PWRINSPACE_TANWA_7_MCU_ADC_CONFIG_H_ */

@@ -17,7 +17,7 @@ typedef struct {
   mcu_spi_config_t spi;
   mcu_i2c_config_t i2c;
   mcu_twai_config_t twai;
-  voltage_measure_config_t voltage_measure;
+  mcu_adc_config_t voltage_measure;
   lora_struct_t lora;
   buzzer_driver_t buzzer;
   mcu_memory_config_t memory;
