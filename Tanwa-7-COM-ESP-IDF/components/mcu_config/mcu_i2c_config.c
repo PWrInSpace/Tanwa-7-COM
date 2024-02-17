@@ -8,7 +8,7 @@
 #include "mcu_i2c_config.h"
 #include <string.h>
 
-#define I2C_TAG "I2C_CONFIG"
+#define TAG "MCU_I2C_CONFIG"
 
 static mcu_i2c_config_t mcu_i2c_config = {
   .port = CONFIG_I2C_MASTER_PORT_NUM, 
@@ -31,7 +31,7 @@ esp_err_t mcu_i2c_init() {
     i2c_param_config(mcu_i2c_config.port, &conf);
     esp_err_t ret = i2c_driver_install(mcu_i2c_config.port, conf.mode, 0, 0, 0);
     if (ret != ESP_OK) {
-      ESP_LOGE(I2C_TAG, "I2C driver install error: %d", ret);
+      ESP_LOGE(TAG, "I2C driver install error: %d", ret);
       return ret;
     }
     mcu_i2c_config.i2c_init_flag = true;
