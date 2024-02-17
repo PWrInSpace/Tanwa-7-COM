@@ -35,8 +35,4 @@
  */
 esp_err_t misc_init(buzzer_driver_t *buzzer);
 
-esp_err_t led_GPIO_init(led_struct_t *led);
-
-bool _GPIO_set_level(uint8_t gpio_num, uint8_t level);
-
 void _delay_ms(uint32_t ms);

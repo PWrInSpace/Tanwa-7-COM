@@ -15,6 +15,7 @@
 
 #include "mcu_i2c_config.h"
 #include "mcu_adc_config.h"
+#include "mcu_gpio_config.h"
 #include "mcu_misc_config.h"
 
 #include "led_driver.h"
@@ -30,7 +31,7 @@
 #define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
 led_struct_t esp_led = {
-    ._gpio_set_level = _GPIO_set_level,
+    ._gpio_set_level = mcu_gpio_set_level,
     ._delay = _delay_ms,
     .gpio_num = CONFIG_GPIO_LED,
     .state = LED_STATE_OFF,
@@ -119,14 +120,13 @@ void app_main(void)
     // fflush(stdout);
     // esp_restart();
 
+    mcu_gpio_init();
     mcu_i2c_init();
     mcu_adc_init();
     vTaskDelay(50 / portTICK_PERIOD_MS);
 
     // voltage_measure_init(&voltage_measure_config);
     // vTaskDelay(50 / portTICK_PERIOD_MS);
-
-    led_GPIO_init(&esp_led);
 
     tmp1075_init(&tmp1075_1);
     tmp1075_init(&tmp1075_2);

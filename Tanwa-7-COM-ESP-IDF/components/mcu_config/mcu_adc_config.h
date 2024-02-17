@@ -21,8 +21,6 @@
 #include "esp_adc/adc_oneshot.h"
 #include "soc/adc_channel.h"
 
-#include "igniter_driver.h"
-
 #define READ_ERROR_RETURN_VAL 0xFFFF
 #define VOLTAGE_READ_ERROR_RETURN_VAL -1.0f
 #define MAX_ADC_CHANNELS 8
@@ -31,14 +29,14 @@ typedef enum {
   VBAT_CHANNEL = ADC_CHANNEL_0,
   IGNITER_1_CHANNEL = ADC_CHANNEL_6,
   IGNITER_2_CHANNEL = ADC_CHANNEL_7
-} adc_chan_cfg_t;
+} mcu_adc_chan_cfg_t;
 
 typedef enum {
   VBAT_CHANNEL_INDEX = 0,
   IGNITER_1_CHANNEL_INDEX,
   IGNITER_2_CHANNEL_INDEX,
   MAX_CHANNEL_INDEX
-} adc_chan_index_cfg_t;
+} mcu_adc_chan_index_cfg_t;
 
 /*!
  * \brief Voltage measure struct
