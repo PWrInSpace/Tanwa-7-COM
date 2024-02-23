@@ -24,6 +24,7 @@
 #include "mcp23018.h"
 #include "ads1115.h"
 #include "pca9574.h"
+#include "igniter_driver.h"
 
 #include "led_state_display.h"
 #include "pressure_driver.h"
@@ -34,7 +35,7 @@
 led_struct_t esp_led = {
     ._gpio_set_level = mcu_gpio_set_level,
     ._delay = _delay_ms,
-    .gpio_num = CONFIG_GPIO_LED,
+    .gpio_num = LED_GPIO_INDEX,
     .state = LED_STATE_OFF,
 };
 
@@ -80,6 +81,28 @@ led_state_display_struct_t led_state_display = {
     .state = LED_STATE_DISPLAY_STATE_NONE,
 };
 
+igniter_struct_t ignite_1 = {
+    ._adc_analog_read_raw = mcu_adc_read_raw,
+    ._gpio_set_level = mcu_gpio_set_level,
+    ._delay = _delay_ms,
+    .adc_channel_continuity = IGNITER_1_CHANNEL_INDEX,
+    .gpio_num_arm = ARM_GPIO_INDEX,
+    .gpio_num_fire = FIRE_1_GPIO_INDEX,
+    .drive = IGNITER_DRIVE_POSITIVE,
+    .state = IGNITER_STATE_WAITING,
+};
+
+igniter_struct_t ignite_2 = {
+    ._adc_analog_read_raw = mcu_adc_read_raw,
+    ._gpio_set_level = mcu_gpio_set_level,
+    ._delay = _delay_ms,
+    .adc_channel_continuity = IGNITER_2_CHANNEL_INDEX,
+    .gpio_num_arm = ARM_GPIO_INDEX,
+    .gpio_num_fire = FIRE_2_GPIO_INDEX,
+    .drive = IGNITER_DRIVE_POSITIVE,
+    .state = IGNITER_STATE_WAITING,
+};
+
 pressure_driver_struct_t pressure_driver = PRESSURE_DRIVER_DEFAULT_CONFIG();
 
 solenoid_driver_struct_t solenoid_driver = SOLENOID_DRIVER_DEFAULT_CONFIG();
@@ -88,30 +111,30 @@ void app_main(void)
 {
     printf("Hello world!\n");
 
-    // /* Print chip information */
-    // esp_chip_info_t chip_info;
-    // uint32_t flash_size;
-    // esp_chip_info(&chip_info);
-    // printf("This is %s chip with %d CPU core(s), %s%s%s%s, ",
-    //        CONFIG_IDF_TARGET,
-    //        chip_info.cores,
-    //        (chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "WiFi/" : "",
-    //        (chip_info.features & CHIP_FEATURE_BT) ? "BT" : "",
-    //        (chip_info.features & CHIP_FEATURE_BLE) ? "BLE" : "",
-    //        (chip_info.features & CHIP_FEATURE_IEEE802154) ? ", 802.15.4 (Zigbee/Thread)" : "");
+    /* Print chip information */
+    esp_chip_info_t chip_info;
+    uint32_t flash_size;
+    esp_chip_info(&chip_info);
+    printf("This is %s chip with %d CPU core(s), %s%s%s%s, ",
+           CONFIG_IDF_TARGET,
+           chip_info.cores,
+           (chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "WiFi/" : "",
+           (chip_info.features & CHIP_FEATURE_BT) ? "BT" : "",
+           (chip_info.features & CHIP_FEATURE_BLE) ? "BLE" : "",
+           (chip_info.features & CHIP_FEATURE_IEEE802154) ? ", 802.15.4 (Zigbee/Thread)" : "");
 
-    // unsigned major_rev = chip_info.revision / 100;
-    // unsigned minor_rev = chip_info.revision % 100;
-    // printf("silicon revision v%d.%d, ", major_rev, minor_rev);
-    // if(esp_flash_get_size(NULL, &flash_size) != ESP_OK) {
-    //     printf("Get flash size failed");
-    //     return;
-    // }
+    unsigned major_rev = chip_info.revision / 100;
+    unsigned minor_rev = chip_info.revision % 100;
+    printf("silicon revision v%d.%d, ", major_rev, minor_rev);
+    if(esp_flash_get_size(NULL, &flash_size) != ESP_OK) {
+        printf("Get flash size failed");
+        return;
+    }
 
-    // printf("%" PRIu32 "MB %s flash\n", flash_size / (uint32_t)(1024 * 1024),
-    //        (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
+    printf("%" PRIu32 "MB %s flash\n", flash_size / (uint32_t)(1024 * 1024),
+           (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 
-    // printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
+    printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
 
     // for (int i = 10; i >= 0; i--) {
     //     printf("Restarting in %d seconds...\n", i);
@@ -121,61 +144,82 @@ void app_main(void)
     // fflush(stdout);
     // esp_restart();
 
-    // mcu_gpio_init();
-    // mcu_i2c_init();
-    // mcu_adc_init();
-    // // mcu_twai_init();
-    // vTaskDelay(50 / portTICK_PERIOD_MS);
+    mcu_gpio_init();
+    mcu_i2c_init();
+    mcu_adc_init();
+    // mcu_twai_init();
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
-    // tmp1075_init(&tmp1075_1);
-    // tmp1075_init(&tmp1075_2);
-    // mcp23018_init(&mcp23018, IOEXP_MODE);
-    // pca9574_init(&pca9574);
-    // vTaskDelay(50 / portTICK_PERIOD_MS);
+    tmp1075_init(&tmp1075_1);
+    tmp1075_init(&tmp1075_2);
+    mcp23018_init(&mcp23018, IOEXP_MODE);
+    pca9574_init(&pca9574);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
-    // pressure_driver.ads1115 = &ads1115;
-    // pressure_driver_init(&pressure_driver);
-    // vTaskDelay(50 / portTICK_PERIOD_MS);
+    pressure_driver.ads1115 = &ads1115;
+    pressure_driver_init(&pressure_driver);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
-    // solenoid_driver.pca9574 = &pca9574;
-    // solenoid_driver_init(&solenoid_driver);
-    // vTaskDelay(50 / portTICK_PERIOD_MS);
+    solenoid_driver.pca9574 = &pca9574;
+    solenoid_driver_init(&solenoid_driver);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
-    // // set all pins to low
-    // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
-    // mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_HIGH);
-    // vTaskDelay(50 / portTICK_PERIOD_MS);
+    // set all pins to low
+    mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
+    mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_HIGH);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
-    // led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
+    led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
 
-    mcu_twai_self_test();
+    // mcu_twai_self_test();
 
-    // while (1) {
-    //     int16_t raw;
-    //     float temp, voltage, pressure;
-    //     tmp1075_get_temp_raw(&tmp1075_1, &raw);
-    //     tmp1075_get_temp_celsius(&tmp1075_1, &temp);
-    //     printf("#TS1=> raw: %d, temp: %f\n", raw, temp);
-    //     tmp1075_get_temp_raw(&tmp1075_2, &raw);
-    //     tmp1075_get_temp_celsius(&tmp1075_2, &temp);
-    //     printf("#TS2=> raw: %d, temp: %f\n", raw, temp);
-    //     led_toggle(&esp_led);
-    //     vTaskDelay(500 / portTICK_PERIOD_MS);
-    //     pressure_driver_read_voltage(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &voltage);
-    //     pressure_driver_read_pressure(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &pressure);
-    //     printf("#ADC=> voltage: %f, pressure: %f\n", voltage, pressure);
-    //     mcu_adc_read_voltage(VBAT_CHANNEL, &voltage);
-    //     printf("#VBAT=> voltage: %f\n", voltage);
-    //     if (led_state_display.state == LED_STATE_DISPLAY_STATE_IDLE) {
-    //         led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_ARMED);
-    //     } else {
-    //         led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
-    //     }
-    //     vTaskDelay(2000 / portTICK_PERIOD_MS);
-    //     solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
-    //     solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
-    //     solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_ADD);
-    //     led_toggle(&esp_led);
-    //     vTaskDelay(500 / portTICK_PERIOD_MS);
-    // }
+    while (1) {
+        int16_t raw;
+        float temp, voltage, pressure;
+        tmp1075_get_temp_raw(&tmp1075_1, &raw);
+        tmp1075_get_temp_celsius(&tmp1075_1, &temp);
+        printf("#TS1=> raw: %d, temp: %f\n", raw, temp);
+        tmp1075_get_temp_raw(&tmp1075_2, &raw);
+        tmp1075_get_temp_celsius(&tmp1075_2, &temp);
+        printf("#TS2=> raw: %d, temp: %f\n", raw, temp);
+        led_toggle(&esp_led);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        // pressure_driver_read_voltage(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &voltage);
+        // pressure_driver_read_pressure(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &pressure);
+        // printf("#ADC=> voltage: %f, pressure: %f\n", voltage, pressure);
+        // mcu_adc_read_voltage(VBAT_CHANNEL_INDEX, &voltage);
+        // printf("#VBAT=> voltage: %f\n", voltage);
+        // if (led_state_display.state == LED_STATE_DISPLAY_STATE_IDLE) {
+        //     led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_ARMED);
+        // } else {
+        //     led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
+        // }
+        // vTaskDelay(2000 / portTICK_PERIOD_MS);
+        // solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
+        // solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
+        // solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_ADD);
+        // led_toggle(&esp_led);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        if (ignite_1.state == IGNITER_STATE_WAITING) {
+            igniter_continuity_t continuity;
+            igniter_check_continuity(&ignite_1, &continuity);
+            igniter_arm(&ignite_1);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
+            igniter_fire(&ignite_1);
+        } else {
+            igniter_disarm(&ignite_1);
+            igniter_reset(&ignite_1);
+        }
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        if (ignite_2.state == IGNITER_STATE_WAITING) {
+            igniter_continuity_t continuity;
+            igniter_check_continuity(&ignite_2, &continuity);
+            igniter_arm(&ignite_2);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
+            igniter_fire(&ignite_2);
+        } else {
+            igniter_disarm(&ignite_2);
+            igniter_reset(&ignite_2);
+        }
+    }
 }

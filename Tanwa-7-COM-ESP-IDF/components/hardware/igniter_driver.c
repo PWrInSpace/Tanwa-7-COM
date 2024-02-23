@@ -19,6 +19,7 @@ igniter_status_t igniter_check_continuity(igniter_struct_t* igniter, igniter_con
         ESP_LOGE(TAG, "Failed to read analog value from ADC for continuity check");
         return IGNITER_ADC_ERR;
     }
+    ESP_LOGI(TAG, "Continuity check value: %d", value);
     if (value > IGNITER_CONTINUITY_THRESHOLD) {
         *continuity = IGNITER_CONTINUITY_OK;
     } else {
@@ -48,6 +49,23 @@ igniter_status_t igniter_arm(igniter_struct_t* igniter) {
     return IGNITER_OK;
 }
 
+igniter_status_t igniter_disarm(igniter_struct_t* igniter) {
+    if (igniter == NULL) {
+        ESP_LOGE(TAG, "Invalid argument - NULL check failed");
+        return IGNITER_NULL_ARG;
+    }
+    if (igniter->state == IGNITER_STATE_WAITING) {
+        ESP_LOGD(TAG, "Already disarmed");
+        return IGNITER_OK;
+    }
+    if(!igniter->_gpio_set_level(igniter->gpio_num_arm, IGNITER_PIN_STATE_LOW)) {
+        ESP_LOGE(TAG, "Failed to set GPIO level for disarming");
+        return IGNITER_GPIO_ERR;
+    }
+    igniter->state = IGNITER_STATE_WAITING;
+    return IGNITER_OK;
+}
+
 igniter_status_t igniter_fire(igniter_struct_t* igniter) {
     if (igniter == NULL) {
         ESP_LOGE(TAG, "Invalid argument - NULL check failed");
@@ -66,5 +84,22 @@ igniter_status_t igniter_fire(igniter_struct_t* igniter) {
         return IGNITER_GPIO_ERR;
     }
     igniter->state = IGNITER_STATE_FIRED;
+    return IGNITER_OK;
+}
+
+igniter_status_t igniter_reset(igniter_struct_t* igniter) {
+    if (igniter == NULL) {
+        ESP_LOGE(TAG, "Invalid argument - NULL check failed");
+        return IGNITER_NULL_ARG;
+    }
+    if (igniter->state == IGNITER_STATE_WAITING) {
+        ESP_LOGD(TAG, "Already reset");
+        return IGNITER_OK;
+    }
+    if(!igniter->_gpio_set_level(igniter->gpio_num_fire, IGNITER_PIN_STATE_LOW)) {
+        ESP_LOGE(TAG, "Failed to set GPIO level for reset");
+        return IGNITER_GPIO_ERR;
+    }
+    igniter->state = IGNITER_STATE_WAITING;
     return IGNITER_OK;
 }

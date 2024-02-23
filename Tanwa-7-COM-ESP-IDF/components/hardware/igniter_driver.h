@@ -69,6 +69,11 @@ igniter_status_t igniter_check_continuity(igniter_struct_t* igniter, igniter_con
 
 igniter_status_t igniter_arm(igniter_struct_t* igniter);
 
+igniter_status_t igniter_disarm(igniter_struct_t* igniter);
+
 igniter_status_t igniter_fire(igniter_struct_t* igniter);
+
+igniter_status_t igniter_reset(igniter_struct_t* igniter);
+
 
 #endif /* PWRINSPACE_IGNITER_DRIVER_H_ */
