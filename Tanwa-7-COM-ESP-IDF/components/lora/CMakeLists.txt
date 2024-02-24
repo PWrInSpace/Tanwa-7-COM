@@ -1,5 +1,5 @@
-idf_component_register(SRCS "lora.c"
-                    INCLUDE_DIRS "."
-                    REQUIRES cmock driver soc esp_rom lora)
+idf_component_register( SRC_DIRS "."
+                        INCLUDE_DIRS "."
+                        REQUIRES cmock driver soc esp_rom)
 
-target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-format -Wall -W -Werror)
+target_compile_options(${COMPONENT_LIB} PRIVATE "-Wno-format" "-Wall" "-Werror")

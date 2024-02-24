@@ -213,7 +213,7 @@
 //      cli_change_lora_frequency, NULL},
 // };
 
-// esp_err_t init_console() {
+// esp_err_t console_config_init() {
 //     esp_err_t ret;
 //     ret = console_init();
 //     ret = console_register_commands(cmd, sizeof(cmd) / sizeof(cmd[0]));

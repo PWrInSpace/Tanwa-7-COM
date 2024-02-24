@@ -1,16 +1,20 @@
-// Copyright 2023 PWr in Space, Krzysztof Gliwiński
-
-#pragma once
-
-#include "devices_config.h"
-#include "lora_task.h"
-#include "slave_com.h"
-#include "user_interface.h"
-#include "memory_task.h"
+///===-----------------------------------------------------------------------------------------===//
+///
+/// Copyright (c) PWr in Space. All rights reserved.
+/// Created: 25.02.2024 by Michał Kos
+///
+///===-----------------------------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains declaration of the system initialization task. This task is responsible for
+/// initializing all the mcu configuration, all hardware devices and all the utilities.
+///===-----------------------------------------------------------------------------------------===//
+#ifndef PWRINSPACE_TANWA_APP_INIT_TASK_H_
+#define PWRINSPACE_TANWA_APP_INIT_TASK_H_
 
 /*!
- * \brief Task for initializing all the devices
- * \param pvParameters Parameters for task - this needs to be pointer to the
- * devices_config structure
+ * \brief Task for initializing of the system.
  */
 void app_init_task(void* pvParameters);
+
+#endif /* PWRINSPACE_TANWA_APP_INIT_TASK_H_ */

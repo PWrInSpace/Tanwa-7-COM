@@ -1,111 +1,19 @@
-/*
- * SPDX-FileCopyrightText: 2010-2022 Espressif Systems (Shanghai) CO LTD
- *
- * SPDX-License-Identifier: CC0-1.0
- */
-
 #include <stdio.h>
 #include <inttypes.h>
 #include <string.h>
 #include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_log.h"
 #include "esp_chip_info.h"
 #include "esp_flash.h"
 
-#include "mcu_gpio_config.h"
-#include "mcu_i2c_config.h"
 #include "mcu_adc_config.h"
-#include "mcu_misc_config.h"
-#include "mcu_twai_config.h"
 
-#include "led_driver.h"
-#include "tmp1075.h"
-#include "mcp23018.h"
-#include "ads1115.h"
-#include "pca9574.h"
-#include "igniter_driver.h"
+#include "TANWA_config.h"
 
-#include "led_state_display.h"
-#include "pressure_driver.h"
-#include "solenoid_driver.h"
-
-#define IOEXP_MODE  (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
-
-led_struct_t esp_led = {
-    ._gpio_set_level = mcu_gpio_set_level,
-    ._delay = _delay_ms,
-    .gpio_num = LED_GPIO_INDEX,
-    .state = LED_STATE_OFF,
-};
-
-tmp1075_struct_t tmp1075_1 = {
-    ._i2c_write = mcu_i2c_write,
-    ._i2c_read = mcu_i2c_read,
-    .i2c_address = CONFIG_I2C_TMP1075_TS1_ADDR,
-    .config_register = 0,
-};
-
-tmp1075_struct_t tmp1075_2 = {
-    ._i2c_write = mcu_i2c_write,
-    ._i2c_read = mcu_i2c_read,
-    .i2c_address = CONFIG_I2C_TMP1075_TS2_ADDR,
-    .config_register = 0,
-};
-
-mcp23018_struct_t mcp23018 = {
-    ._i2c_write = mcu_i2c_write,
-    ._i2c_read = mcu_i2c_read,
-    .i2c_address = CONFIG_I2C_MCP23018_ADDR,
-    .iocon = 0,
-    .dirRegisters = {0, 0},
-    .polRegisters = {0, 0},
-    .pullupRegisters = {0, 0},
-    .ports = {0, 0},
-};
-
-ads1115_struct_t ads1115 = {
-    ._i2c_write = mcu_i2c_write,
-    ._i2c_read = mcu_i2c_read,
-    .i2c_address = CONFIG_I2C_ADS1115_ADDR,
-};
-
-pca9574_struct_t pca9574 = {
-    ._i2c_write = mcu_i2c_write,
-    ._i2c_read = mcu_i2c_read,
-    .i2c_address = CONFIG_I2C_PCA9574_ADDR,
-};
-
-led_state_display_struct_t led_state_display = {
-    .mcp23018 = &mcp23018,
-    .state = LED_STATE_DISPLAY_STATE_NONE,
-};
-
-igniter_struct_t ignite_1 = {
-    ._adc_analog_read_raw = mcu_adc_read_raw,
-    ._gpio_set_level = mcu_gpio_set_level,
-    ._delay = _delay_ms,
-    .adc_channel_continuity = IGNITER_1_CHANNEL_INDEX,
-    .gpio_num_arm = ARM_GPIO_INDEX,
-    .gpio_num_fire = FIRE_1_GPIO_INDEX,
-    .drive = IGNITER_DRIVE_POSITIVE,
-    .state = IGNITER_STATE_WAITING,
-};
-
-igniter_struct_t ignite_2 = {
-    ._adc_analog_read_raw = mcu_adc_read_raw,
-    ._gpio_set_level = mcu_gpio_set_level,
-    ._delay = _delay_ms,
-    .adc_channel_continuity = IGNITER_2_CHANNEL_INDEX,
-    .gpio_num_arm = ARM_GPIO_INDEX,
-    .gpio_num_fire = FIRE_2_GPIO_INDEX,
-    .drive = IGNITER_DRIVE_POSITIVE,
-    .state = IGNITER_STATE_WAITING,
-};
-
-pressure_driver_struct_t pressure_driver = PRESSURE_DRIVER_DEFAULT_CONFIG();
-
-solenoid_driver_struct_t solenoid_driver = SOLENOID_DRIVER_DEFAULT_CONFIG();
+extern TANWA_hardware_t TANWA_hardware;
+extern TANWA_utility_t TANWA_utility;
 
 void app_main(void)
 {
@@ -144,82 +52,57 @@ void app_main(void)
     // fflush(stdout);
     // esp_restart();
 
-    mcu_gpio_init();
-    mcu_i2c_init();
-    mcu_adc_init();
-    // mcu_twai_init();
-    vTaskDelay(50 / portTICK_PERIOD_MS);
-
-    tmp1075_init(&tmp1075_1);
-    tmp1075_init(&tmp1075_2);
-    mcp23018_init(&mcp23018, IOEXP_MODE);
-    pca9574_init(&pca9574);
-    vTaskDelay(50 / portTICK_PERIOD_MS);
-
-    pressure_driver.ads1115 = &ads1115;
-    pressure_driver_init(&pressure_driver);
-    vTaskDelay(50 / portTICK_PERIOD_MS);
-
-    solenoid_driver.pca9574 = &pca9574;
-    solenoid_driver_init(&solenoid_driver);
-    vTaskDelay(50 / portTICK_PERIOD_MS);
-
-    // set all pins to low
-    mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_A, MCP23018_ALL_HIGH);
-    mcp23018_digital_write_port(&mcp23018, MCP23018_PORT_B, MCP23018_ALL_HIGH);
-    vTaskDelay(50 / portTICK_PERIOD_MS);
-
-    led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
+    TANWA_mcu_config_init();
+    TANWA_hardware_init();
+    TANWA_utility_init();
 
     // mcu_twai_self_test();
 
     while (1) {
         int16_t raw;
         float temp, voltage, pressure;
-        tmp1075_get_temp_raw(&tmp1075_1, &raw);
-        tmp1075_get_temp_celsius(&tmp1075_1, &temp);
+        tmp1075_get_temp_raw(&(TANWA_hardware.tmp1075[0]), &raw);
+        tmp1075_get_temp_celsius(&(TANWA_hardware.tmp1075[0]), &temp);
         printf("#TS1=> raw: %d, temp: %f\n", raw, temp);
-        tmp1075_get_temp_raw(&tmp1075_2, &raw);
-        tmp1075_get_temp_celsius(&tmp1075_2, &temp);
+        tmp1075_get_temp_raw(&(TANWA_hardware.tmp1075[1]), &raw);
+        tmp1075_get_temp_celsius(&(TANWA_hardware.tmp1075[1]), &temp);
         printf("#TS2=> raw: %d, temp: %f\n", raw, temp);
-        led_toggle(&esp_led);
-        vTaskDelay(500 / portTICK_PERIOD_MS);
-        // pressure_driver_read_voltage(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &voltage);
-        // pressure_driver_read_pressure(&pressure_driver, PRESSURE_DRIVER_SENSOR_2, &pressure);
-        // printf("#ADC=> voltage: %f, pressure: %f\n", voltage, pressure);
-        // mcu_adc_read_voltage(VBAT_CHANNEL_INDEX, &voltage);
-        // printf("#VBAT=> voltage: %f\n", voltage);
-        // if (led_state_display.state == LED_STATE_DISPLAY_STATE_IDLE) {
-        //     led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_ARMED);
-        // } else {
-        //     led_state_display_state_update(&led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
-        // }
-        // vTaskDelay(2000 / portTICK_PERIOD_MS);
-        // solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
-        // solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
-        // solenoid_driver_valve_toggle(&solenoid_driver, SOLENOID_DRIVER_VALVE_ADD);
-        // led_toggle(&esp_led);
-        vTaskDelay(500 / portTICK_PERIOD_MS);
-        if (ignite_1.state == IGNITER_STATE_WAITING) {
-            igniter_continuity_t continuity;
-            igniter_check_continuity(&ignite_1, &continuity);
-            igniter_arm(&ignite_1);
-            vTaskDelay(100 / portTICK_PERIOD_MS);
-            igniter_fire(&ignite_1);
+        pressure_driver_read_voltage(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_2, &voltage);
+        pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_2, &pressure);
+        printf("#ADC=> voltage: %f, pressure: %f\n", voltage, pressure);
+        mcu_adc_read_voltage(VBAT_CHANNEL_INDEX, &voltage);
+        printf("#VBAT=> voltage: %f\n", voltage);
+        if (TANWA_utility.led_state_display.state == LED_STATE_DISPLAY_STATE_IDLE) {
+            led_state_display_state_update(&(TANWA_utility.led_state_display), LED_STATE_DISPLAY_STATE_ARMED);
         } else {
-            igniter_disarm(&ignite_1);
-            igniter_reset(&ignite_1);
+            led_state_display_state_update(&(TANWA_utility.led_state_display), LED_STATE_DISPLAY_STATE_IDLE);
+        }
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+        solenoid_driver_valve_toggle(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FILL);
+        solenoid_driver_valve_toggle(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR);
+        solenoid_driver_valve_toggle(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_ADD);
+        led_toggle(&(TANWA_hardware.esp_led));
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        if (TANWA_hardware.igniter[0].state == IGNITER_STATE_WAITING) {
+            igniter_continuity_t continuity;
+            igniter_check_continuity(&(TANWA_hardware.igniter[0]), &continuity);
+            igniter_arm(&(TANWA_hardware.igniter[0]));
+            vTaskDelay(100 / portTICK_PERIOD_MS);
+            igniter_fire(&(TANWA_hardware.igniter[0]));
+        } else {
+            igniter_disarm(&(TANWA_hardware.igniter[0]));
+            igniter_reset(&(TANWA_hardware.igniter[0]));
         }
         vTaskDelay(500 / portTICK_PERIOD_MS);
-        if (ignite_2.state == IGNITER_STATE_WAITING) {
+        if (TANWA_hardware.igniter[1].state == IGNITER_STATE_WAITING) {
             igniter_continuity_t continuity;
-            igniter_check_continuity(&ignite_2, &continuity);
-            igniter_arm(&ignite_2);
+            igniter_check_continuity(&(TANWA_hardware.igniter[1]), &continuity);
+            igniter_arm(&(TANWA_hardware.igniter[1]));
             vTaskDelay(100 / portTICK_PERIOD_MS);
-            igniter_fire(&ignite_2);
+            igniter_fire(&(TANWA_hardware.igniter[1]));
         } else {
-            igniter_disarm(&ignite_2);
-            igniter_reset(&ignite_2);
+            igniter_disarm(&(TANWA_hardware.igniter[1]));
+            igniter_reset(&(TANWA_hardware.igniter[1]));
         }
     }
 }

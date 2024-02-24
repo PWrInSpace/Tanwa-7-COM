@@ -29,9 +29,9 @@
 #define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.0f
 #define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 5.0f
 
-#define PRESSURE_DRIVER_DEFAULT_CONFIG()                        \
+#define PRESSURE_DRIVER_TANWA_CONFIG(X)                         \
   {                                                             \
-    .ads1115 = NULL,                                            \
+    .ads1115 = X,                                               \
     .sensors = {                                                \
       {                                                         \
         .sensor = PRESSURE_DRIVER_SENSOR_1,                     \

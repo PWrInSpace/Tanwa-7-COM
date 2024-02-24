@@ -22,18 +22,21 @@
 
 #define SOLENOID_DRIVER_VALVE_COUNT 3
 
-#define SOLENOID_DRIVER_DEFAULT_CONFIG()            \
+#define SOLENOID_DRIVER_TANWA_CONFIG(X)             \
   {                                                 \
-    .pca9574 = NULL,                                \
+    .pca9574 = X,                                   \
     .valves = {                                     \
         {SOLENOID_DRIVER_VALVE_FILL,                \
          SOLENOID_DRIVER_VALVE_GPIO_PIN_FILL,       \
+         SOLENOID_DRIVER_LED_GPIO_PIN_FILL,         \
          SOLENOID_DRIVER_VALVE_STATE_CLOSE},        \
         {SOLENOID_DRIVER_VALVE_DEPR,                \
          SOLENOID_DRIVER_VALVE_GPIO_PIN_DEPR,       \
+         SOLENOID_DRIVER_LED_GPIO_PIN_DEPR,         \
          SOLENOID_DRIVER_VALVE_STATE_CLOSE},        \
         {SOLENOID_DRIVER_VALVE_ADD,                 \
          SOLENOID_DRIVER_VALVE_GPIO_PIN_ADD,        \
+         SOLENOID_DRIVER_LED_GPIO_PIN_ADD,          \
          SOLENOID_DRIVER_VALVE_STATE_CLOSE},        \
     }                                               \
   }
@@ -46,8 +49,11 @@ typedef enum {
 
 typedef enum {
     SOLENOID_DRIVER_VALVE_GPIO_PIN_FILL = 2,
+    SOLENOID_DRIVER_LED_GPIO_PIN_FILL = 5,
     SOLENOID_DRIVER_VALVE_GPIO_PIN_DEPR = 1,
-    SOLENOID_DRIVER_VALVE_GPIO_PIN_ADD = 0
+    SOLENOID_DRIVER_LED_GPIO_PIN_DEPR = 4,
+    SOLENOID_DRIVER_VALVE_GPIO_PIN_ADD = 0,
+    SOLENOID_DRIVER_LED_GPIO_PIN_ADD = 3
 } solenoid_driver_valve_gpio_pin_t;
 
 typedef enum {
@@ -64,6 +70,7 @@ typedef enum {
 typedef struct {
     solenoid_driver_valve_t valve;
     solenoid_driver_valve_gpio_pin_t gpio_pin;
+    solenoid_driver_valve_gpio_pin_t led_gpio_pin;
     solenoid_driver_valve_state_t state;
 } solenoid_struct_t;
 

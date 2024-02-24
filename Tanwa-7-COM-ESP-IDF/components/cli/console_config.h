@@ -19,6 +19,6 @@
  *
  * @return esp_err_t initialization status
  */
-esp_err_t init_console();
+esp_err_t console_config_init();
 
 #endif /* PWRINSPACE_CONSOLE_CONFIG_H_ */

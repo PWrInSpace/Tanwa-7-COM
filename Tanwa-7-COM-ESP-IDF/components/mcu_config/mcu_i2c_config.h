@@ -46,6 +46,7 @@ typedef struct {
 esp_err_t mcu_i2c_init();
 
 bool mcu_i2c_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+
 bool mcu_i2c_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 
 #endif // PWRINSPACE_TANWA_7_MCU_I2C_CONFIG_H_

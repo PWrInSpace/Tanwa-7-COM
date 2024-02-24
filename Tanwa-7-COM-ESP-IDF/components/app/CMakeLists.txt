@@ -1,5 +1,5 @@
-idf_component_register( SRCS "lora_task.c" "memory_task.c" "user_interface.c" "slave_com.c" "app_init_task.c" "devices_config.c"
+idf_component_register( SRC_DIRS "."
                         INCLUDE_DIRS "."
-                        REQUIRES cmock driver lora console app utility mcu_config flash_memory sd_card)
+                        REQUIRES cmock device_config )
 
-target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-format -Wall -W -Werror)
+target_compile_options(${COMPONENT_LIB} PRIVATE "-Wno-format" "-Wall" "-Werror")

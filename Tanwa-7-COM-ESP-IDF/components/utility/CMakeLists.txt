@@ -2,4 +2,4 @@ idf_component_register( SRC_DIRS "."
                         INCLUDE_DIRS "."
                         REQUIRES driver hardware)
 
-target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-format -Wall -W -Werror)
+target_compile_options(${COMPONENT_LIB} PRIVATE "-Wno-format" "-Wall" "-Werror")

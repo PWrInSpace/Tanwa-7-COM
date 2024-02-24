@@ -21,6 +21,12 @@
 
 #include "mcp23018.h"
 
+#define LED_STATE_DISPLAY_TANWA_CONFIG()        \
+    {                                           \
+        .mcp23018 = NULL,                       \
+        .state = LED_STATE_DISPLAY_STATE_NONE,  \
+    }
+
 typedef enum {
     LED_STATE_DISPLAY_STATE_NONE = 0,
     LED_STATE_DISPLAY_STATE_IDLE = 1,
