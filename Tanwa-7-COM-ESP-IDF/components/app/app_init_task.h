@@ -12,8 +12,14 @@
 #ifndef PWRINSPACE_TANWA_APP_INIT_TASK_H_
 #define PWRINSPACE_TANWA_APP_INIT_TASK_H_
 
-/*!
- * \brief Task for initializing of the system.
+/**
+ * @brief Function for initializing the system.
+ * 
+ */
+void run_app_init(void);
+
+/**
+ * @brief Task for initializing of the system.
  */
 void app_init_task(void* pvParameters);
 

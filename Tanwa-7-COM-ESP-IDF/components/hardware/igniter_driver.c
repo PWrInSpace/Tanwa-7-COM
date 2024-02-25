@@ -19,7 +19,7 @@ igniter_status_t igniter_check_continuity(igniter_struct_t* igniter, igniter_con
         ESP_LOGE(TAG, "Failed to read analog value from ADC for continuity check");
         return IGNITER_ADC_ERR;
     }
-    ESP_LOGI(TAG, "Continuity check value: %d", value);
+    ESP_LOGD(TAG, "Continuity check value: %d", value);
     if (value > IGNITER_CONTINUITY_THRESHOLD) {
         *continuity = IGNITER_CONTINUITY_OK;
     } else {
