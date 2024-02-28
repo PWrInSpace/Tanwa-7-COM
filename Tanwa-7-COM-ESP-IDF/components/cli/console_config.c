@@ -193,55 +193,284 @@ static int read_vbat(int argc, char **argv) {
 }
 
 static int open_solenoid(int argc, char **argv) {
-    if (argc != 2) {
+    if (argc < 2) {
         return -1;
     }
     uint8_t ret = 0;
 
-    
-
+    switch (argv[1]) {
+        case "F":
+            ret = solenoid_driver_valve_open(&(TANWA_hardware.solenoid_driver), SOLENOID_DRIVER_VALVE_FILL);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver open valve FILL failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "D":
+            ret = solenoid_driver_valve_open(&(TANWA_hardware.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver open valve DEPR failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "D":
+            ret = solenoid_driver_valve_open(&(TANWA_hardware.solenoid_driver), SOLENOID_DRIVER_VALVE_ADD);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver open valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        default:
+            ESP_LOGE(TAG, "Invalid solenoid valve identifier");
+            break;
+    }
     return 0;
 }
 
 static int close_solenoid(int argc, char **argv) {
+     if (argc < 2) {
+        return -1;
+    }
     uint8_t ret = 0;
-    // TODO: implement
+
+    switch (argv[1]) {
+        case "F":
+            ret = solenoid_driver_valve_close(&(TANWA_hardware.solenoid_driver), SOLENOID_DRIVER_VALVE_FILL);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve FILL failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "D":
+            ret = solenoid_driver_valve_close(&(TANWA_hardware.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve DEPR failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "D":
+            ret = solenoid_driver_valve_close(&(TANWA_hardware.solenoid_driver), SOLENOID_DRIVER_VALVE_ADD);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        default:
+            ESP_LOGE(TAG, "Invalid solenoid valve identifier");
+            break;
+    }
     return 0;
 }
 
 static int toggle_solenoid(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
     uint8_t ret = 0;
-    // TODO: implement
+
+    switch (argv[1]) {
+        case "F":
+            ret = solenoid_driver_valve_toggle(&(TANWA_hardware.solenoid_driver), SOLENOID_DRIVER_VALVE_FILL);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver toggle valve FILL failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "D":
+            ret = solenoid_driver_valve_toggle(&(TANWA_hardware.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver toggle valve DEPR failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "D":
+            ret = solenoid_driver_valve_toggle(&(TANWA_hardware.solenoid_driver), SOLENOID_DRIVER_VALVE_ADD);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver toggle valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        default:
+            ESP_LOGE(TAG, "Invalid solenoid valve identifier");
+            break;
+    }
     return 0;
 }
 
 static int arm_igniter(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
     uint8_t ret = 0;
-    // TODO: implement
+
+    switch (argv[1])
+    {
+        case "1":
+            ret = igniter_arm(&(TANWA_hardware.igniter[0]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #1 arm failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "2":
+            ret = igniter_arm(&(TANWA_hardware.igniter[1]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #2 arm failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "A":
+            ret = igniter_arm(&(TANWA_hardware.igniter[0]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #1 arm failed - status: %d", ret);
+                return -1;
+            }
+            ret = igniter_arm(&(TANWA_hardware.igniter[1]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #2 arm failed - status: %d", ret);
+                return -1;
+            }
+        default:
+            ESP_LOGE(TAG, "Invalid igniter identifier");
+            break;
+    }
     return 0;
 }
 
 static int disarm_igniter(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
     uint8_t ret = 0;
-    // TODO: implement
+
+    switch (argv[1])
+    {
+        case "1":
+            ret = igniter_disarm(&(TANWA_hardware.igniter[0]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #1 disarm failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "2":
+            ret = igniter_disarm(&(TANWA_hardware.igniter[1]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #2 disarm failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "A":
+            ret = igniter_disarm(&(TANWA_hardware.igniter[0]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #1 disarm failed - status: %d", ret);
+                return -1;
+            }
+            ret = igniter_disarm(&(TANWA_hardware.igniter[1]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #2 disarm failed - status: %d", ret);
+                return -1;
+            }
+        default:
+            ESP_LOGE(TAG, "Invalid igniter identifier");
+            break;
+    }
     return 0;
 }
 
 static int fire_igniter(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
     uint8_t ret = 0;
-    // TODO: implement
+
+    switch (argv[1])
+    {
+        case "1":
+            ret = igniter_fire(&(TANWA_hardware.igniter[0]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #1 fire failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "2":
+            ret = igniter_fire(&(TANWA_hardware.igniter[1]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #2 fire failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "A":
+            ret = igniter_fire(&(TANWA_hardware.igniter[0]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #1 fire failed - status: %d", ret);
+                return -1;
+            }
+            ret = igniter_fire(&(TANWA_hardware.igniter[1]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #2 fire failed - status: %d", ret);
+                return -1;
+            }
+        default:
+            ESP_LOGE(TAG, "Invalid igniter identifier");
+            break;
+    }
     return 0;
 }
 
 static int reset_igniter(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
     uint8_t ret = 0;
-    // TODO: implement
+
+    switch (argv[1])
+    {
+        case "1":
+            ret = igniter_reset(&(TANWA_hardware.igniter[0]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #1 reset failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "2":
+            ret = igniter_reset(&(TANWA_hardware.igniter[1]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #2 reset failed - status: %d", ret);
+                return -1;
+            }
+            break;
+        case "A":
+            ret = igniter_reset(&(TANWA_hardware.igniter[0]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #1 reset failed - status: %d", ret);
+                return -1;
+            }
+            ret = igniter_reset(&(TANWA_hardware.igniter[1]));
+            if (ret != IGNITER_OK) {
+                ESP_LOGE(TAG, "Igniter #2 reset failed - status: %d", ret);
+                return -1;
+            }
+        default:
+            ESP_LOGE(TAG, "Invalid igniter identifier");
+            break;
+    }
     return 0;
 }
 
 static int check_igniter_continuity(int argc, char **argv) {
     uint8_t ret = 0;
-    // TODO: implement
+
+    ret = igniter_check_continuity(&(TANWA_hardware.igniter[0]));
+    if (ret != IGNITER_OK) {
+        ESP_LOGE(TAG, "Igniter #1 continuity check failed - status: %d", ret);
+        return -1;
+    }
+    ret = igniter_check_continuity(&(TANWA_hardware.igniter[1]));
+    if (ret != IGNITER_OK) {
+        ESP_LOGE(TAG, "Igniter #2 continuity check failed - status: %d", ret);
+        return -1;
+    }
+
     return 0;
 }
 
@@ -260,15 +489,15 @@ static esp_console_cmd_t cmd[] = {
     {"pressure-read", "read pressure", NULL, read_pressure, NULL},
     {"vbat-read", "read vbat voltage", NULL, read_vbat, NULL},
     // solenoid valve commands
-    {"valve-open", "open solenoid valve", NULL, open_solenoid, NULL},
-    {"valve-close", "close solenoid valve", NULL, close_solenoid, NULL},
-    {"valve-toggle", "toggle solenoid valve", NULL, toggle_solenoid, NULL},
+    {"valve-open", "open solenoid valve", "F|D|A", open_solenoid, NULL},
+    {"valve-close", "close solenoid valve", "F|D|A", close_solenoid, NULL},
+    {"valve-toggle", "toggle solenoid valve", "F|D|A", toggle_solenoid, NULL},
     // igniter commands
-    {"igniter-arm", "arm igniter", NULL, arm_igniter, NULL},
-    {"igniter-disarm", "disarm igniter", NULL, disarm_igniter, NULL},
-    {"igniter-fire", "fire igniter", NULL, fire_igniter, NULL},
-    {"igniter-reset", "reset igniter", NULL, reset_igniter, NULL},
-    {"igniter-continuity", "check igniter continuity", NULL, check_igniter_continuity, NULL},
+    {"igniter-arm", "arm igniter", "1|2|A", arm_igniter, NULL},
+    {"igniter-disarm", "disarm igniter", "1|2|A", disarm_igniter, NULL},
+    {"igniter-fire", "fire igniter", "1|2|A", fire_igniter, NULL},
+    {"igniter-reset", "reset igniter", "1|2|A", reset_igniter, NULL},
+    {"igniter-continuity", "check igniters continuity", NULL, check_igniter_continuity, NULL},
 };
 
 esp_err_t console_config_init() {
