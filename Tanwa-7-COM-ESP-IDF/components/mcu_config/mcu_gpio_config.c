@@ -55,6 +55,13 @@ esp_err_t mcu_gpio_init() {
         }
     }
 
+    for (uint8_t i = 0; i < mcu_gpio_config.num_pins; i++) {
+        res |= mcu_gpio_set_level(mcu_gpio_config.pins[i], 0);
+        if (res != ESP_OK) {
+            ESP_LOGE(TAG, "GPIO pin %d level set failed!", i);
+        }
+    }
+
     return res;
 }
 
