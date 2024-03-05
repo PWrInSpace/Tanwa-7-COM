@@ -42,8 +42,8 @@ typedef struct {
 
 esp_err_t mcu_gpio_init(void);
 
-bool mcu_gpio_set_level(uint8_t gpio, uint8_t level);
+bool _mcu_gpio_set_level(uint8_t gpio, uint8_t level);
 
-bool mcu_gpio_get_level(uint8_t gpio, uint8_t* level);
+bool _mcu_gpio_get_level(uint8_t gpio, uint8_t* level);
 
 #endif /* PWRINSPACE_MCU_GPIO_CONFIG_H_ */

@@ -57,6 +57,14 @@ static void on_flight(void *arg) {
     ESP_LOGI(TAG, "----> ON FLIGHT <----");
 }
 
+static void on_first_stage_recovery(void *arg) {
+    ESP_LOGI(TAG, "ON FIRST STAGE RECOVERY");
+}
+
+static void on_second_stage_recovery(void *arg) {
+    ESP_LOGI(TAG, "ON FIRST STAGE RECOVERY");
+}
+
 static void on_ground(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ON_GROUND);
     ESP_LOGI(TAG, "ON GROUND");
@@ -96,9 +104,9 @@ bool initialize_state_machine(void) {
         .priority = CONFIG_SM_TASK_PRIORITY,
     };
 
-    SM_Response status = SM_OK;
-    SM_init();
-    status |= SM_set_states(states_cfg, sizeof(states_cfg)/sizeof(states_cfg[0]));
-    status |= SM_run(&task_cfg);
-    return status == SM_OK ? true : false;
+    state_machine_status_t status = STATE_MACHINE_OK;
+    state_machine_init();
+    status |= state_machine_set_states(states_cfg, sizeof(states_cfg)/sizeof(states_cfg[0]));
+    status |= state_machine_run(&task_cfg);
+    return status == STATE_MACHINE_OK ? true : false;
 }

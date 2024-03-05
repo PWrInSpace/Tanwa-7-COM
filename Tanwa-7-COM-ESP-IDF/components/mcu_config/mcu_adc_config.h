@@ -77,7 +77,7 @@ esp_err_t mcu_adc_init();
  * \param adc_chan - specific channel of ADC as specified in v_mes struct
  * \param adc_raw - pointer to raw value read from ADC
  */
-bool mcu_adc_read_raw(uint8_t adc_chan, uint16_t* adc_raw);
+bool _mcu_adc_read_raw(uint8_t adc_chan, uint16_t* adc_raw);
 
 /*!
  * \brief Read voltage from ADC
@@ -85,6 +85,6 @@ bool mcu_adc_read_raw(uint8_t adc_chan, uint16_t* adc_raw);
  * \param adc_chan - specific channel of ADC as specified in v_mes struct
  * \param adc_voltage - pointer to voltage read from ADC
  */
-bool mcu_adc_read_voltage(uint8_t adc_chan, float* adc_voltage);
+bool _mcu_adc_read_voltage(uint8_t adc_chan, float* adc_voltage);
 
 #endif /* PWRINSPACE_TANWA_7_MCU_ADC_CONFIG_H_ */

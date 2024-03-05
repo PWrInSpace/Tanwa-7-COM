@@ -56,7 +56,7 @@ esp_err_t mcu_gpio_init() {
     }
 
     for (uint8_t i = 0; i < mcu_gpio_config.num_pins; i++) {
-        res |= mcu_gpio_set_level(mcu_gpio_config.pins[i], 0);
+        res |= _mcu_gpio_set_level(mcu_gpio_config.pins[i], 0);
         if (res != ESP_OK) {
             ESP_LOGE(TAG, "GPIO pin %d level set failed!", i);
         }
@@ -65,11 +65,11 @@ esp_err_t mcu_gpio_init() {
     return res;
 }
 
-bool mcu_gpio_set_level(uint8_t gpio, uint8_t level) {
+bool _mcu_gpio_set_level(uint8_t gpio, uint8_t level) {
     return gpio_set_level(mcu_gpio_config.pins[gpio], level) == ESP_OK ? true : false;
 }
 
-bool mcu_gpio_get_level(uint8_t gpio, uint8_t* level) {
+bool _mcu_gpio_get_level(uint8_t gpio, uint8_t* level) {
     uint8_t res = gpio_get_level(mcu_gpio_config.pins[gpio]);
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "GPIO pin %d read failed!", mcu_gpio_config.pins[gpio]);

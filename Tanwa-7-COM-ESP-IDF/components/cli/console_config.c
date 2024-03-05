@@ -180,7 +180,7 @@ static int read_vbat(int argc, char **argv) {
     float voltage;
     bool ret = true;
 
-    ret = mcu_adc_read_voltage(VBAT_CHANNEL_INDEX, &voltage);
+    ret = _mcu_adc_read_voltage(VBAT_CHANNEL_INDEX, &voltage);
     if (ret != true) {
         ESP_LOGE(TAG, "VBAT read voltage failed");
         return -1;

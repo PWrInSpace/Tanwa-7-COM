@@ -88,7 +88,7 @@ void app_init_task(void* pvParameters) {
   //   pressure_driver_read_voltage(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_2, &voltage);
   //   pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_2, &pressure);
   //   printf("#ADC=> voltage: %f, pressure: %f\n", voltage, pressure);
-  //   mcu_adc_read_voltage(VBAT_CHANNEL_INDEX, &voltage);
+  //   _mcu_adc_read_voltage(VBAT_CHANNEL_INDEX, &voltage);
   //   printf("#VBAT=> voltage: %f\n", voltage);
   //   if (TANWA_utility.led_state_display.state == LED_STATE_DISPLAY_STATE_IDLE) {
   //       led_state_display_state_update(&(TANWA_utility.led_state_display), LED_STATE_DISPLAY_STATE_ARMED);

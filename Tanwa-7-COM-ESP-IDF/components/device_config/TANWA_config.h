@@ -23,6 +23,8 @@
 #include "pressure_driver.h"
 #include "solenoid_driver.h"
 
+#include "lora.h"
+
 // TANWA hardware
 typedef struct {
     led_struct_t esp_led;
@@ -40,8 +42,12 @@ typedef struct {
     solenoid_driver_struct_t solenoid_driver;
 } TANWA_utility_t;
 
+// LoRa communication
+typedef lora_struct_t TANWA_lora_t;
+
 extern TANWA_hardware_t TANWA_hardware;
 extern TANWA_utility_t TANWA_utility;
+extern TANWA_lora_t TANWA_lora;
 
 esp_err_t TANWA_mcu_config_init();
 

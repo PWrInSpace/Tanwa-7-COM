@@ -94,8 +94,6 @@ bool _lora_SPI_transmit(uint8_t _in[2], uint8_t _out[2]) {
   return true;
 }
 
-void _lora_delay(size_t _ms) { vTaskDelay(pdMS_TO_TICKS(_ms)); }
-
 bool _lora_GPIO_set_level(uint8_t _gpio_num, uint32_t _level) {
   return gpio_set_level(_gpio_num, _level) == ESP_OK ? true : false;
 }

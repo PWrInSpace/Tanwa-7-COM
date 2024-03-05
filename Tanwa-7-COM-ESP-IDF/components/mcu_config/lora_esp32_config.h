@@ -56,13 +56,6 @@ esp_err_t _lora_spi_and_pins_init(gpio_num_t _rst_gpio_num,
 bool _lora_SPI_transmit(uint8_t _in[2], uint8_t _out[2]);
 
 /*!
- * \brief Delay function for LoRa
- * \param[in] _ms delay in milliseconds
- */
-
-void _lora_delay(size_t _ms);
-
-/*!
  * \brief GPIO set level function for LoRa
  * \param[in] _gpio_num gpio number
  * \param[in] _level level to set

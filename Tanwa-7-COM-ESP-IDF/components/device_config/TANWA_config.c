@@ -20,28 +20,28 @@
 
 TANWA_hardware_t TANWA_hardware = {
     .esp_led = {
-        ._gpio_set_level = mcu_gpio_set_level,
-        ._delay = _delay_ms,
+        ._gpio_set_level = _mcu_gpio_set_level,
+        ._delay = _LED_delay_ms,
         .gpio_num = LED_GPIO_INDEX,
         .state = LED_STATE_OFF,
     },
     .tmp1075 = {
         {
-            ._i2c_write = mcu_i2c_write,
-            ._i2c_read = mcu_i2c_read,
+            ._i2c_write = _mcu_i2c_write,
+            ._i2c_read = _mcu_i2c_read,
             .i2c_address = CONFIG_I2C_TMP1075_TS1_ADDR,
             .config_register = 0,
         },
         {
-            ._i2c_write = mcu_i2c_write,
-            ._i2c_read = mcu_i2c_read,
+            ._i2c_write = _mcu_i2c_write,
+            ._i2c_read = _mcu_i2c_read,
             .i2c_address = CONFIG_I2C_TMP1075_TS2_ADDR,
             .config_register = 0,
         },
     },
     .mcp23018 = {
-        ._i2c_write = mcu_i2c_write,
-        ._i2c_read = mcu_i2c_read,
+        ._i2c_write = _mcu_i2c_write,
+        ._i2c_read = _mcu_i2c_read,
         .i2c_address = CONFIG_I2C_MCP23018_ADDR,
         .iocon = 0,
         .dirRegisters = {0, 0},
@@ -50,20 +50,20 @@ TANWA_hardware_t TANWA_hardware = {
         .ports = {0, 0},
     },
     .ads1115 = {
-        ._i2c_write = mcu_i2c_write,
-        ._i2c_read = mcu_i2c_read,
+        ._i2c_write = _mcu_i2c_write,
+        ._i2c_read = _mcu_i2c_read,
         .i2c_address = CONFIG_I2C_ADS1115_ADDR,
     },
     .pca9574 = {
-        ._i2c_write = mcu_i2c_write,
-        ._i2c_read = mcu_i2c_read,
+        ._i2c_write = _mcu_i2c_write,
+        ._i2c_read = _mcu_i2c_read,
         .i2c_address = CONFIG_I2C_PCA9574_ADDR,
     },
     .igniter = {
         {
-            ._adc_analog_read_raw = mcu_adc_read_raw,
-            ._gpio_set_level = mcu_gpio_set_level,
-            ._delay = _delay_ms,
+            ._adc_analog_read_raw = _mcu_adc_read_raw,
+            ._gpio_set_level = _mcu_gpio_set_level,
+            ._delay = _IGNITER_delay_ms,
             .adc_channel_continuity = IGNITER_1_CHANNEL_INDEX,
             .gpio_num_arm = ARM_GPIO_INDEX,
             .gpio_num_fire = FIRE_1_GPIO_INDEX,
@@ -71,9 +71,9 @@ TANWA_hardware_t TANWA_hardware = {
             .state = IGNITER_STATE_WAITING,
         },
         {
-            ._adc_analog_read_raw = mcu_adc_read_raw,
-            ._gpio_set_level = mcu_gpio_set_level,
-            ._delay = _delay_ms,
+            ._adc_analog_read_raw = _mcu_adc_read_raw,
+            ._gpio_set_level = _mcu_gpio_set_level,
+            ._delay = _IGNITER_delay_ms,
             .adc_channel_continuity = IGNITER_2_CHANNEL_INDEX,
             .gpio_num_arm = ARM_GPIO_INDEX,
             .gpio_num_fire = FIRE_2_GPIO_INDEX,

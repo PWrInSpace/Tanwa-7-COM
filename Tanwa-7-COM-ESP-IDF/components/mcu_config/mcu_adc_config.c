@@ -18,7 +18,7 @@ static mcu_adc_config_t mcu_adc_config = {
   },        
   .oneshot_chan_cfg = {                                                  
     .bitwidth = ADC_BITWIDTH_12,                   
-    .atten = ADC_ATTEN_DB_12,                      
+    .atten = ADC_ATTEN_DB_11,                      
   },                                               
 };
 
@@ -44,7 +44,7 @@ esp_err_t mcu_adc_init() {
   return res;
 }
 
-bool mcu_adc_read_raw(uint8_t channel, uint16_t* adc_raw) {
+bool _mcu_adc_read_raw(uint8_t channel, uint16_t* adc_raw) {
   int vRaw;
   if (adc_oneshot_read(mcu_adc_config.oneshot_unit_handle, mcu_adc_config.adc_chan[channel], &vRaw) != ESP_OK) {
     return false;
@@ -53,9 +53,9 @@ bool mcu_adc_read_raw(uint8_t channel, uint16_t* adc_raw) {
   return true;
 }
 
-bool mcu_adc_read_voltage(uint8_t channel, float* adc_voltage) {
+bool _mcu_adc_read_voltage(uint8_t channel, float* adc_voltage) {
   uint16_t vRaw;
-  if (!mcu_adc_read_raw(channel, &vRaw)) {
+  if (!_mcu_adc_read_raw(channel, &vRaw)) {
     return false;
   }
   *adc_voltage = mcu_adc_config.adc_cal[channel] * (float)vRaw / 4095.0f * 3.3f;
