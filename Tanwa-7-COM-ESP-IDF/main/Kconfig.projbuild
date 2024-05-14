@@ -21,10 +21,16 @@ menu "TANWA +7 COM board config ESP32"
                 GPIO pin number for LORA CS
 
         config GPIO_RS
-            int "GPIO RESET pin number"
+            int "GPIO EXPANDER RESET pin number"
             default 13
             help
                 GPIO pin number for GPIO expander RESET
+
+        config GPIO_ABORT
+            int "GPIO ABORT pin number"
+            default 14
+            help
+                GPIO pin number for ABORT button
         
         config CAN_RX
             int "CAN RX pin number"

@@ -22,6 +22,13 @@ static mcu_gpio_config_t mcu_gpio_config = {
             .intr_type = GPIO_INTR_DISABLE,
         },
         {
+            .pin_bit_mask = (1ULL << ABORT_GPIO),
+            .mode = GPIO_MODE_INPUT,
+            .pull_up_en = GPIO_PULLUP_ENABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_NEGEDGE,
+        },
+        {
             .pin_bit_mask = (1ULL << ARM_GPIO),
             .mode = GPIO_MODE_OUTPUT,
             .pull_up_en = GPIO_PULLUP_DISABLE,
