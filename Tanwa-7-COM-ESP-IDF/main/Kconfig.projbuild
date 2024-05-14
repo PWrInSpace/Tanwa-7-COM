@@ -194,8 +194,8 @@ menu "TANWA +7 COM board config ESP32"
                 I2C address of PCA9574 device.
 
         config I2C_MCP23018_ADDR
-            int "MCP23018 I2C address 0x21"
-            default 33
+            int "MCP23018 I2C address 0x22"
+            default 34
             help
                 I2C address of MCP23018 device.
 
