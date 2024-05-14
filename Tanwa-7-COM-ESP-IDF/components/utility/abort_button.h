@@ -25,26 +25,26 @@
         .isr_counter = 0                            \
     }
 
-typedef enum {
-    ABORT_BUTTTON_POLARITY_POSITIVE = 0,
-    ABORT_BUTTTON_POLARITY_NEGATIVE = 1
-} abort_button_polarity_t;
+// typedef enum {
+//     ABORT_BUTTTON_POLARITY_POSITIVE = 0,
+//     ABORT_BUTTTON_POLARITY_NEGATIVE = 1
+// } abort_button_polarity_t;
 
-typedef enum {
-    ABORT_BUTTON_OK = 0,
-    ABORT_BUTTON_ERROR = 1,
-    ABORT_BUTTON_READ_ERROR = 2
-} abort_button_status_t;
+// typedef enum {
+//     ABORT_BUTTON_OK = 0,
+//     ABORT_BUTTON_ERROR = 1,
+//     ABORT_BUTTON_READ_ERROR = 2
+// } abort_button_status_t;
 
-typedef struct {
-    uint8_t pin;
-    abort_button_polarity_t polarity;
-    uint8_t isr_counter;
-    void (*callback)();
-} abort_button_struct_t;
+// typedef struct {
+//     uint8_t pin;
+//     abort_button_polarity_t polarity;
+//     uint8_t isr_counter;
+//     void (*callback)();
+// } abort_button_struct_t;
 
-abort_button_status_t abort_button_init(abort_button_struct_t *abort_button, void (*isr_handler)());
+// abort_button_status_t abort_button_init(abort_button_struct_t *abort_button, void (*isr_handler)());
 
-abort_button_status_t abort_button_check_state(abort_button_struct_t *abort_button);
+// abort_button_status_t abort_button_check_state(abort_button_struct_t *abort_button);
 
 #endif /* PWRINSPACE_ABORT_BUTTON_H_ */

@@ -11,7 +11,7 @@
 #define TAG "MCU_GPIO_CONFIG"
 
 static mcu_gpio_config_t mcu_gpio_config = {
-    .pins = {LED_GPIO, ARM_GPIO, FIRE_1_GPIO, FIRE_2_GPIO},
+    .pins = {LED_GPIO, /*ABORT_GPIO,*/ ARM_GPIO, FIRE_1_GPIO, FIRE_2_GPIO},
     .num_pins = MAX_GPIO_INDEX,
     .configs = {
         {
@@ -21,13 +21,13 @@ static mcu_gpio_config_t mcu_gpio_config = {
             .pull_down_en = GPIO_PULLDOWN_DISABLE,
             .intr_type = GPIO_INTR_DISABLE,
         },
-        {
-            .pin_bit_mask = (1ULL << ABORT_GPIO),
-            .mode = GPIO_MODE_INPUT,
-            .pull_up_en = GPIO_PULLUP_ENABLE,
-            .pull_down_en = GPIO_PULLDOWN_DISABLE,
-            .intr_type = GPIO_INTR_NEGEDGE,
-        },
+        // {
+        //     .pin_bit_mask = (1ULL << ABORT_GPIO),
+        //     .mode = GPIO_MODE_INPUT,
+        //     .pull_up_en = GPIO_PULLUP_ENABLE,
+        //     .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        //     .intr_type = GPIO_INTR_NEGEDGE,
+        // },
         {
             .pin_bit_mask = (1ULL << ARM_GPIO),
             .mode = GPIO_MODE_OUTPUT,
@@ -63,8 +63,7 @@ esp_err_t mcu_gpio_init() {
     }
 
     for (uint8_t i = 0; i < mcu_gpio_config.num_pins; i++) {
-        res |= _mcu_gpio_set_level(mcu_gpio_config.pins[i], 0);
-        if (res != ESP_OK) {
+        if (!_mcu_gpio_set_level(mcu_gpio_config.pins[i], 0)) {
             ESP_LOGE(TAG, "GPIO pin %d level set failed!", i);
         }
     }
