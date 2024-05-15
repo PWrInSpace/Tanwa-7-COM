@@ -12,6 +12,7 @@
 #include "mcu_gpio_config.h"
 #include "mcu_adc_config.h"
 #include "mcu_i2c_config.h"
+#include "mcu_twai_config.h"
 #include "mcu_misc_config.h"
 
 #define TAG "TANWA_CONFIG"
@@ -98,16 +99,29 @@ esp_err_t TANWA_mcu_config_init() {
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize GPIO");
         return ret;
+    } else {
+        ESP_LOGI(TAG, "GPIO initialized");
     }
     ret |= mcu_adc_init();
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize ADC");
         return ret;
+    } else {
+        ESP_LOGI(TAG, "ADC initialized");
     }
     ret |= mcu_i2c_init();
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize I2C");
         return ret;
+    } else {
+        ESP_LOGI(TAG, "I2C initialized");
+    }
+    ret |= mcu_twai_init();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize TWAI");
+        return ret;
+    } else {
+        ESP_LOGI(TAG, "TWAI initialized");
     }
     return ESP_OK;
 }
@@ -118,21 +132,29 @@ esp_err_t TANWA_hardware_init() {
     if (ret != TMP1075_OK) {
         ESP_LOGE(TAG, "Failed to initialize TMP1075 sensor 1");
         return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "TMP1075 sensor 1 initialized");
     }
     ret = tmp1075_init(&(TANWA_hardware.tmp1075[1]));
     if (ret != TMP1075_OK) {
         ESP_LOGE(TAG, "Failed to initialize TMP1075 sensor 2");
         return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "TMP1075 sensor 2 initialized");
     }
     ret = mcp23018_init(&(TANWA_hardware.mcp23018), IOEXP_MODE);
     if (ret != MCP23018_OK) {
         ESP_LOGE(TAG, "Failed to initialize MCP23018");
         return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "MCP23018 initialized");
     }
     ret = pca9574_init(&(TANWA_hardware.pca9574));
     if (ret != true) {
         ESP_LOGE(TAG, "Failed to initialize PCA9574");
         return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "PCA9574 initialized");
     }
     return ESP_OK;
 }
@@ -143,16 +165,22 @@ esp_err_t TANWA_utility_init() {
     if (ret != LED_STATE_DISPLAY_OK) {
         ESP_LOGE(TAG, "Failed to initialize LED state display");
         return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "LED state display initialized");
     }
     ret = pressure_driver_init(&(TANWA_utility.pressure_driver));
     if (ret != PRESSURE_DRIVER_OK) {
         ESP_LOGE(TAG, "Failed to initialize pressure driver");
         return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "Pressure driver initialized");
     }
     ret = solenoid_driver_init(&(TANWA_utility.solenoid_driver));
     if (ret != SOLENOID_DRIVER_OK) {
         ESP_LOGE(TAG, "Failed to initialize solenoid driver");
         return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "Solenoid driver initialized");
     }
     return ESP_OK;
 }

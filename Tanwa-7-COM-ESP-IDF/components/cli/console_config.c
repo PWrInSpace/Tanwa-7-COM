@@ -13,6 +13,9 @@
 
 #include "TANWA_config.h"
 #include "mcu_adc_config.h"
+#include "state_machine_config.h"
+
+#include "measure_task.h"
 
 #define TAG "CONSOLE_CONFIG"
 
@@ -44,50 +47,61 @@ static int disable_log(int argc, char **argv) {
     return 0;
 }
 
-// static int force_change_state(int argc, char **argv) {
-//     if (argc != 2) {
-//         return -1;
-//     }
+static int force_change_state(int argc, char **argv) {
+    if (argc != 2) {
+        return -1;
+    }
 
-//     int state = atoi(argv[1]);
-//     if (state == 11) {
-//         if (SM_get_current_state() == HOLD) {
-//             ESP_LOGI(TAG, "Leaving hold state");
-//             if (SM_get_previous_state() == COUNTDOWN) {
-//                 SM_force_change_state(RDY_TO_LAUNCH);
-//             } else {
-//                 SM_change_to_previous_state(true);
-//             }
-//         } else {
-//             SM_force_change_state(HOLD);
-//             ESP_LOGI(TAG, "HOLD");
-//         }
-//         return 0;
-//     }
-//     if (SM_force_change_state(state) != SM_OK) {
-//         return -1;
-//     }
+    int state = atoi(argv[1]);
+    if (state == 11) {
+        if (state_machine_get_current_state() == HOLD) {
+            ESP_LOGI(TAG, "Leaving hold state");
+            if (state_machine_get_previous_state() == COUNTDOWN) {
+                state_machine_force_change_state(RDY_TO_LAUNCH);
+            } else {
+                state_machine_change_to_previous_state(true);
+            }
+        } else {
+            state_machine_force_change_state(HOLD);
+            ESP_LOGI(TAG, "HOLD");
+        }
+        return 0;
+    }
+    if (state_machine_force_change_state(state) != STATE_MACHINE_OK) {
+        return -1;
+    }
 
-//     return 0;
-// }
+    return 0;
+}
 
-// static int change_to_previous_state(int argc, char **argv) {
-//     bool run_callback = false;
-//     if (argc == 2) {
-//         run_callback = true;
-//     }
+static int change_to_previous_state(int argc, char **argv) {
+    bool run_callback = false;
+    if (argc == 2) {
+        run_callback = true;
+    }
 
-//     if (SM_change_to_previous_state(run_callback) != SM_OK) {
-//         return -1;
-//     }
+    if (state_machine_change_to_previous_state(run_callback) != STATE_MACHINE_OK) {
+        return -1;
+    }
 
-//     return 0;
-// }
+    return 0;
+}
 
-// static int get_state(int argc, char **argv) {
-//     CONSOLE_WRITE_G("Current state -> %d", SM_get_current_state());
-//     return 0;
-// }
+static int get_state(int argc, char **argv) {
+    CONSOLE_WRITE_G("Current state -> %d", state_machine_get_current_state());
+    return 0;
+}
+
+static int change_measure_period(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+
+    uint32_t period = atoi(argv[1]);
+    change_measure_task_period(period);
+
+    return 0;
+}
 
 static int read_temperature(int argc, char **argv) {
     int16_t raw[2];
@@ -504,11 +518,13 @@ static esp_console_cmd_t cmd[] = {
     {"reset-dev", "restart device", NULL, reset_device, NULL},
     {"log-enable", "enable logs", NULL, enable_log, NULL},
     {"log-disable", "disable logs", NULL, disable_log, NULL},
-    // // state machine commands
-    // {"state-change", "change state", NULL, force_change_state, NULL},
-    // {"state-change-prev", "change state to previous", NULL, change_to_previous_state, NULL},
-    // {"state-change-force", "force change state", NULL, force_change_state, NULL},
-    // {"state-get", "get current state", NULL, get_state, NULL},
+    // state machine commands
+    {"state-change", "change state", NULL, force_change_state, NULL},
+    {"state-change-prev", "change state to previous", NULL, change_to_previous_state, NULL},
+    {"state-change-force", "force change state", NULL, force_change_state, NULL},
+    {"state-get", "get current state", NULL, get_state, NULL},
+    // measument task commands
+    {"measure-period", "change measurement period", "period", change_measure_period, NULL},
     // measurements commands
     {"temp-read", "read temperature", NULL, read_temperature, NULL},
     {"pressure-read", "read pressure", NULL, read_pressure, NULL},

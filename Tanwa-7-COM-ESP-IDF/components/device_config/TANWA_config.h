@@ -17,6 +17,7 @@
 #include "mcp23018.h"
 #include "ads1115.h"
 #include "pca9574.h"
+#include "sdcard.h"
 #include "igniter_driver.h"
 
 #include "led_state_display.h"

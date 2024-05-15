@@ -58,10 +58,12 @@ static void on_flight(void *arg) {
 }
 
 static void on_first_stage_recovery(void *arg) {
+    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_FIRST_STAGE);
     ESP_LOGI(TAG, "ON FIRST STAGE RECOVERY");
 }
 
 static void on_second_stage_recovery(void *arg) {
+    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_SECOND_STAGE);
     ESP_LOGI(TAG, "ON FIRST STAGE RECOVERY");
 }
 

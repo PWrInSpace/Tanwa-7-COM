@@ -19,12 +19,15 @@
 
 #include "TANWA_config.h"
 #include "mcu_adc_config.h"
+#include "state_machine_config.h"
 
 #include "console_config.h"
 
+#include "measure_task.h"
+
 #define TAG "APP_INIT_TASK"
 
-// static sdmmc_card_t sdmmc_card
+// static sdmmc_card_t sdmmc_card;
 
 // static sd_card_t sd_card = SD_CARD_DEFAULT_CONFIG(sdmmc_card);
 
@@ -58,14 +61,24 @@ void app_init_task(void* pvParameters) {
     ESP_LOGE(TAG, "Utility initialization failed");
   }
 
+  ESP_LOGI(TAG, "Initializing system...");
+
+  if (!initialize_state_machine()) {
+    ESP_LOGE(TAG, "State machine initialization failed");
+  }
+
   ESP_LOGI(TAG, "### App initialization finished ###");
 
   ESP_LOGI(TAG, "Starting console...");
 
-  ret += console_config_init();
+  ret |= console_config_init();
   if (ret != ESP_OK) {
     ESP_LOGE(TAG, "Console initialization failed");
+  } else {
+    ESP_LOGI(TAG, "Console initialized");
   }
+
+  run_measure_task();
 
   // xTaskCreatePinnedToCore(user_interface_task, "user_interface_task", 4096,
   //                         (void*)&devices_config, 1, NULL, 1);
