@@ -22,6 +22,9 @@ led_state_display_status_t led_state_display_clear(led_state_display_struct_t *l
     mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_8, LED_STATE_DISPLAY_PIN_LED_8, MCP23018_HIGH);
     mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_9, LED_STATE_DISPLAY_PIN_LED_9, MCP23018_HIGH);
     mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_10, LED_STATE_DISPLAY_PIN_LED_10, MCP23018_HIGH);
+    mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_11, LED_STATE_DISPLAY_PIN_LED_11, MCP23018_HIGH);
+    mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_12, LED_STATE_DISPLAY_PIN_LED_12, MCP23018_HIGH);
+    mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_13, LED_STATE_DISPLAY_PIN_LED_13, MCP23018_HIGH);
 
     return LED_STATE_DISPLAY_OK;
 }
@@ -67,17 +70,25 @@ led_state_display_status_t led_state_display_state_update(led_state_display_stru
             status = led_state_display_clear(led_state_display);
             mcp_status = mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_7, LED_STATE_DISPLAY_PIN_LED_7, MCP23018_LOW);
             break;
-        case LED_STATE_DISPLAY_STATE_ON_GROUND:
+        case LED_STATE_DISPLAY_STATE_FIRST_STAGE:
             status = led_state_display_clear(led_state_display);
             mcp_status = mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_8, LED_STATE_DISPLAY_PIN_LED_8, MCP23018_LOW);
             break;
-        case LED_STATE_DISPLAY_STATE_HOLD:
+        case LED_STATE_DISPLAY_STATE_SECOND_STAGE:
             status = led_state_display_clear(led_state_display);
             mcp_status = mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_9, LED_STATE_DISPLAY_PIN_LED_9, MCP23018_LOW);
             break;
-        case LED_STATE_DISPLAY_STATE_ABORT:
+        case LED_STATE_DISPLAY_STATE_ON_GROUND:
             status = led_state_display_clear(led_state_display);
             mcp_status = mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_10, LED_STATE_DISPLAY_PIN_LED_10, MCP23018_LOW);
+            break;
+        case LED_STATE_DISPLAY_STATE_HOLD:
+            status = led_state_display_clear(led_state_display);
+            mcp_status = mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_11, LED_STATE_DISPLAY_PIN_LED_11, MCP23018_LOW);
+            break;
+        case LED_STATE_DISPLAY_STATE_ABORT:
+            status = led_state_display_clear(led_state_display);
+            mcp_status = mcp23018_digital_write(led_state_display->mcp23018, LED_STATE_DISPLAY_PORT_LED_12, LED_STATE_DISPLAY_PIN_LED_12, MCP23018_LOW);
             break;
         default:
             break;
