@@ -244,7 +244,6 @@ esp_err_t TANWA_lora_init() {
     }
     // self test lora
     const char* lora_packet = "TEST;";
-    ESP_LOGI(TAG, "LORA_TASK");
     ESP_LOGI(TAG, "Reading LoRa registers");
     int16_t read_val_one = lora_read_reg(&TANWA_lora, 0x0d);
     int16_t read_val_two = lora_read_reg(&TANWA_lora, 0x0c);
