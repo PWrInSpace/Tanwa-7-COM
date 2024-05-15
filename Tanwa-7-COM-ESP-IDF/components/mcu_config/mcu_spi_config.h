@@ -1,4 +1,13 @@
-// Copyright 2023 PWr in Space, Krzysztof Gliwiński
+///===-----------------------------------------------------------------------------------------===//
+///
+/// Copyright (c) PWr in Space. All rights reserved.
+/// Created: 15.05.2024 by Michał Kos
+///
+///===-----------------------------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains the configuration of the SPI of the MCU.
+///===-----------------------------------------------------------------------------------------===//
 
 #pragma once
 
@@ -41,18 +50,23 @@ typedef struct {
   bool spi_init_flag;
 } mcu_spi_config_t;
 
-/*!
+/**
  * \brief Initiates the SPI bus
- * \param spi_config SPI configuration
  * \return ESP_OK on success, ESP_FAIL otherwise
  * \note This function will only initiate SPI peripheral,
  *      it will not configure the GPIO for CS pins.
  */
-esp_err_t spi_init(mcu_spi_config_t *spi_config);
+esp_err_t mcu_spi_init(void);
 
-/*!
+/**
  * \brief Deinitializes the SPI bus
- * \param[in] spi_config SPI configuration
  * \return ESP_OK on success, ESP_FAIL otherwise
 */
-esp_err_t spi_deinit(mcu_spi_config_t *spi_config);
+esp_err_t mcu_spi_deinit(void);
+
+/**
+ * \brief SPI transmit function for LoRa
+ * \param[in] _in input buffer
+ * \param[out] _out output buffer
+ */
+bool _lora_SPI_transmit(uint8_t _in[2], uint8_t _out[2]);

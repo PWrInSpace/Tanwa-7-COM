@@ -24,7 +24,7 @@
 extern TANWA_hardware_t TANWA_hardware;
 extern TANWA_utility_t TANWA_utility;
 
-static volatile TickType_t measure_task_freq = 1000;
+static volatile TickType_t measure_task_freq = 10000;
 SemaphoreHandle_t measure_task_freq_mutex;
 
 void run_measure_task(void) {
@@ -80,4 +80,5 @@ void measure_task(void* pvParameters) {
             // ToDo
         }
     }
+    vTaskDelete(NULL);
 }

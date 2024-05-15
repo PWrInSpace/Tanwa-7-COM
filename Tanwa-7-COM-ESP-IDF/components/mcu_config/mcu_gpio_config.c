@@ -11,12 +11,27 @@
 #define TAG "MCU_GPIO_CONFIG"
 
 static mcu_gpio_config_t mcu_gpio_config = {
-    .pins = {LED_GPIO, ABORT_GPIO, ARM_GPIO, FIRE_1_GPIO, FIRE_2_GPIO},
+    .pins = {LED_GPIO, LORA_RST_GPIO, LORA_CS_GPIO, ABORT_GPIO, ARM_GPIO, FIRE_1_GPIO, FIRE_2_GPIO, 
+             LORA_D0_GPIO},
     .num_pins = MAX_GPIO_INDEX,
     .configs = {
         {
             .pin_bit_mask = (1ULL << LED_GPIO),
             .mode = GPIO_MODE_OUTPUT_OD,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_DISABLE,
+        },
+        {
+            .pin_bit_mask = (1ULL << LORA_RST_GPIO),
+            .mode = GPIO_MODE_OUTPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_DISABLE,
+        },
+        {
+            .pin_bit_mask = (1ULL << LORA_CS_GPIO),
+            .mode = GPIO_MODE_OUTPUT,
             .pull_up_en = GPIO_PULLUP_DISABLE,
             .pull_down_en = GPIO_PULLDOWN_DISABLE,
             .intr_type = GPIO_INTR_DISABLE,
@@ -48,7 +63,14 @@ static mcu_gpio_config_t mcu_gpio_config = {
             .pull_up_en = GPIO_PULLUP_DISABLE,
             .pull_down_en = GPIO_PULLDOWN_DISABLE,
             .intr_type = GPIO_INTR_DISABLE,
-        }
+        },
+        {
+            .pin_bit_mask = (1ULL << LORA_D0_GPIO),
+            .mode = GPIO_MODE_INPUT,
+            .pull_up_en = GPIO_PULLUP_ENABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_LOW_LEVEL,
+        },
     },
 };
 

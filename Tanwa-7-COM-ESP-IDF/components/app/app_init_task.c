@@ -45,6 +45,8 @@ void app_init_task(void* pvParameters) {
   ret |= TANWA_mcu_config_init();
   if (ret != ESP_OK) {
     ESP_LOGE(TAG, "MCU configuration failed");
+  } else {
+    ESP_LOGI(TAG, "### MCU configuration success ###");
   }
 
   ESP_LOGI(TAG, "Initializing hardware...");
@@ -52,6 +54,8 @@ void app_init_task(void* pvParameters) {
   ret |= TANWA_hardware_init();
   if (ret != ESP_OK) {
     ESP_LOGE(TAG, "Hardware initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### Hardware initialization success ###");
   }
 
   ESP_LOGI(TAG, "Initializing utility...");
@@ -59,12 +63,25 @@ void app_init_task(void* pvParameters) {
   ret |= TANWA_utility_init();
   if (ret != ESP_OK) {
     ESP_LOGE(TAG, "Utility initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### Utility initialization success ###");
+  }
+
+  ESP_LOGI(TAG, "Initializing LoRa...");
+
+  ret |= TANWA_lora_init();
+  if (ret != ESP_OK) {
+    ESP_LOGE(TAG, "LoRa initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### LoRa initialization success ###");
   }
 
   ESP_LOGI(TAG, "Initializing system...");
 
   if (!initialize_state_machine()) {
     ESP_LOGE(TAG, "State machine initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### State machine initialization success ###");
   }
 
   ESP_LOGI(TAG, "### App initialization finished ###");

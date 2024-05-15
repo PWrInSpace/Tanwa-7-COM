@@ -12,6 +12,7 @@
 #include "mcu_gpio_config.h"
 #include "mcu_adc_config.h"
 #include "mcu_i2c_config.h"
+#include "mcu_spi_config.h"
 #include "mcu_twai_config.h"
 #include "mcu_misc_config.h"
 
@@ -93,6 +94,18 @@ TANWA_utility_t TANWA_utility = {
     .solenoid_driver = SOLENOID_DRIVER_TANWA_CONFIG(&TANWA_hardware.pca9574),
 };
 
+TANWA_lora_t TANWA_lora = {
+    ._spi_transmit = _lora_SPI_transmit,
+    ._delay = _lora_delay,
+    ._gpio_set_level = _mcu_gpio_set_level,
+    .log = _lora_log,
+    .rst_gpio_num = LORA_RST_GPIO_INDEX,
+    .cs_gpio_num = LORA_CS_GPIO_INDEX,
+    .d0_gpio_num = LORA_D0_GPIO_INDEX,
+    .implicit_header = 0, 
+    .frequency = 0,
+};
+
 esp_err_t TANWA_mcu_config_init() {
     esp_err_t ret = ESP_OK;
     ret |= mcu_gpio_init();
@@ -115,6 +128,13 @@ esp_err_t TANWA_mcu_config_init() {
         return ret;
     } else {
         ESP_LOGI(TAG, "I2C initialized");
+    }
+    ret |= mcu_spi_init();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize SPI");
+        return ret;
+    } else {
+        ESP_LOGI(TAG, "SPI initialized");
     }
     ret |= mcu_twai_init();
     if (ret != ESP_OK) {
@@ -185,6 +205,55 @@ esp_err_t TANWA_utility_init() {
     return ESP_OK;
 }
 
+esp_err_t TANWA_lora_init() {
+    lora_err_t ret = 0;
+    // LoRa init
+    ret = lora_init(&TANWA_lora); 
+    if (ret != LORA_OK) {
+        ESP_LOGE(TAG, "Failed to initialize LoRa");
+        return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "LoRa initialized");
+    }
+    // set lora config
+    vTaskDelay(pdMS_TO_TICKS(100));
+    ret = lora_set_frequency(&TANWA_lora, 867e6);
+    if (ret != LORA_OK) {
+        ESP_LOGE(TAG, "Failed to set LoRa frequency");
+        return ESP_FAIL;
+    }
+    ret = lora_set_bandwidth(&TANWA_lora, LORA_BW_250_kHz); 
+    if (ret != LORA_OK) {
+        ESP_LOGE(TAG, "Failed to set LoRa bandwidth");
+        return ESP_FAIL;
+    }
+    ret = lora_set_tx_power(&TANWA_lora, 17); 
+    if (ret != LORA_OK) {
+        ESP_LOGE(TAG, "Failed to set LoRa TX power");
+        return ESP_FAIL;
+    }
+    ret = lora_set_spreading_factor(&TANWA_lora, 7);
+    if (ret != LORA_OK) {
+        ESP_LOGE(TAG, "Failed to set LoRa spreading factor");
+        return ESP_FAIL;
+    }
+    ret = lora_disable_crc(&TANWA_lora);
+    if (ret != LORA_OK) {
+        ESP_LOGE(TAG, "Failed to disable LoRa CRC");
+        return ESP_FAIL;
+    }
+    // self test lora
+    const char* lora_packet = "TEST;";
+    ESP_LOGI(TAG, "LORA_TASK");
+    ESP_LOGI(TAG, "Reading LoRa registers");
+    int16_t read_val_one = lora_read_reg(&TANWA_lora, 0x0d);
+    int16_t read_val_two = lora_read_reg(&TANWA_lora, 0x0c);
+    ESP_LOGI(TAG, "LORA_READ: %04x, %04x", read_val_one, read_val_two);
+    lora_reset(&TANWA_lora);
+    ESP_LOGI(TAG, "LoRa Reset");
+    return ESP_OK;
+}
+
 // esp_err_t TANWA_get_hardware(TANWA_hardware_t** hardware) {
 //     *hardware = &TANWA_hardware;
 //     return ESP_OK;
@@ -194,3 +263,7 @@ esp_err_t TANWA_utility_init() {
 //     *utility = &TANWA_utility;
 //     return ESP_OK;
 // }
+
+void _lora_delay(size_t _ms) { vTaskDelay(pdMS_TO_TICKS(_ms)); }
+
+void _lora_log(const char* info) { ESP_LOGI(TAG, "%s", info); }

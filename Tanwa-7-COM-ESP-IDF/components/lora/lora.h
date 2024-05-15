@@ -128,7 +128,7 @@ typedef enum {
 
 typedef bool (*lora_SPI_transmit)(uint8_t _in[2], uint8_t _val[2]);
 typedef void (*lora_delay)(size_t _ms);
-typedef bool (*lora_GPIO_set_level)(uint8_t _gpio_num, uint32_t _level);
+typedef bool (*lora_GPIO_set_level)(uint8_t _gpio_num, uint8_t _level);
 typedef void (*lora_log)(const char *info);
 
 typedef struct {
