@@ -6,18 +6,15 @@
 ///===-----------------------------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains declaration of the LoRa task. This task is for the LoRa communication.
+/// This file contains declaration of the ESP-NOW task. This task is for the ESP-NOW communication.
 ///===-----------------------------------------------------------------------------------------===//
-#ifndef PWRINSPACE_TANWA_LORA_TASK_H_
-#define PWRINSPACE_TANWA_LORA_TASK_H_
+#ifndef PWRINSPACE_TANWA_ESP_NOW_TASK_H_
+#define PWRINSPACE_TANWA_ESP_NOW_TASK_H_
 
+#include <stdint.h>
 
-void run_lora_task(void);
+void run_esp_now_task(void);
 
-/**
- * \brief LoRa sender task - sends data from UART to LoRa
- * \param[in] pvParameters Used to pass the devices configuration
- */
-void lora_task(void* pvParameters);
+void esp_now_task(void* pvParameters);
 
-#endif /* PWRINSPACE_TANWA_LORA_TASK_H_ */
+#endif /* PWRINSPACE_TANWA_ESP_NOW_TASK_H_ */

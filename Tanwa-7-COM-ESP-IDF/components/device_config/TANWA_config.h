@@ -24,6 +24,7 @@
 #include "pressure_driver.h"
 #include "solenoid_driver.h"
 
+#include "esp_now.h"
 #include "lora.h"
 
 // TANWA hardware
@@ -55,6 +56,8 @@ esp_err_t TANWA_mcu_config_init();
 esp_err_t TANWA_hardware_init();
 
 esp_err_t TANWA_utility_init();
+
+esp_err_t TANWA_esp_now_init();
 
 esp_err_t TANWA_lora_init();
 

@@ -205,6 +205,16 @@ esp_err_t TANWA_utility_init() {
     return ESP_OK;
 }
 
+esp_err_t TANWA_esp_now_init() {
+    if (!nowInit()) {
+        ESP_LOGE(TAG, "Failed to initialize ESP-NOW");
+        return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "ESP-NOW initialized");
+    }
+    nowAddPeer(adressObc, 0);
+}
+
 esp_err_t TANWA_lora_init() {
     lora_err_t ret = 0;
     // LoRa init

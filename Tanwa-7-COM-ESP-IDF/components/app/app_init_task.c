@@ -67,6 +67,23 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "### Utility initialization success ###");
   }
 
+  ESP_LOGI(TAG, "Initializing state machine...");
+
+  if (!initialize_state_machine()) {
+    ESP_LOGE(TAG, "State machine initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### State machine initialization success ###");
+  }
+
+  ESP_LOGI(TAG, "Initializing ESP-NOW...");
+
+  ret |= TANWA_esp_now_init();
+  if (ret != ESP_OK) {
+    ESP_LOGE(TAG, "ESP-NOW initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### ESP-NOW initialization success ###");
+  }
+
   ESP_LOGI(TAG, "Initializing LoRa...");
 
   ret |= TANWA_lora_init();
@@ -76,13 +93,6 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "### LoRa initialization success ###");
   }
 
-  ESP_LOGI(TAG, "Initializing system...");
-
-  if (!initialize_state_machine()) {
-    ESP_LOGE(TAG, "State machine initialization failed");
-  } else {
-    ESP_LOGI(TAG, "### State machine initialization success ###");
-  }
 
   ESP_LOGI(TAG, "### App initialization finished ###");
 

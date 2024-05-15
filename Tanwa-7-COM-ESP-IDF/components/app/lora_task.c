@@ -21,6 +21,10 @@
 
 #define TAG "LORA_TASK"
 
+void run_lora_task(void) {
+    xTaskCreatePinnedToCore(lora_task, "lora_task", 4096, NULL, 5, NULL, 1);
+}
+
 void lora_task(void* pvParameters) {
     ESP_LOGI(TAG, "### LoRa task started ###");
     while (1) {
