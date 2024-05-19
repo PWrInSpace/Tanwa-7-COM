@@ -16,6 +16,8 @@
 #include "mcu_twai_config.h"
 #include "mcu_misc_config.h"
 
+#include "now.h"
+
 #define TAG "TANWA_CONFIG"
 
 #define IOEXP_MODE (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
@@ -212,7 +214,8 @@ esp_err_t TANWA_esp_now_init() {
     } else {
         ESP_LOGI(TAG, "ESP-NOW initialized");
     }
-    nowAddPeer(adressObc, 0);
+    nowAddPeer(adress_obc, 0);
+    return ESP_OK;
 }
 
 esp_err_t TANWA_lora_init() {

@@ -200,6 +200,8 @@ static int read_vbat(int argc, char **argv) {
         return -1;
     }
 
+    voltage = voltage * 6.26335877863f; // (10k + 50k) / 10k (voltage divider)
+
     CONSOLE_WRITE("VBAT Voltage:");
     CONSOLE_WRITE("voltage: %f", voltage);
 

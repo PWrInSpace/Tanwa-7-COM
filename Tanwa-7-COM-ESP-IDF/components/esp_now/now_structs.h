@@ -9,7 +9,6 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "pinout.h"
 
 #define ANSWER_WAIT_MS 750
 #define MIN_SLEEP_TIME_MS 2000
@@ -31,7 +30,6 @@ typedef enum {
     HOLD_PERIOD             = 1000,
     ABORT_PERIOD            = SLEEP_TIME_MS
 } Periods;
-
 // IMPORTANT END!
 
 typedef enum {
@@ -51,44 +49,49 @@ typedef enum {
   NO_CHANGE = 0xff //DO NOT USE, ONLY FOR REQUEST PURPOSE
 } States;
 
-
 typedef struct DataToObc {
-
-    bool wakenUp : 1;
-    // IMPORTANT! To implementation of each module:
-
-    // IMPORTANT END!
+    uint8_t tanWaState;
+    uint16_t pressureSensor;
+    uint16_t solenoid_fill; //pin pa0 10 pin stm adc
+    uint16_t solenoid_depr; // pin pa2 12 pin stm adc
+    bool abortButton : 1;
+    bool igniterContinouity_1;
+    bool igniterContinouity_2;
+    uint8_t hxRequest_RCK;
+    uint8_t hxRequest_TANK;
+    float vbat;
+    uint8_t motorState_1;
+    uint8_t motorState_2;
+    uint8_t motorState_3;
+    uint8_t motorState_4;
+    int rocketWeight_blink;
+    float rocketWeight_temp;
+    int tankWeight_blink;
+    float tankWeight_temp;
+    float rocketWeight_val;
+    float tankWeight_val;
+    uint32_t rocketWeightRaw_val;
+    uint32_t tankWeightRaw_val;
+    bool interface_rck;
+    bool interface_tank;
+    bool interface_mcu;
 } DataToObc;
 
 typedef struct {
-
     uint32_t commandNum;
     int32_t commandArg;
-
 } DataFromObc;
 
-typedef struct DataToSave {
-
-    uint32_t uptime;
-    // IMPORTANT! To implementation of each module:
-
-    // IMPORTANT END!
-} DataToSave;
-
 typedef struct {
-
     DataToObc dataToObc;
     DataFromObc dataFromObc;
-    DataToSave dataToSave;
     uint8_t obcState;
     uint16_t stateTimes[13];
     bool inServiceMode;
-
     // IMPORTANT! Add other global variables in this struct:
-
     // IMPORTANT END!
 } ModuleData;
 
-extern volatile ModuleData moduleData;
+volatile ModuleData module_data;
 
 #endif
