@@ -4,8 +4,8 @@
 /// Created: 15.05.2024 by Michał Kos
 ///
 ///===-----------------------------------------------------------------------------------------===//
-#ifndef PWRINSPACE_TANWA_DATA_STRUCTS_H_
-#define PWRINSPACE_TANWA_DATA_STRUCTS_H_
+#ifndef PWRINSPACE_TANWA_NOW_STRUCTS_H_
+#define PWRINSPACE_TANWA_NOW_STRUCTS_H_
 
 #include <stdbool.h>
 #include <stdint.h>

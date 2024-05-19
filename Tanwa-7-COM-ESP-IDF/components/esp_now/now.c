@@ -57,7 +57,6 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len) {
     }
 
     if (adressCompare(mac, adressObc)) {
-
         // if nextSendTime:
         if (len == sizeof(moduleData.obcState)) {
 
@@ -67,7 +66,6 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len) {
             if (stateInWakenUp()) moduleData.dataToObc.wakenUp = false;
             else moduleData.dataToObc.wakenUp = true;
         }
-
         // if different command:
         else rxNowHandler(incomingData, len);
     }
