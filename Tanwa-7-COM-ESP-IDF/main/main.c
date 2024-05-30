@@ -13,6 +13,9 @@
 #include "TANWA_config.h"
 #include "led_driver.h"
 
+#include "mcu_i2c_config.h"
+#include "pca9574.h"
+
 extern TANWA_hardware_t TANWA_hardware;
 extern TANWA_utility_t TANWA_utility;
 
@@ -48,10 +51,38 @@ void app_main(void) {
 
     print_chip_info();
     
-    run_app_init();
+    // run_app_init();
+
+    mcu_i2c_init();
+
+    pca9574_struct_t pca9574 = {
+        ._i2c_read = _mcu_i2c_read,
+        ._i2c_write = _mcu_i2c_write,
+        .i2c_address = 0x20
+    };
+    pca9574_init(&pca9574);
+
+    pca9574_set_mode(&pca9574, PCA9574_OUTPUT);
+
+    pca9574_set_level(&pca9574, PCA9574_HIGH);
+
+    // pca9574_set_mode_pin(&pca9574, 0, PCA9574_OUTPUT);
+    // pca9574_set_mode_pin(&pca9574, 1, PCA9574_OUTPUT);
+    // pca9574_set_mode_pin(&pca9574, 2, PCA9574_OUTPUT);
+
+    // pca9574_set_level_pin(&pca9574, 0, PCA9574_HIGH);
+    // pca9574_set_level_pin(&pca9574, 1, PCA9574_HIGH);
+    // pca9574_set_level_pin(&pca9574, 2, PCA9574_HIGH);
+    // pca9574_set_level_pin(&pca9574, 3, PCA9574_HIGH);
+    // pca9574_set_level_pin(&pca9574, 4, PCA9574_HIGH);
+    // pca9574_set_level_pin(&pca9574, 5, PCA9574_HIGH);
+    // pca9574_set_level_pin(&pca9574, 6, PCA9574_HIGH);
+    // pca9574_set_level_pin(&pca9574, 7, PCA9574_HIGH);
     
     while(1) {
-        led_toggle(&(TANWA_hardware.esp_led));
+        pca9574_set_level(&pca9574, PCA9574_LOW);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        pca9574_set_level(&pca9574, PCA9574_HIGH);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
