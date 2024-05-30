@@ -59,6 +59,7 @@ solenoid_driver_status_t solenoid_driver_valve_close(solenoid_driver_struct_t *s
         return SOLENOID_DRIVER_OK;
     } else {
         pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, solenoid_driver->valves[valve].gpio_pin);
+        pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, solenoid_driver->valves[valve].led_gpio_pin);
         solenoid_driver->valves[valve].state = SOLENOID_DRIVER_VALVE_STATE_CLOSE;
     }
 
