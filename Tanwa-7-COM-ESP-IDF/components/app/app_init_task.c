@@ -18,6 +18,7 @@
 #include "esp_log.h"
 
 #include "TANWA_config.h"
+#include "TANWA_data.h"
 #include "mcu_adc_config.h"
 #include "state_machine_config.h"
 
@@ -93,6 +94,13 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "### LoRa initialization success ###");
   }
 
+  ESP_LOGI(TAG, "Initializing shared memory...");
+
+  if (!tanwa_data_init()) {
+    ESP_LOGE(TAG, "Shared memory initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### Shared memory initialization success ###");
+  }
 
   ESP_LOGI(TAG, "### App initialization finished ###");
 

@@ -1,5 +1,5 @@
-#ifndef PWRINSPACE_TANWA_NOW_H
-#define PWRINSPACE_TANWA_NOW_H
+#ifndef PWRINSPACE_NOW_H
+#define PWRINSPACE_NOW_H
 
 #include <stdbool.h>
 #include <stdint.h>

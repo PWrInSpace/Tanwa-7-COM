@@ -12,6 +12,7 @@
 #include "console.h"
 
 #include "TANWA_config.h"
+#include "TANWA_data.h"
 #include "mcu_adc_config.h"
 #include "state_machine_config.h"
 
@@ -515,6 +516,19 @@ static int check_igniter_continuity(int argc, char **argv) {
     return 0;
 }
 
+static int get_com_board_data(int argc, char **argv) {
+    com_data_t com_data = {0};
+    com_data = tanwa_data_read_com_data();
+    CONSOLE_WRITE("COM Data:");
+    CONSOLE_WRITE("Pressure 1: %.2f", com_data.pressure_1);
+    CONSOLE_WRITE("Pressure 2: %.2f", com_data.pressure_2);
+    CONSOLE_WRITE("Pressure 3: %.2f", com_data.pressure_3);
+    CONSOLE_WRITE("Pressure 4: %.2f", com_data.pressure_4);
+    CONSOLE_WRITE("Temperature 1: %.2f", com_data.temperature_1);
+    CONSOLE_WRITE("Temperature 2: %.2f", com_data.temperature_2);
+    return 0;
+}
+
 static esp_console_cmd_t cmd[] = {
     // system commands
     {"reset-dev", "restart device", NULL, reset_device, NULL},
@@ -541,6 +555,9 @@ static esp_console_cmd_t cmd[] = {
     {"igniter-fire", "fire igniter", "1|2|A", fire_igniter, NULL},
     {"igniter-reset", "reset igniter", "1|2|A", reset_igniter, NULL},
     {"igniter-continuity", "check igniters continuity", NULL, check_igniter_continuity, NULL},
+    // tanwa data commands
+    // {"tanwa-data", "get tanwa data", NULL, get_tanwa_data, NULL},
+    {"com-data", "get com data", NULL, get_com_board_data, NULL},
 };
 
 esp_err_t console_config_init() {

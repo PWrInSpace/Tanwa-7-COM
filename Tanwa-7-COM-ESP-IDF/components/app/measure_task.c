@@ -18,6 +18,8 @@
 #include "esp_log.h"
 
 #include "TANWA_config.h"
+#include "TANWA_data.h"
+#include "mcu_adc_config.h"
 
 #define TAG "MEASURE_TASK"
 
@@ -45,7 +47,7 @@ void measure_task(void* pvParameters) {
     TickType_t last_wake_time;
     TickType_t local_freq;
 
-    float temp[2], pressure;
+    float vbat, temp[2], pressure[4];
 
     // Initialise the xLastWakeTime variable with the current time.
     last_wake_time = xTaskGetTickCount();
@@ -58,15 +60,35 @@ void measure_task(void* pvParameters) {
         
             vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(local_freq));
 
+            com_data_t com_data;
+
+            // Measure battery voltage
+            _mcu_adc_read_voltage(VBAT_CHANNEL_INDEX, &vbat);
+            vbat = vbat * 6.26335877863f; // (10k + 50k) / 10k (voltage divider)
+            // ESP_LOGI(TAG, "Battery voltage: %.2f", vbat);
+            com_data.vbat = vbat;
+
             // Measure temperature
             for (int i = 0; i < 2; ++i) {
                 tmp1075_get_temp_celsius(&(TANWA_hardware.tmp1075[i]), &temp[i]);
             }
-            ESP_LOGI(TAG, "Temperature sensors 1: %.2f, 2: %.2f", temp[0], temp[1]); 
+            // ESP_LOGI(TAG, "Temperature sensors 1: %.2f, 2: %.2f", temp[0], temp[1]);
+            com_data.temperature_1 = temp[0];
+            com_data.temperature_2 = temp[1];
 
             // Measure pressure
-            pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_1, &pressure);
-            ESP_LOGI(TAG, "Pressure: %.2f", pressure);
+            pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_1, &pressure[0]);
+            pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_2, &pressure[1]);
+            pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_3, &pressure[2]);
+            pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_4, &pressure[3]);
+            // ESP_LOGI(TAG, "Pressure: %.2f", pressure);
+            com_data.pressure_1 = pressure[0];
+            com_data.pressure_2 = pressure[1];
+            com_data.pressure_3 = pressure[2];
+            com_data.pressure_4 = pressure[3];
+
+            // Update COM data
+            tanwa_data_update_com_data(&com_data);
 
             // Oxidizer weight measurement
             // CAN bus communication
