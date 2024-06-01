@@ -13,8 +13,19 @@
 
 #include <stdint.h>
 
+/**
+ * @brief Function for starting the ESP-NOW task.
+ */
 void run_esp_now_task(void);
 
+/**
+ * @brief Function for stopping the ESP-NOW task.
+ */
+void stop_esp_now_task(void);
+
+/**
+ * @brief Task for handling the ESP-NOW communication.
+ */
 void esp_now_task(void* pvParameters);
 
 #endif /* PWRINSPACE_TANWA_ESP_NOW_TASK_H_ */

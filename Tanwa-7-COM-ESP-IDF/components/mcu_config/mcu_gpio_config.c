@@ -8,7 +8,7 @@
 
 #include "esp_log.h"
 
-#define TAG "MCU_GPIO_CONFIG"
+#define TAG "MCU_GPIO"
 
 static mcu_gpio_config_t mcu_gpio_config = {
     .pins = {LED_GPIO, LORA_RST_GPIO, LORA_CS_GPIO, ABORT_GPIO, ARM_GPIO, FIRE_1_GPIO, FIRE_2_GPIO, 

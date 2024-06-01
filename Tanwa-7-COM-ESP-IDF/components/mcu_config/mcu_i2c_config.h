@@ -9,8 +9,8 @@
 /// This file contains the configuration of the I2C peripheral for the MCU.
 ///===-----------------------------------------------------------------------------------------===//
 
-#ifndef PWRINSPACE_TANWA_7_MCU_I2C_CONFIG_H_
-#define PWRINSPACE_TANWA_7_MCU_I2C_CONFIG_H_
+#ifndef PWRINSPACE_MCU_I2C_CONFIG_H_
+#define PWRINSPACE_MCU_I2C_CONFIG_H_
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -49,4 +49,4 @@ bool _mcu_i2c_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 
 bool _mcu_i2c_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 
-#endif // PWRINSPACE_TANWA_7_MCU_I2C_CONFIG_H_
+#endif // PWRINSPACE_MCU_I2C_CONFIG_H_

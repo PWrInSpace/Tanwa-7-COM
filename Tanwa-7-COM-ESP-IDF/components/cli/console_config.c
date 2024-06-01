@@ -520,6 +520,7 @@ static int get_com_board_data(int argc, char **argv) {
     com_data_t com_data = {0};
     com_data = tanwa_data_read_com_data();
     CONSOLE_WRITE("COM Data:");
+    CONSOLE_WRITE("Battery Voltage: %.2f", com_data.vbat);
     CONSOLE_WRITE("Pressure 1: %.2f", com_data.pressure_1);
     CONSOLE_WRITE("Pressure 2: %.2f", com_data.pressure_2);
     CONSOLE_WRITE("Pressure 3: %.2f", com_data.pressure_3);

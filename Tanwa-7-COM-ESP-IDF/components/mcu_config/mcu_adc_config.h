@@ -10,8 +10,8 @@
 /// This can only be used for ADC1!
 ///===-----------------------------------------------------------------------------------------===//
 
-#ifndef PWRINSPACE_TANWA_7_MCU_ADC_CONFIG_H_
-#define PWRINSPACE_TANWA_7_MCU_ADC_CONFIG_H_
+#ifndef PWRINSPACE_MCU_ADC_CONFIG_H_
+#define PWRINSPACE_MCU_ADC_CONFIG_H_
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -87,4 +87,4 @@ bool _mcu_adc_read_raw(uint8_t adc_chan, uint16_t* adc_raw);
  */
 bool _mcu_adc_read_voltage(uint8_t adc_chan, float* adc_voltage);
 
-#endif /* PWRINSPACE_TANWA_7_MCU_ADC_CONFIG_H_ */
+#endif /* PWRINSPACE_MCU_ADC_CONFIG_H_ */

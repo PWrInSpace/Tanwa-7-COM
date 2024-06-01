@@ -7,7 +7,7 @@
 #include "mcu_adc_config.h"
 #include "esp_log.h"
 
-#define TAG "MCU_ADC_CONFIG"
+#define TAG "MCU_ADC"
 
 static mcu_adc_config_t mcu_adc_config = {                                                        
   .adc_cal = {1.0f, 5.742f, 5.180f},                     

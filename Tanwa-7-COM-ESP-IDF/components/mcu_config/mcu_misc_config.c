@@ -10,16 +10,16 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#define TAG "MCU_MISC_CONFIG"
+#define TAG "MCU_MISC"
 
 void _LED_delay_ms(uint32_t ms) {
-  vTaskDelay(pdMS_TO_TICKS(ms));
+    vTaskDelay(pdMS_TO_TICKS(ms));
 }
 
 void _IGNITER_delay_ms(uint32_t ms) {
-  vTaskDelay(pdMS_TO_TICKS(ms));
+    vTaskDelay(pdMS_TO_TICKS(ms));
 }
 
 void _LORA_delay_ms(uint32_t ms) {
-  vTaskDelay(pdMS_TO_TICKS(ms));
+    vTaskDelay(pdMS_TO_TICKS(ms));
 }

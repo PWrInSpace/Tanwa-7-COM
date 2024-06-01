@@ -19,24 +19,35 @@
 
 #include "TANWA_config.h"
 #include "TANWA_data.h"
-#include "mcu_adc_config.h"
+#include "can_commands.h"
+#include "can_task.h"
 
 #define TAG "MEASURE_TASK"
+
+#define MEASURE_TASK_STACK_SIZE 4096
+#define MEASURE_TASK_PRIORITY 5
+#define MEASURE_TASK_CORE 1
 
 extern TANWA_hardware_t TANWA_hardware;
 extern TANWA_utility_t TANWA_utility;
 
+static TaskHandle_t measure_task_handle = NULL;
+static SemaphoreHandle_t measure_task_freq_mutex = NULL;
 static volatile TickType_t measure_task_freq = 10000;
-SemaphoreHandle_t measure_task_freq_mutex;
 
 void run_measure_task(void) {
     measure_task_freq_mutex = xSemaphoreCreateMutex();
-    xTaskCreatePinnedToCore(measure_task, "measure_task", 4096, NULL, 5, NULL, 1);
+    xTaskCreatePinnedToCore(measure_task, "measure_task", MEASURE_TASK_STACK_SIZE, NULL, 
+                            MEASURE_TASK_PRIORITY, &measure_task_handle, MEASURE_TASK_CORE);
 }
 
-void change_measure_task_period(uint32_t period) {
+void stop_measure_task(void) {
+    vTaskDelete(measure_task_handle);
+}
+
+void change_measure_task_period(uint32_t period_ms) {
     if (xSemaphoreTake(measure_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
-        measure_task_freq = (TickType_t) period;
+        measure_task_freq = (TickType_t) period_ms;
         xSemaphoreGive(measure_task_freq_mutex);
     }
 }
@@ -63,8 +74,7 @@ void measure_task(void* pvParameters) {
             com_data_t com_data;
 
             // Measure battery voltage
-            _mcu_adc_read_voltage(VBAT_CHANNEL_INDEX, &vbat);
-            vbat = vbat * 6.26335877863f; // (10k + 50k) / 10k (voltage divider)
+            TANWA_get_vbat(&vbat);
             // ESP_LOGI(TAG, "Battery voltage: %.2f", vbat);
             com_data.vbat = vbat;
 
@@ -91,8 +101,10 @@ void measure_task(void* pvParameters) {
             tanwa_data_update_com_data(&com_data);
 
             // Oxidizer weight measurement
-            // CAN bus communication
-            // ToDo
+            if (twai_transmit(&can_hx_rck_tx_get_data, pdMS_TO_TICKS(100)) == ESP_OK) {
+                // can_task_add_counter();
+                change_can_task_period(100);
+            }
 
             // Rocket weight measurement
             // CAN bus communication

@@ -8,7 +8,7 @@
 #include "mcu_i2c_config.h"
 #include <string.h>
 
-#define TAG "MCU_I2C_CONFIG"
+#define TAG "MCU_I2C"
 
 static mcu_i2c_config_t mcu_i2c_config = {
   .port = CONFIG_I2C_MASTER_PORT_NUM, 

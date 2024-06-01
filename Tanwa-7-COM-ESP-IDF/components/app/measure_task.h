@@ -20,10 +20,15 @@
 void run_measure_task(void);
 
 /**
+ * @brief Function for stopping the measurement task.
+ */
+void stop_measure_task(void);
+
+/**
  * @brief Function for changing the period of the measurement task.
  * @param period Period of the task in ms.
  */
-void change_measure_task_period(uint32_t period);
+void change_measure_task_period(uint32_t period_ms);
 
 /**
  * @brief Task for measuring the temperature and pressure.

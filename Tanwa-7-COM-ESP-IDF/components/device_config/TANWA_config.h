@@ -65,6 +65,8 @@ esp_err_t TANWA_lora_init();
 
 // esp_err_t TANWA_get_utility(TANWA_utility_t** utility);
 
+esp_err_t TANWA_get_vbat(float* vbat);
+
 /**
  * \brief Delay function for LoRa
  * \param[in] _ms delay in milliseconds

@@ -9,7 +9,8 @@
 /// This file contains the configuration of the SPI of the MCU.
 ///===-----------------------------------------------------------------------------------------===//
 
-#pragma once
+#ifndef PWRINSPACE_MCU_SPI_CONFIG_H_
+#define PWRINSPACE_MCU_SPI_CONFIG_H_
 
 #include <stdbool.h>
 
@@ -70,3 +71,5 @@ esp_err_t mcu_spi_deinit(void);
  * \param[out] _out output buffer
  */
 bool _lora_SPI_transmit(uint8_t _in[2], uint8_t _out[2]);
+
+#endif /* PWRINSPACE_MCU_SPI_CONFIG_H_ */

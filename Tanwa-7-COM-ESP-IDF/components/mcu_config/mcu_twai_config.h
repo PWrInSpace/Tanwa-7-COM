@@ -1,6 +1,16 @@
-// Copyright 2023 PWr in Space, Krzysztof Gliwiński
+///===-----------------------------------------------------------------------------------------===//
+///
+/// Copyright (c) PWr in Space. All rights reserved.
+/// Created: 31.05.2024 by Michał Kos
+///
+///===-----------------------------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains the configuration of the TWAI of the MCU.
+///===-----------------------------------------------------------------------------------------===//
 
-#pragma once
+#ifndef PWRINSPACE_MCU_TWAI_CONFIG_H_
+#define PWRINSPACE_MCU_TWAI_CONFIG_H_
 
 /*!
  * \file mcu_twai_config.h
@@ -31,20 +41,20 @@ typedef struct {
 
 /*!
  * \brief TWAI initialization, initializes and starts TWAI driver
- * \note
- * \param config TWAI configuration structure
  * \return ESP_OK on success, ESP_FAIL otherwise
  */
 esp_err_t mcu_twai_init();
 
 /*!
- * \brief TWAI message composition for self test purposes
- * \param id Message ID
- * \param data_length_code Message data length code
- * \param data Pointer to message data
+ * \brief TWAI deinitialization, stops and deinitializes TWAI driver
+ * \return ESP_OK on success, ESP_FAIL otherwise
  */
-twai_message_t mcu_twai_compose_self_test_message(uint32_t id,
-                                                  uint8_t data_length_code,
-                                                  uint8_t *data);
+esp_err_t mcu_twai_deinit();
 
-void mcu_twai_self_test();
+/*!
+ * \brief TWAI check alerts, checks if there are any alerts on the bus
+ * \return ESP_OK on success, ESP_FAIL otherwise
+ */
+void mcu_twai_check_alerts();
+
+#endif // PWRINSPACE_MCU_TWAI_CONFIG_H_
