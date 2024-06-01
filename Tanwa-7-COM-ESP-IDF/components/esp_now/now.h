@@ -12,9 +12,12 @@
 #include "esp_system.h"
 #include "esp_now.h"
 #include "esp_crc.h"
-#include "esp_sleep.h"
+
+#include "now_structs.h"
+#include "now_commands.h"
 
 extern const uint8_t adress_obc[];
+extern QueueHandle_t obc_now_rx_queue;
 
 // Init:
 bool nowInit();

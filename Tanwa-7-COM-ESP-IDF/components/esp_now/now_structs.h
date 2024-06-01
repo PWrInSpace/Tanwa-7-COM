@@ -82,16 +82,13 @@ typedef struct {
     int32_t commandArg;
 } DataFromObc;
 
-typedef struct {
-    DataToObc dataToObc;
-    DataFromObc dataFromObc;
-    uint8_t obcState;
-    uint16_t stateTimes[13];
-    bool inServiceMode;
-    // IMPORTANT! Add other global variables in this struct:
-    // IMPORTANT END!
-} ModuleData;
+// typedef struct {
+//     DataToObc dataToObc;
+//     DataFromObc dataFromObc;
+//     uint8_t obcState;
+//     uint16_t stateTimes[13];
+// } ModuleData;
 
-volatile ModuleData module_data;
+// volatile ModuleData module_data;
 
 #endif

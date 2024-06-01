@@ -116,6 +116,9 @@ void measure_task(void* pvParameters) {
 
             // Fetch data from CAN bus
             // ToDo
+
+            // Update esp now data structure
+            // Send esp now structure to OBC
         }
     }
     vTaskDelete(NULL);

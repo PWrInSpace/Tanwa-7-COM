@@ -2,14 +2,24 @@
 
 #include <string.h>
 
-#include "now_structs.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+
+#include "esp_log.h"
+
+#define TAG "NOW"
+
+#define ESP_NOW_QUEUE_LENGTH 100
 
 // Adress OBC:
 const uint8_t adress_obc[] = {0x04, 0x20, 0x04, 0x20, 0x04, 0x20};
 // Adress TANWA:
 const uint8_t adress_tanwa[] = {0x80, 0x08, 0x50, 0x80, 0x08, 0x50}; // BOOBS
 
-extern volatile ModuleData module_data;
+QueueHandle_t obc_now_rx_queue = NULL;
+
+// extern volatile ModuleData module_data;
 
 bool adressCompare(const uint8_t *addr1, const uint8_t *addr2);
 
@@ -28,6 +38,8 @@ bool nowInit() {
     // init esp_now
     if (esp_now_init())
         return false;
+    // init esp_now rx queue
+    obc_now_rx_queue = xQueueCreate(ESP_NOW_QUEUE_LENGTH, sizeof(DataFromObc));
     // register callbacks
     esp_now_register_send_cb(OnDataSent);
     esp_now_register_recv_cb(OnDataRecv);
@@ -57,17 +69,15 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 /**********************************************************************************************/
 
 void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, int len) {
-    // protection against unwanted state change in service mode (possibility of flashe erase)
-    if (module_data.inServiceMode == true) {
-        return;
-    }
+    DataFromObc obc_data;
     if (adressCompare(info->src_addr, adress_obc)) {
-        // if nextSendTime:
-        if (len == sizeof(module_data.obcState)) {
-            memcpy((void*) &module_data.obcState, (uint16_t *)incomingData, sizeof(module_data.obcState));
+        if (len == sizeof(uint8_t)) {
+            return;
         }
-        // if different command:
-        // else rxNowHandler(incomingData, len);
+        memcpy((void*) &obc_data, incomingData, sizeof(DataFromObc));
+        // if (xQueueSendToBack(obc_now_rx_queue, &obc_data, 0) != pdTRUE) {
+        //     ESP_LOGE(TAG, "ESP-NOW RX queue error sending to back");
+        // }
     }
 }
 

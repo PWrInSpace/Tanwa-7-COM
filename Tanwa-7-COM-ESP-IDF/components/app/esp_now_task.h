@@ -24,6 +24,12 @@ void run_esp_now_task(void);
 void stop_esp_now_task(void);
 
 /**
+ * @brief Function for changing the period of the ESP-NOW task.
+ * @param period_ms New period in milliseconds.
+ */
+void change_esp_now_task_period(uint32_t period_ms);
+
+/**
  * @brief Task for handling the ESP-NOW communication.
  */
 void esp_now_task(void* pvParameters);
