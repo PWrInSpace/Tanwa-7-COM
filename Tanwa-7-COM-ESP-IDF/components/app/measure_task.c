@@ -108,11 +108,11 @@ void measure_task(void* pvParameters) {
             }
 
             // Rocket weight measurement
-            // const twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
-            // if (twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
-            //     can_task_add_rx_counter();
-            //     change_can_task_period(100U);
-            // }
+            const twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
+            if (twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+                can_task_add_rx_counter();
+                change_can_task_period(100U);
+            }
 
             // Fetch data from CAN bus
             // ToDo

@@ -516,6 +516,32 @@ static int check_igniter_continuity(int argc, char **argv) {
     return 0;
 }
 
+static int get_tanwa_data(int argc, char **argv) {
+    tanwa_data_t tanwa_data = tanwa_data_read();
+    CONSOLE_WRITE("TANWA Data:");
+    CONSOLE_WRITE("COM: ");
+    CONSOLE_WRITE("  Vbat: %.2f", tanwa_data.com_data.vbat);
+    CONSOLE_WRITE("  Pressures: [0] %.2f, [1] %.2f, [2] %.2f, [3] %.2f",
+                  tanwa_data.com_data.pressure_1, tanwa_data.com_data.pressure_2,
+                  tanwa_data.com_data.pressure_3, tanwa_data.com_data.pressure_4);
+    CONSOLE_WRITE("  Temperatures: [0] %.2f, [1] %.2f", tanwa_data.com_data.temperature_1,
+                  tanwa_data.com_data.temperature_2);
+    CONSOLE_WRITE("HX OXI: ");
+    CONSOLE_WRITE("  Weight: %.2f, Weight Raw: %d", tanwa_data.can_hx_oxidizer_data.weight,
+                  tanwa_data.can_hx_oxidizer_data.weight_raw);
+    CONSOLE_WRITE("HX RCK: ");
+    CONSOLE_WRITE("  Weight: %.2f, Weight Raw: %d", tanwa_data.can_hx_rocket_data.weight,
+                  tanwa_data.can_hx_rocket_data.weight_raw);
+    CONSOLE_WRITE("FLC: ");
+    CONSOLE_WRITE("  Temperatures: [0] %d, [1] %d, [2] %d, [3] %d", tanwa_data.can_flc_data.temperature_1,
+                  tanwa_data.can_flc_data.temperature_2, tanwa_data.can_flc_data.temperature_3,
+                  tanwa_data.can_flc_data.temperature_4);
+    CONSOLE_WRITE("TERMO: ");
+    CONSOLE_WRITE("  Pressure: %.2f, Temperature: %d", tanwa_data.can_termo_data.pressure,
+                  tanwa_data.can_termo_data.temperature);
+    return 0;
+}
+
 static int get_com_board_data(int argc, char **argv) {
     com_data_t com_data = {0};
     com_data = tanwa_data_read_com_data();
@@ -535,6 +561,32 @@ static int get_hx_oxi_data(int argc, char **argv) {
     CONSOLE_WRITE("HX OXI Data:");
     CONSOLE_WRITE("Weight: %.2f", hx_oxi_data.weight);
     CONSOLE_WRITE("Weight Raw: %d", hx_oxi_data.weight_raw);
+    return 0;
+}
+
+static int get_hx_rck_data(int argc, char **argv) {
+    can_hx_rocket_data_t hx_rck_data = tanwa_data_read_can_hx_rocket_data();
+    CONSOLE_WRITE("HX RCK Data:");
+    CONSOLE_WRITE("Weight: %.2f", hx_rck_data.weight);
+    CONSOLE_WRITE("Weight Raw: %d", hx_rck_data.weight_raw);
+    return 0;
+}
+
+static int get_flc_data(int argc, char **argv) {
+    can_flc_data_t flc_data = tanwa_data_read_can_flc_data();
+    CONSOLE_WRITE("FLC Data:");
+    CONSOLE_WRITE("Temperature 1: %d", flc_data.temperature_1);
+    CONSOLE_WRITE("Temperature 2: %d", flc_data.temperature_2);
+    CONSOLE_WRITE("Temperature 3: %d", flc_data.temperature_3);
+    CONSOLE_WRITE("Temperature 4: %d", flc_data.temperature_4);
+    return 0;
+}
+
+static int get_termo_data(int argc, char **argv) {
+    can_termo_data_t termo_data = tanwa_data_read_can_termo_data();
+    CONSOLE_WRITE("TERMO Data:");
+    CONSOLE_WRITE("Pressure: %.2f", termo_data.pressure);
+    CONSOLE_WRITE("Temperature: %d", termo_data.temperature);
     return 0;
 }
 
@@ -565,9 +617,12 @@ static esp_console_cmd_t cmd[] = {
     // measument task commands
     {"measure-period", "change measurement period", "period", change_measure_period, NULL},
     // tanwa data commands
-    // {"tanwa-data", "get tanwa data", NULL, get_tanwa_data, NULL},
+    {"tanwa-data", "get tanwa data", NULL, get_tanwa_data, NULL},
     {"com-data", "get com data", NULL, get_com_board_data, NULL},
     {"oxi-data", "get hx oxi data", NULL, get_hx_oxi_data, NULL},
+    {"rck-data", "get hx rck data", NULL, get_hx_rck_data, NULL},
+    {"flc-data", "get flc data", NULL, get_flc_data, NULL},
+    {"termo-data", "get termo data", NULL, get_termo_data, NULL},
 };
 
 esp_err_t console_config_init() {

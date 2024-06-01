@@ -59,12 +59,12 @@ void parse_can_hx_rck_status(twai_message_t rx_message) {
 
 void parse_can_hx_rck_data(twai_message_t rx_message) {
     // update hx oxi data
-    can_hx_oxidizer_data_t hx_oxi_data = {
+    can_hx_rocket_data_t hx_rck_data = {
         .weight = *((float*)rx_message.data + CAN_HX_DATA_WEIGHT_POS),
         .weight_raw = *((uint32_t*)(rx_message.data + CAN_HX_DATA_WEIGHT_RAW_POS)),
     };
-    ESP_LOGI(TAG, "HX RCK data: weight: %.2f, weight raw: %d", hx_oxi_data.weight, hx_oxi_data.weight_raw);
-    tanwa_data_update_can_hx_oxidizer_data(&hx_oxi_data);
+    ESP_LOGI(TAG, "HX RCK data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
+    tanwa_data_update_can_hx_rocket_data(&hx_rck_data);
 }
 
 void parse_can_hx_oxi_status(twai_message_t rx_message) {
@@ -84,7 +84,7 @@ void parse_can_hx_oxi_data(twai_message_t rx_message) {
         .weight = *((float*)rx_message.data + CAN_HX_DATA_WEIGHT_POS),
         .weight_raw = *((uint32_t*)(rx_message.data + CAN_HX_DATA_WEIGHT_RAW_POS)),
     };
-    ESP_LOGI(TAG, "HX RCK data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
+    ESP_LOGI(TAG, "HX OXI data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
     tanwa_data_update_can_hx_oxidizer_data(&hx_rck_data);
 }
 

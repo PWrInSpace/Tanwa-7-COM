@@ -25,7 +25,7 @@ mcu_twai_config_t mcu_twai_config = {
         .clkout_divider = 0,
         .intr_flags = ESP_INTR_FLAG_LEVEL1,
     },
-    .t_config = TWAI_TIMING_CONFIG_25KBITS(),
+    .t_config = TWAI_TIMING_CONFIG_250KBITS(),
     .f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL(),
 };
 

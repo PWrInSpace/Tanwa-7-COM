@@ -26,7 +26,7 @@
 #define CAN_TASK_STACK_SIZE 4096
 #define CAN_TASK_PRIORITY 5
 #define CAN_TASK_CORE 1
-#define CAN_TASK_DEFAULT_FREQ 10000
+#define CAN_TASK_DEFAULT_FREQ 1000
 
 static TaskHandle_t can_task_handle = NULL;
 static SemaphoreHandle_t can_task_freq_mutex = NULL, can_task_rx_counter_mutex = NULL;
@@ -64,7 +64,7 @@ void change_can_task_period(uint32_t period_ms) {
     if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
         can_task_freq = (TickType_t) period_ms;
         xSemaphoreGive(can_task_freq_mutex);
-        ESP_LOGI(TAG, "CAN task period changed to: %d", period_ms);
+        // ESP_LOGI(TAG, "CAN task period changed to: %d", period_ms);
     }
 }
 
@@ -72,7 +72,7 @@ void can_task_add_rx_counter(void) {
     if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
         can_task_rx_counter++;
         xSemaphoreGive(can_task_freq_mutex);
-        ESP_LOGI(TAG, "CAN RX counter++: %d", can_task_rx_counter);
+        // ESP_LOGI(TAG, "CAN RX counter++: %d", can_task_rx_counter);
     }
 }
 
@@ -80,7 +80,7 @@ void can_task_sub_rx_counter(void) {
     if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
         can_task_rx_counter--;
         xSemaphoreGive(can_task_freq_mutex);
-        ESP_LOGI(TAG, "CAN RX counter--: %d", can_task_rx_counter);
+        // ESP_LOGI(TAG, "CAN RX counter--: %d", can_task_rx_counter);
     }
 }
 
@@ -106,10 +106,58 @@ void can_task(void* pvParameters) {
             if (twai_receive(&rx_message, pdMS_TO_TICKS(100)) == ESP_OK) {
                 // Parse the received message
                 switch (rx_message.identifier) {
+                    case CAN_HX_RCK_RX_STATUS: {
+                        ESP_LOGI(TAG, "Received HX RCK status");
+                        can_task_sub_rx_counter();
+                        parse_can_hx_rck_status(rx_message);
+                        break;
+                    }
+                    case CAN_HX_RCK_RX_DATA: {
+                        ESP_LOGI(TAG, "Received HX RCK data");
+                        can_task_sub_rx_counter();
+                        parse_can_hx_rck_data(rx_message);
+                        break;
+                    }
+                    case CAN_HX_OXI_RX_STATUS: {
+                        ESP_LOGI(TAG, "Received HX OXI status");
+                        can_task_sub_rx_counter();
+                        parse_can_hx_oxi_status(rx_message);
+                        break;
+                    }
                     case CAN_HX_OXI_RX_DATA: {
                         ESP_LOGI(TAG, "Received HX OXI data");
                         can_task_sub_rx_counter();
                         parse_can_hx_oxi_data(rx_message);
+                        break;
+                    }
+                    case CAN_FAC_RX_STATUS: {
+                        ESP_LOGI(TAG, "Received FAC status");
+                        can_task_sub_rx_counter();
+                        parse_can_fac_status(rx_message);
+                        break;
+                    }
+                    case CAN_FLC_RX_STATUS: {
+                        ESP_LOGI(TAG, "Received FLC status");
+                        can_task_sub_rx_counter();
+                        parse_can_flc_status(rx_message);
+                        break;
+                    }
+                    case CAN_FLC_RX_DATA: {
+                        ESP_LOGI(TAG, "Received FLC data");
+                        can_task_sub_rx_counter();
+                        parse_can_flc_data(rx_message);
+                        break;
+                    }
+                    case CAN_TERMO_RX_STATUS: {
+                        ESP_LOGI(TAG, "Received TERMO status");
+                        can_task_sub_rx_counter();
+                        parse_can_termo_status(rx_message);
+                        break;
+                    }
+                    case CAN_TERMO_RX_DATA: {
+                        ESP_LOGI(TAG, "Received TERMO data");
+                        can_task_sub_rx_counter();
+                        parse_can_termo_data(rx_message);
                         break;
                     }
                     default: {
