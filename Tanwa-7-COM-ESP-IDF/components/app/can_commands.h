@@ -100,198 +100,220 @@ typedef enum {
 
 // HX Rocket submodule
 
-const twai_message_t can_hx_rck_tx_get_status = {
-    .identifier = CAN_HX_RCK_TX_GET_STATUS,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_RCK_GET_STATUS() {           \
+    .identifier = CAN_HX_RCK_TX_GET_STATUS, \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_rck_tx_get_data = {
-    .identifier = CAN_HX_RCK_TX_GET_DATA,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_RCK_GET_DATA() {             \
+    .identifier = CAN_HX_RCK_TX_GET_DATA,   \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_rck_tx_tare = {
-    .identifier = CAN_HX_RCK_TX_TARE,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_RCK_TARE() {                 \
+    .identifier = CAN_HX_RCK_TX_TARE,       \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_rck_tx_calibrate = {
-    .identifier = CAN_HX_RCK_TX_CALIBRATE,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_RCK_CALIBRATE() {            \
+    .identifier = CAN_HX_RCK_TX_CALIBRATE,  \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_rck_tx_set_calibration_factor = {
-    .identifier = CAN_HX_RCK_TX_SET_CALIBRATION_FACTOR,
-    .data_length_code = 4,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_RCK_SET_CALIBRATION_FACTOR() {           \
+    .identifier = CAN_HX_RCK_TX_SET_CALIBRATION_FACTOR, \
+    .data_length_code = 4,                              \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}                    \
+}
 
-const twai_message_t can_hx_rck_tx_set_offset = {
-    .identifier = CAN_HX_RCK_TX_SET_OFFSET,
-    .data_length_code = 4,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_RCK_SET_OFFSET() {           \
+    .identifier = CAN_HX_RCK_TX_SET_OFFSET, \
+    .data_length_code = 4,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_rck_tx_soft_reset = {
-    .identifier = CAN_HX_RCK_TX_SOFT_RESET,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_RCK_SOFT_RESET() {           \
+    .identifier = CAN_HX_RCK_TX_SOFT_RESET, \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
 // HX Oxidizer submodule
 
-const twai_message_t can_hx_oxi_tx_get_status = {
-    .identifier = CAN_HX_OXI_TX_GET_STATUS,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_OXI_GET_STATUS() {           \
+    .identifier = CAN_HX_OXI_TX_GET_STATUS, \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_oxi_tx_get_data = {
-    .identifier = CAN_HX_OXI_TX_GET_DATA,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_OXI_GET_DATA() {             \
+    .identifier = CAN_HX_OXI_TX_GET_DATA,   \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_oxi_tx_tare = {
-    .identifier = CAN_HX_OXI_TX_TARE,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_OXI_TARE() {                 \
+    .identifier = CAN_HX_OXI_TX_TARE,       \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_oxi_tx_calibrate = {
-    .identifier = CAN_HX_OXI_TX_CALIBRATE,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_OXI_CALIBRATE() {            \
+    .identifier = CAN_HX_OXI_TX_CALIBRATE,  \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_oxi_tx_set_calibration_factor = {
-    .identifier = CAN_HX_OXI_TX_SET_CALIBRATION_FACTOR,
-    .data_length_code = 4,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_OXI_SET_CALIBRATION_FACTOR() {           \
+    .identifier = CAN_HX_OXI_TX_SET_CALIBRATION_FACTOR, \
+    .data_length_code = 4,                              \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}                    \
+}
 
-const twai_message_t can_hx_oxi_tx_set_offset = {
-    .identifier = CAN_HX_OXI_TX_SET_OFFSET,
-    .data_length_code = 4,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_OXI_SET_OFFSET() {           \
+    .identifier = CAN_HX_OXI_TX_SET_OFFSET, \
+    .data_length_code = 4,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
-const twai_message_t can_hx_oxi_tx_soft_reset = {
-    .identifier = CAN_HX_OXI_TX_SOFT_RESET,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_HX_OXI_SOFT_RESET() {           \
+    .identifier = CAN_HX_OXI_TX_SOFT_RESET, \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
 
 // FAC submodule
 
-const twai_message_t can_fac_tx_get_status = {
-    .identifier = CAN_FAC_TX_GET_STATUS,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_FAC_GET_STATUS() {           \
+    .identifier = CAN_FAC_TX_GET_STATUS, \
+    .data_length_code = 0,               \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}     \
+}
 
-const twai_message_t can_fac_tx_qd_pull = {
-    .identifier = CAN_FAC_TX_QD_PULL,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_FAC_QD_PULL() {               \
+    .identifier = CAN_FAC_TX_QD_PULL,     \
+    .data_length_code = 0,                \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}      \
+}
 
-const twai_message_t can_fac_tx_qd_stop = {
-    .identifier = CAN_FAC_TX_QD_STOP,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_FAC_QD_STOP() {               \
+    .identifier = CAN_FAC_TX_QD_STOP,     \
+    .data_length_code = 0,                \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}      \
+}
 
-const twai_message_t can_fac_tx_qd_push = {
-    .identifier = CAN_FAC_TX_QD_PUSH,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_FAC_QD_PUSH() {               \
+    .identifier = CAN_FAC_TX_QD_PUSH,     \
+    .data_length_code = 0,                \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}      \
+}
 
-const twai_message_t can_fac_tx_soft_reset = {
-    .identifier = CAN_FAC_TX_SOFT_RESET,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_FAC_SOFT_RESET() {            \
+    .identifier = CAN_FAC_TX_SOFT_RESET,  \
+    .data_length_code = 0,                \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}      \
+}
 
 // FLC submodule
 
-const twai_message_t can_flc_tx_get_status = {
-    .identifier = CAN_FLC_TX_GET_STATUS,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_FLC_GET_STATUS() {           \
+    .identifier = CAN_FLC_TX_GET_STATUS, \
+    .data_length_code = 0,               \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}     \
+}
 
-const twai_message_t can_flc_tx_get_data = {
-    .identifier = CAN_FLC_TX_GET_DATA,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_FLC_GET_DATA() {             \
+    .identifier = CAN_FLC_TX_GET_DATA,   \
+    .data_length_code = 0,               \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}     \
+}
 
-const twai_message_t can_flc_tx_soft_reset = {
-    .identifier = CAN_FLC_TX_SOFT_RESET,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_FLC_SOFT_RESET() {           \
+    .identifier = CAN_FLC_TX_SOFT_RESET, \
+    .data_length_code = 0,               \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}     \
+}
 
 // TERMO submodule
 
-const twai_message_t can_termo_tx_get_status = {
-    .identifier = CAN_TERMO_TX_GET_STATUS,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_TERMO_GET_STATUS() {           \
+    .identifier = CAN_TERMO_TX_GET_STATUS, \
+    .data_length_code = 0,                 \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}       \
+}
 
-const twai_message_t can_termo_tx_get_data = {
-    .identifier = CAN_TERMO_TX_GET_DATA,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_TERMO_GET_DATA() {             \
+    .identifier = CAN_TERMO_TX_GET_DATA,   \
+    .data_length_code = 0,                 \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}       \
+}
 
-const twai_message_t can_termo_tx_heat_start = {
-    .identifier = CAN_TERMO_TX_HEAT_START,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_TERMO_HEAT_START() {           \
+    .identifier = CAN_TERMO_TX_HEAT_START, \
+    .data_length_code = 0,                 \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}       \
+}
 
-const twai_message_t can_termo_tx_heat_stop = {
-    .identifier = CAN_TERMO_TX_HEAT_STOP,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_TERMO_HEAT_STOP() {            \
+    .identifier = CAN_TERMO_TX_HEAT_STOP,  \
+    .data_length_code = 0,                 \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}       \
+}
 
-const twai_message_t can_termo_tx_cool_start = {
-    .identifier = CAN_TERMO_TX_COOL_START,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_TERMO_COOL_START() {           \
+    .identifier = CAN_TERMO_TX_COOL_START, \
+    .data_length_code = 0,                 \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}       \
+}
 
-const twai_message_t can_termo_tx_cool_stop = {
-    .identifier = CAN_TERMO_TX_COOL_STOP,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_TERMO_COOL_STOP() {            \
+    .identifier = CAN_TERMO_TX_COOL_STOP,  \
+    .data_length_code = 0,                 \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}       \
+}
 
-const twai_message_t can_termo_tx_set_max_pressure = {
-    .identifier = CAN_TERMO_TX_SET_MAX_PRESSURE,
-    .data_length_code = 4,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_TERMO_SET_MAX_PRESSURE() {           \
+    .identifier = CAN_TERMO_TX_SET_MAX_PRESSURE, \
+    .data_length_code = 4,                       \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}             \
+}
 
-const twai_message_t can_termo_tx_set_min_pressure = {
-    .identifier = CAN_TERMO_TX_SET_MIN_PRESSURE,
-    .data_length_code = 4,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_TERMO_SET_MIN_PRESSURE() {           \
+    .identifier = CAN_TERMO_TX_SET_MIN_PRESSURE, \
+    .data_length_code = 4,                       \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}             \
+}
 
-const twai_message_t can_termo_tx_soft_reset = {
-    .identifier = CAN_TERMO_TX_SOFT_RESET,
-    .data_length_code = 0,
-    .data = {0, 0, 0, 0, 0, 0, 0, 0}
-};
+#define CAN_TERMO_SOFT_RESET() {            \
+    .identifier = CAN_TERMO_TX_SOFT_RESET,  \
+    .data_length_code = 0,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
+
+///===-----------------------------------------------------------------------------------------===//
+// CAN message parsing
+///===-----------------------------------------------------------------------------------------===//
+
+void parse_can_hx_rck_status(twai_message_t rx_message);
+
+void parse_can_hx_rck_data(twai_message_t rx_message);
+
+void parse_can_hx_oxi_status(twai_message_t rx_message);
+
+void parse_can_hx_oxi_data(twai_message_t rx_message);
+
+void parse_can_fac_status(twai_message_t rx_message);
+
+void parse_can_flc_status(twai_message_t rx_message);
+
+void parse_can_flc_data(twai_message_t rx_message);
+
+void parse_can_termo_status(twai_message_t rx_message);
+
+void parse_can_termo_data(twai_message_t rx_message);
 
 #endif /* PWRINSPACE_TANWA_CAN_COMMANDS_H_ */

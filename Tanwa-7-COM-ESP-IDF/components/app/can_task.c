@@ -18,6 +18,7 @@
 #include "esp_log.h"
 
 #include "mcu_twai_config.h"
+
 #include "can_commands.h"
 
 #define TAG "CAN_TASK"
@@ -25,18 +26,30 @@
 #define CAN_TASK_STACK_SIZE 4096
 #define CAN_TASK_PRIORITY 5
 #define CAN_TASK_CORE 1
+#define CAN_TASK_DEFAULT_FREQ 10000
 
 static TaskHandle_t can_task_handle = NULL;
-static SemaphoreHandle_t can_task_freq_mutex = NULL;
-static volatile TickType_t can_task_freq = 10000;
-static volatile uint32_t can_task_counter = 0;
+static SemaphoreHandle_t can_task_freq_mutex = NULL, can_task_rx_counter_mutex = NULL;
+static volatile TickType_t can_task_freq = CAN_TASK_DEFAULT_FREQ;
+static volatile uint32_t can_task_rx_counter = 0;
+
+bool is_rx_counter_zero(void) {
+    bool result = false;
+    if (xSemaphoreTake(can_task_rx_counter_mutex, (TickType_t) 10) == pdTRUE) {
+        result = (can_task_rx_counter == 0);
+        xSemaphoreGive(can_task_rx_counter_mutex);
+    }
+    return result;
+}
 
 void run_can_task(void) {
     if (twai_start() != ESP_OK) {
       ESP_LOGE(TAG, "TWAI start error");
     } else {
-    xTaskCreatePinnedToCore(can_task, "can_task", CAN_TASK_STACK_SIZE, NULL, CAN_TASK_PRIORITY, 
-                            &can_task_handle, CAN_TASK_CORE);
+        can_task_freq_mutex = xSemaphoreCreateMutex();
+        can_task_rx_counter_mutex = xSemaphoreCreateMutex();
+        xTaskCreatePinnedToCore(can_task, "can_task", CAN_TASK_STACK_SIZE, NULL, CAN_TASK_PRIORITY,
+                                &can_task_handle, CAN_TASK_CORE);
     }
 }
 
@@ -51,11 +64,24 @@ void change_can_task_period(uint32_t period_ms) {
     if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
         can_task_freq = (TickType_t) period_ms;
         xSemaphoreGive(can_task_freq_mutex);
+        ESP_LOGI(TAG, "CAN task period changed to: %d", period_ms);
     }
 }
 
-void can_task_add_counter(void) {
-    can_task_counter++;
+void can_task_add_rx_counter(void) {
+    if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
+        can_task_rx_counter++;
+        xSemaphoreGive(can_task_freq_mutex);
+        ESP_LOGI(TAG, "CAN RX counter++: %d", can_task_rx_counter);
+    }
+}
+
+void can_task_sub_rx_counter(void) {
+    if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
+        can_task_rx_counter--;
+        xSemaphoreGive(can_task_freq_mutex);
+        ESP_LOGI(TAG, "CAN RX counter--: %d", can_task_rx_counter);
+    }
 }
 
 void can_task(void* pvParameters) {
@@ -75,25 +101,28 @@ void can_task(void* pvParameters) {
 
             vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(local_freq));
 
-            // If there are more than 1 messages in the queue, shorten the delay
-            // twai_status_info_t status_info;
-            // twai_get_status_info(&status_info);
-            // if (status_info.msgs_to_rx > 1) {
-            //     change_can_task_period(100);
-            // }
-
             // Receive the CAN message from the queue
             twai_message_t rx_message;
             if (twai_receive(&rx_message, pdMS_TO_TICKS(100)) == ESP_OK) {
-                ESP_LOGI(TAG, "Received message with ID: %d", rx_message.identifier);
-
                 // Parse the received message
                 switch (rx_message.identifier) {
+                    case CAN_HX_OXI_RX_DATA: {
+                        ESP_LOGI(TAG, "Received HX OXI data");
+                        can_task_sub_rx_counter();
+                        parse_can_hx_oxi_data(rx_message);
+                        break;
+                    }
                     default: {
                         ESP_LOGW(TAG, "Unknown message ID: %d", rx_message.identifier);
+                        can_task_sub_rx_counter();
                         break;
                     }
                 }
+            }
+
+            // If counter is zero -> change the period back to the default
+            if (is_rx_counter_zero()) {
+                change_can_task_period(CAN_TASK_DEFAULT_FREQ);
             }
         }
     }

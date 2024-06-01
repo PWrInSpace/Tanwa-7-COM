@@ -530,6 +530,14 @@ static int get_com_board_data(int argc, char **argv) {
     return 0;
 }
 
+static int get_hx_oxi_data(int argc, char **argv) {
+    can_hx_oxidizer_data_t hx_oxi_data = tanwa_data_read_can_hx_oxidizer_data();
+    CONSOLE_WRITE("HX OXI Data:");
+    CONSOLE_WRITE("Weight: %.2f", hx_oxi_data.weight);
+    CONSOLE_WRITE("Weight Raw: %d", hx_oxi_data.weight_raw);
+    return 0;
+}
+
 static esp_console_cmd_t cmd[] = {
     // system commands
     {"reset-dev", "restart device", NULL, reset_device, NULL},
@@ -540,8 +548,6 @@ static esp_console_cmd_t cmd[] = {
     {"state-change-prev", "change state to previous", NULL, change_to_previous_state, NULL},
     {"state-change-force", "force change state", NULL, force_change_state, NULL},
     {"state-get", "get current state", NULL, get_state, NULL},
-    // measument task commands
-    {"measure-period", "change measurement period", "period", change_measure_period, NULL},
     // measurements commands
     {"temp-read", "read temperature", NULL, read_temperature, NULL},
     {"pressure-read", "read pressure", NULL, read_pressure, NULL},
@@ -556,9 +562,12 @@ static esp_console_cmd_t cmd[] = {
     {"igniter-fire", "fire igniter", "1|2|A", fire_igniter, NULL},
     {"igniter-reset", "reset igniter", "1|2|A", reset_igniter, NULL},
     {"igniter-continuity", "check igniters continuity", NULL, check_igniter_continuity, NULL},
+    // measument task commands
+    {"measure-period", "change measurement period", "period", change_measure_period, NULL},
     // tanwa data commands
     // {"tanwa-data", "get tanwa data", NULL, get_tanwa_data, NULL},
     {"com-data", "get com data", NULL, get_com_board_data, NULL},
+    {"oxi-data", "get hx oxi data", NULL, get_hx_oxi_data, NULL},
 };
 
 esp_err_t console_config_init() {

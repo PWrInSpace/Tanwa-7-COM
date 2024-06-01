@@ -24,6 +24,7 @@
 
 #include "console_config.h"
 
+#include "can_task.h"
 #include "measure_task.h"
 
 #define TAG "APP_INIT_TASK"
@@ -113,6 +114,7 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "Console initialized");
   }
 
+  run_can_task();
   run_measure_task();
 
   // xTaskCreatePinnedToCore(user_interface_task, "user_interface_task", 4096,

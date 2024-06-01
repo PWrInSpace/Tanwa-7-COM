@@ -14,7 +14,6 @@
 #define PWRINSPACE_TANWA_CAN_TASK_H_
 
 #include <stdint.h>
-#include <stdbool.h>
 
 /**
  * @brief Function for starting the can bus task.
@@ -35,7 +34,12 @@ void change_can_task_period(uint32_t period_ms);
 /**
  * @brief Function for add a message to the counter.
  */
-void can_task_add_counter(void);
+void can_task_add_rx_counter(void);
+
+/**
+ * @brief Function for subtract a message from the counter.
+ */
+void can_task_sub_rx_counter(void);
 
 /**
  * @brief Task for receiving and parsing the CAN BUS messages.

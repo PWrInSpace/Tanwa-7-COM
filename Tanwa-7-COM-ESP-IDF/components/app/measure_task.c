@@ -17,10 +17,10 @@
 
 #include "esp_log.h"
 
+#include "can_task.h"
+#include "can_commands.h"
 #include "TANWA_config.h"
 #include "TANWA_data.h"
-#include "can_commands.h"
-#include "can_task.h"
 
 #define TAG "MEASURE_TASK"
 
@@ -101,14 +101,18 @@ void measure_task(void* pvParameters) {
             tanwa_data_update_com_data(&com_data);
 
             // Oxidizer weight measurement
-            if (twai_transmit(&can_hx_rck_tx_get_data, pdMS_TO_TICKS(100)) == ESP_OK) {
-                // can_task_add_counter();
-                change_can_task_period(100);
+            const twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
+            if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+                can_task_add_rx_counter();
+                change_can_task_period(100U);
             }
 
             // Rocket weight measurement
-            // CAN bus communication
-            // ToDo
+            // const twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
+            // if (twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            //     can_task_add_rx_counter();
+            //     change_can_task_period(100U);
+            // }
 
             // Fetch data from CAN bus
             // ToDo
