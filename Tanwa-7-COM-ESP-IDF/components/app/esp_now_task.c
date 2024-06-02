@@ -19,6 +19,8 @@
 #include "esp_log.h"
 
 #include "now.h"
+#include "now_commands.h"
+#include "state_machine_config.h"
 
 #define TAG "ESP_NOW_TASK"
 
@@ -72,7 +74,31 @@ void esp_now_task(void* pvParameters) {
             if (xQueueReceive(obc_now_rx_queue, (void*)&obc_command, (TickType_t) 10) == pdTRUE) {
                 switch (obc_command.commandNum) {
                     case NOW_STATE_CHANGE: {
-                        ESP_LOGI(TAG, "ESP-NOW | State change command received");
+                        state_t state = (state_t) obc_command.commandArg;
+                        char state_text[20];
+                        get_state_text(state, state_text);
+                        ESP_LOGI(TAG, "ESP-NOW | State change | %s", state_text);
+                        break;
+                    }
+                    case NOW_ABORT: {
+                        ESP_LOGI(TAG, "ESP-NOW | Abort");
+                        break;
+                    }
+                    case NOW_HOLD_IN: {
+                        ESP_LOGI(TAG, "ESP-NOW | Hold in");
+                        break;
+                    }
+                    case NOW_HOLD_OUT: {
+                        ESP_LOGI(TAG, "ESP-NOW | Hold out");
+                        if (state_machine_get_current_state() == HOLD) {
+                            ESP_LOGW(TAG, "SM | Not in HOLD state");
+                            break;
+                        } else {
+                            state_machine_status_t sm_status = state_machine_change_to_previous_state(true);
+                            if (sm_status != STATE_MACHINE_OK) {
+                                ESP_LOGE(TAG, "SM | State change error | %d", sm_status);
+                            }
+                        }
                         break;
                     }
                     default: {

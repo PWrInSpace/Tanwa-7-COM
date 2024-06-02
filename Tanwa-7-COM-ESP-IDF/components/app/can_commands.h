@@ -120,7 +120,7 @@ typedef enum {
 
 #define CAN_HX_RCK_CALIBRATE() {            \
     .identifier = CAN_HX_RCK_TX_CALIBRATE,  \
-    .data_length_code = 0,                  \
+    .data_length_code = 4,                  \
     .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
 }
 
@@ -164,7 +164,7 @@ typedef enum {
 
 #define CAN_HX_OXI_CALIBRATE() {            \
     .identifier = CAN_HX_OXI_TX_CALIBRATE,  \
-    .data_length_code = 0,                  \
+    .data_length_code = 4,                  \
     .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
 }
 

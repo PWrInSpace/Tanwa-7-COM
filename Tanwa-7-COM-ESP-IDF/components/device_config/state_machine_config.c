@@ -112,3 +112,50 @@ bool initialize_state_machine(void) {
     status |= state_machine_run(&task_cfg);
     return status == STATE_MACHINE_OK ? true : false;
 }
+
+void get_state_text(state_t state, char *text) {
+    switch (state) {
+        case INIT:
+            strcpy(text, "INIT");
+            break;
+        case IDLE:
+            strcpy(text, "IDLE");
+            break;
+        case RECOVERY_ARM:
+            strcpy(text, "RECOVERY_ARM");
+            break;
+        case FUELING:
+            strcpy(text, "FUELING");
+            break;
+        case ARMED_TO_LAUNCH:
+            strcpy(text, "ARMED_TO_LAUNCH");
+            break;
+        case RDY_TO_LAUNCH:
+            strcpy(text, "RDY_TO_LAUNCH");
+            break;
+        case COUNTDOWN:
+            strcpy(text, "COUNTDOWN");
+            break;
+        case FLIGHT:
+            strcpy(text, "FLIGHT");
+            break;
+        case FIRST_STAGE_RECOVERY:
+            strcpy(text, "FIRST_STAGE_RECOVERY");
+            break;
+        case SECOND_STAGE_RECOVERY:
+            strcpy(text, "SECOND_STAGE_RECOVERY");
+            break;
+        case ON_GROUND:
+            strcpy(text, "ON_GROUND");
+            break;
+        case HOLD:
+            strcpy(text, "HOLD");
+            break;
+        case ABORT:
+            strcpy(text, "ABORT");
+            break;
+        default:
+            strcpy(text, "UNKNOWN");
+            break;
+    }
+}

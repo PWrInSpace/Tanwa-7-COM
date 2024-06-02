@@ -41,7 +41,7 @@ typedef enum {
     LED_STATE_DISPLAY_STATE_ON_GROUND = 10,
     LED_STATE_DISPLAY_STATE_HOLD = 11,
     LED_STATE_DISPLAY_STATE_ABORT = 12
-} led_state_display_states_t;
+} led_state_display_state_t;
 
 typedef enum {
     LED_STATE_DISPLAY_PORT_LED_1 = MCP23018_PORT_B,
@@ -83,11 +83,11 @@ typedef enum {
 
 typedef struct {
     mcp23018_struct_t *mcp23018;
-    led_state_display_states_t state;
+    led_state_display_state_t state;
 } led_state_display_struct_t;
 
 led_state_display_status_t led_state_display_clear(led_state_display_struct_t *led_state_display);
 
-led_state_display_status_t led_state_display_state_update(led_state_display_struct_t *led_state_display, led_state_display_states_t state);
+led_state_display_status_t led_state_display_state_update(led_state_display_struct_t *led_state_display, led_state_display_state_t state);
 
 #endif  /* PWRINSPACE_LED_STATE_DISPLAY_H_ */

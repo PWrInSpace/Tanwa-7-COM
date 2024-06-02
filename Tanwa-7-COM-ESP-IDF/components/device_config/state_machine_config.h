@@ -25,7 +25,7 @@ typedef enum {
     ON_GROUND,
     HOLD,
     ABORT,
-} states_t;
+} state_t;
 
 /**
  * @brief Initialize state machine task
@@ -34,5 +34,12 @@ typedef enum {
  * @return false :C
  */
 bool initialize_state_machine(void);
+
+/**
+ * @brief Provide state text from number
+ * @param state state number
+ * @param text pointer to char array
+ */
+void get_state_text(state_t state, char *text);
 
 #endif /* PWRINSPACE_STATE_MACHINE_CONFIG_H_*/

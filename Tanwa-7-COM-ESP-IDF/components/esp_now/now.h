@@ -14,7 +14,6 @@
 #include "esp_crc.h"
 
 #include "now_structs.h"
-#include "now_commands.h"
 
 extern const uint8_t adress_obc[];
 extern QueueHandle_t obc_now_rx_queue;

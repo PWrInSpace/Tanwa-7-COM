@@ -32,23 +32,6 @@ typedef enum {
 } Periods;
 // IMPORTANT END!
 
-typedef enum {
-  INIT = 0,
-  IDLE,
-  RECOVERY_ARM,
-  FUELING,
-  ARMED_TO_LAUNCH,
-  RDY_TO_LAUNCH,
-  COUNTDOWN,
-  FLIGHT,
-  FIRST_STAGE_RECOVERY,
-  SECOND_STAGE_RECOVERY,
-  ON_GROUND,
-  HOLD,
-  ABORT,
-  NO_CHANGE = 0xff //DO NOT USE, ONLY FOR REQUEST PURPOSE
-} States;
-
 typedef struct DataToObc {
     uint8_t tanWaState;
     uint16_t pressureSensor;

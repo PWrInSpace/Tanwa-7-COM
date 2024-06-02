@@ -29,7 +29,7 @@ led_state_display_status_t led_state_display_clear(led_state_display_struct_t *l
     return LED_STATE_DISPLAY_OK;
 }
 
-led_state_display_status_t led_state_display_state_update(led_state_display_struct_t *led_state_display, led_state_display_states_t state) {
+led_state_display_status_t led_state_display_state_update(led_state_display_struct_t *led_state_display, led_state_display_state_t state) {
     if (led_state_display == NULL) {
         return LED_STATE_DISPLAY_FAIL;
     }
