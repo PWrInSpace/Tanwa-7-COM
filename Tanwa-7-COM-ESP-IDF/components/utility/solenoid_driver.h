@@ -87,4 +87,6 @@ solenoid_driver_status_t solenoid_driver_valve_close(solenoid_driver_struct_t *s
 
 solenoid_driver_status_t solenoid_driver_valve_toggle(solenoid_driver_struct_t *solenoid_driver, solenoid_driver_valve_t valve);
 
+solenoid_driver_status_t solenoid_driver_valve_get_state(solenoid_driver_struct_t *solenoid_driver, solenoid_driver_valve_t valve, solenoid_driver_valve_state_t *state);
+
 #endif /* PWRINSPACE_SOLENOID_VALVE_DRIVER_H_ */

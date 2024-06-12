@@ -14,6 +14,8 @@
 
 #include <stdint.h>
 
+#include "now_structs.h"
+
 /**
  * @brief Function for starting the measurement task.
  */
@@ -29,6 +31,11 @@ void stop_measure_task(void);
  * @param period Period of the task in ms.
  */
 void change_measure_task_period(uint32_t period_ms);
+
+/**
+ * @brief Function for copying the data from the TANWA to the now struct.
+ */
+void copy_tanwa_data_to_now_struct(DataToObc *now_struct);
 
 /**
  * @brief Task for measuring the temperature and pressure.

@@ -12,24 +12,26 @@ solenoid_driver_status_t solenoid_driver_init(solenoid_driver_struct_t *solenoid
         return SOLENOID_DRIVER_FAIL;
     }
 
-    // FILL VALVE
-    pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_VALVE_GPIO_PIN_FILL);
-    pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_VALVE_GPIO_PIN_FILL);
-    // FILL LED
-    pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_LED_GPIO_PIN_FILL);
-    pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_LED_GPIO_PIN_FILL);
-    // DEPR VALVE
-    pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_VALVE_GPIO_PIN_DEPR);
-    pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_VALVE_GPIO_PIN_DEPR);
-    // DEPR LED
-    pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_LED_GPIO_PIN_DEPR);
-    pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_LED_GPIO_PIN_DEPR);
-    // ADD VALVE
-    pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_VALVE_GPIO_PIN_ADD);
-    pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_VALVE_GPIO_PIN_ADD);
-    // ADD LED
-    pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_LED_GPIO_PIN_ADD);
-    pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_LED_GPIO_PIN_ADD);
+    // // FILL VALVE
+    // pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_VALVE_GPIO_PIN_FILL);
+    // pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_VALVE_GPIO_PIN_FILL);
+    // // FILL LED
+    // pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_LED_GPIO_PIN_FILL);
+    // pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_LED_GPIO_PIN_FILL);
+    // // DEPR VALVE
+    // pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_VALVE_GPIO_PIN_DEPR);
+    // pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_VALVE_GPIO_PIN_DEPR);
+    // // DEPR LED
+    // pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_LED_GPIO_PIN_DEPR);
+    // pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_LED_GPIO_PIN_DEPR);
+    // // ADD VALVE
+    // pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_VALVE_GPIO_PIN_ADD);
+    // pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_VALVE_GPIO_PIN_ADD);
+    // // ADD LED
+    // pca9574_set_mode_pin(solenoid_driver->pca9574, PCA9574_OUTPUT, SOLENOID_DRIVER_LED_GPIO_PIN_ADD);
+    // pca9574_set_level_pin(solenoid_driver->pca9574, PCA9574_LOW, SOLENOID_DRIVER_LED_GPIO_PIN_ADD);
+
+    pca9574_set_mode(solenoid_driver->pca9574, PCA9574_OUTPUT);
 
     return SOLENOID_DRIVER_OK;
 }
@@ -76,6 +78,20 @@ solenoid_driver_status_t solenoid_driver_valve_toggle(solenoid_driver_struct_t *
     } else {
         solenoid_driver_valve_open(solenoid_driver, valve);
     }
+
+    return SOLENOID_DRIVER_OK;
+}
+
+solenoid_driver_status_t solenoid_driver_valve_get_state(solenoid_driver_struct_t *solenoid_driver, solenoid_driver_valve_t valve, solenoid_driver_valve_state_t *state) {
+    if (solenoid_driver == NULL) {
+        return SOLENOID_DRIVER_FAIL;
+    }
+
+    if (state == NULL) {
+        return SOLENOID_DRIVER_FAIL;
+    }
+
+    *state = solenoid_driver->valves[valve].state;
 
     return SOLENOID_DRIVER_OK;
 }

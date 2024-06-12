@@ -32,8 +32,8 @@ typedef enum {
 } igniter_pin_state_t;
 
 typedef enum {
-    IGNITER_CONTINUITY_OK = 0,
-    IGNITER_CONTINUITY_FAIL,
+    IGNITER_CONTINUITY_FAIL = 0,
+    IGNITER_CONTINUITY_OK,
 } igniter_continuity_t;
 
 typedef enum {

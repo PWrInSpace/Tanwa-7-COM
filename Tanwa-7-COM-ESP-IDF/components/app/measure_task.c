@@ -17,6 +17,7 @@
 
 #include "esp_log.h"
 
+#include "now.h"
 #include "can_task.h"
 #include "can_commands.h"
 #include "TANWA_config.h"
@@ -52,12 +53,45 @@ void change_measure_task_period(uint32_t period_ms) {
     }
 }
 
+void copy_tanwa_data_to_now_struct(DataToObc *now_struct){
+    // Get data from shared memory
+    tanwa_data_t tanwa_data = tanwa_data_read();
+    // Copy data to now struct
+    now_struct->tanWaState = tanwa_data.state;
+    now_struct->pressureSensor = (uint16_t) tanwa_data.com_data.pressure_1;
+    now_struct->solenoid_fill = tanwa_data.com_data.solenoid_state_fill;
+    now_struct->solenoid_depr = tanwa_data.com_data.solenoid_state_depr;
+    now_struct->abortButton = 0; // TODO: Implement abort button state
+    now_struct->igniterContinouity_1 = tanwa_data.com_data.igniter_cont_1;
+    now_struct->igniterContinouity_2 = tanwa_data.com_data.igniter_cont_2;
+    now_struct->hxRequest_RCK = 0; // TODO: Implement
+    now_struct->hxRequest_TANK = 0; // TODO: Implement
+    now_struct->vbat = tanwa_data.com_data.vbat;
+    now_struct->motorState_1 = 0; // TODO: Implement
+    now_struct->motorState_2 = 0; // TODO: Implement
+    now_struct->motorState_3 = 0; // TODO: Implement
+    now_struct->motorState_4 = 0; // TODO: Implement
+    now_struct->rocketWeight_blink = 0; // TODO: Implement
+    now_struct->rocketWeight_temp = tanwa_data.can_hx_rocket_status.temperature;
+    now_struct->tankWeight_blink = 0; // TODO: Implement
+    now_struct->tankWeight_temp = tanwa_data.can_hx_oxidizer_status.temperature;
+    now_struct->rocketWeight_val = tanwa_data.can_hx_rocket_data.weight;
+    now_struct->tankWeight_val = tanwa_data.can_hx_oxidizer_data.weight;
+    now_struct->rocketWeightRaw_val = tanwa_data.can_hx_rocket_data.weight_raw;
+    now_struct->tankWeightRaw_val = tanwa_data.can_hx_oxidizer_data.weight_raw;
+    now_struct->interface_rck = 0; // TODO: Implement
+    now_struct->interface_tank = 0; // TODO: Implement
+    now_struct->interface_mcu = 0; // TODO: Implement
+}
+
 void measure_task(void* pvParameters) {
     ESP_LOGI(TAG, "### Measurement task started ###");
 
     TickType_t last_wake_time;
     TickType_t local_freq;
 
+    solenoid_driver_valve_state_t sol_fill, sol_depr;
+    igniter_continuity_t ign_cont_1, ign_cont_2;
     float vbat, temp[2], pressure[4];
 
     // Initialise the xLastWakeTime variable with the current time.
@@ -78,13 +112,11 @@ void measure_task(void* pvParameters) {
             // ESP_LOGI(TAG, "Battery voltage: %.2f", vbat);
             com_data.vbat = vbat;
 
-            // Measure temperature
-            for (int i = 0; i < 2; ++i) {
-                tmp1075_get_temp_celsius(&(TANWA_hardware.tmp1075[i]), &temp[i]);
-            }
-            // ESP_LOGI(TAG, "Temperature sensors 1: %.2f, 2: %.2f", temp[0], temp[1]);
-            com_data.temperature_1 = temp[0];
-            com_data.temperature_2 = temp[1];
+            // Check solenoid states
+            solenoid_driver_valve_get_state(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FILL, &sol_fill);
+            solenoid_driver_valve_get_state(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR, &sol_depr);
+            com_data.solenoid_state_fill = sol_fill;
+            com_data.solenoid_state_depr = sol_depr;
 
             // Measure pressure
             pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_1, &pressure[0]);
@@ -97,12 +129,40 @@ void measure_task(void* pvParameters) {
             com_data.pressure_3 = pressure[2];
             com_data.pressure_4 = pressure[3];
 
+            // Measure temperature
+            for (int i = 0; i < 2; ++i) {
+                tmp1075_get_temp_celsius(&(TANWA_hardware.tmp1075[i]), &temp[i]);
+            }
+            // ESP_LOGI(TAG, "Temperature sensors 1: %.2f, 2: %.2f", temp[0], temp[1]);
+            com_data.temperature_1 = temp[0];
+            com_data.temperature_2 = temp[1];
+
+            // Check igniter continuity
+            igniter_check_continuity(&(TANWA_hardware.igniter[0]), &ign_cont_1);
+            igniter_check_continuity(&(TANWA_hardware.igniter[1]), &ign_cont_2);
+            com_data.igniter_cont_1 = (bool) ign_cont_1;
+            com_data.igniter_cont_2 = (bool) ign_cont_2;
+
             // Update COM data
             tanwa_data_update_com_data(&com_data);
+
+            // Oxidizer board status
+            const twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
+            if (twai_transmit(&hx_oxi_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
+                can_task_add_rx_counter();
+                change_can_task_period(100U);
+            }
 
             // Oxidizer weight measurement
             const twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
             if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+                can_task_add_rx_counter();
+                change_can_task_period(100U);
+            }
+
+            // Rocket board status 
+            const twai_message_t hx_rck_stat = CAN_HX_RCK_GET_STATUS();
+            if (twai_transmit(&hx_rck_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
                 can_task_add_rx_counter();
                 change_can_task_period(100U);
             }
@@ -118,7 +178,9 @@ void measure_task(void* pvParameters) {
             // ToDo
 
             // Update esp now data structure
-            // Send esp now structure to OBC
+            DataToObc now_data_struct;
+            copy_tanwa_data_to_now_struct(&now_data_struct);
+            esp_now_send(adress_obc, (uint8_t*) &now_data_struct, sizeof(DataToObc));
         }
     }
     vTaskDelete(NULL);

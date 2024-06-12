@@ -19,6 +19,7 @@
 #include "slave_structs.h"
 
 typedef struct {
+    uint16_t state;
     // COM
     com_data_t com_data;
     can_connected_slaves_t can_connected_slaves;

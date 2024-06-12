@@ -521,11 +521,13 @@ static int get_tanwa_data(int argc, char **argv) {
     CONSOLE_WRITE("TANWA Data:");
     CONSOLE_WRITE("COM: ");
     CONSOLE_WRITE("  Vbat: %.2f", tanwa_data.com_data.vbat);
+    CONSOLE_WRITE("  Valves: [F] %d, [D] %d", tanwa_data.com_data.solenoid_state_fill, tanwa_data.com_data.solenoid_state_depr);
     CONSOLE_WRITE("  Pressures: [0] %.2f, [1] %.2f, [2] %.2f, [3] %.2f",
                   tanwa_data.com_data.pressure_1, tanwa_data.com_data.pressure_2,
                   tanwa_data.com_data.pressure_3, tanwa_data.com_data.pressure_4);
     CONSOLE_WRITE("  Temperatures: [0] %.2f, [1] %.2f", tanwa_data.com_data.temperature_1,
                   tanwa_data.com_data.temperature_2);
+    CONSOLE_WRITE("  Igniters: [0] %d, [1] %d", tanwa_data.com_data.igniter_cont_1, tanwa_data.com_data.igniter_cont_2);
     CONSOLE_WRITE("HX OXI: ");
     CONSOLE_WRITE("  Weight: %.2f, Weight Raw: %d", tanwa_data.can_hx_oxidizer_data.weight,
                   tanwa_data.can_hx_oxidizer_data.weight_raw);
