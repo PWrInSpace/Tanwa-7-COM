@@ -12,6 +12,9 @@
 #include "state_machine_config.h"
 #include "TANWA_config.h"
 
+#include "can_commands.h"
+#include "can_task.h"
+
 #define TAG "NOW_COMMANDS"
 
 extern TANWA_hardware_t TANWA_hardware;
@@ -195,8 +198,96 @@ void tanwa_soft_restart_esp(void) {
 
 void tanwa_soft_restart_rck(void) {
     // Send soft restart command to HX RCK
+    const twai_message_t hx_oxi_mess = CAN_HX_RCK_SOFT_RESET();
+    if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
 }
 
 void tanwa_soft_restart_oxi(void) {
     // Send soft restart command to HX OXI
+    const twai_message_t hx_oxi_mess = CAN_HX_OXI_SOFT_RESET();
+    if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
+}
+
+void tanwa_calibrate_rck(float weight) {
+    // Send calibrate command to HX RCK
+    twai_message_t hx_rck_mess = CAN_HX_RCK_CALIBRATE();
+    memcpy(hx_rck_mess.data, &weight, sizeof(float));
+    if (twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
+}
+
+void tanwa_tare_rck(void) {
+    // Send tare command to HX RCK
+    const twai_message_t hx_rck_mess = CAN_HX_RCK_TARE();
+    if (twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
+}
+
+void tanwa_set_cal_factor_rck(float cal_factor) {
+    // Send set cal factor command to HX RCK
+    twai_message_t hx_rck_mess = CAN_HX_RCK_SET_CALIBRATION_FACTOR();
+    memcpy(hx_rck_mess.data, &cal_factor, sizeof(float));
+    if (twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
+}
+
+void tanwa_set_offset_rck(float offset) {
+    // Send set offset command to HX RCK
+    twai_message_t hx_rck_mess = CAN_HX_RCK_SET_OFFSET();
+    memcpy(hx_rck_mess.data, &offset, sizeof(float));
+    if (twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
+}
+
+void tanwa_calibrate_oxi(float weight) {
+    // Send calibrate command to HX OXI
+    twai_message_t hx_oxi_mess = CAN_HX_OXI_CALIBRATE();
+    memcpy(hx_oxi_mess.data, &weight, sizeof(float));
+    if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
+}
+
+void tanwa_tare_oxi(void) {
+    // Send tare command to HX OXI
+    const twai_message_t hx_oxi_mess = CAN_HX_OXI_TARE();
+    if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
+}
+
+void tanwa_set_cal_factor_oxi(float cal_factor) {
+    // Send set cal factor command to HX OXI
+    twai_message_t hx_oxi_mess = CAN_HX_OXI_SET_CALIBRATION_FACTOR();
+    memcpy(hx_oxi_mess.data, &cal_factor, sizeof(float));
+    if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
+}
+
+void tanwa_set_offset_oxi(float offset) {
+    // Send set offset command to HX OXI
+    twai_message_t hx_oxi_mess = CAN_HX_OXI_SET_OFFSET();
+    memcpy(hx_oxi_mess.data, &offset, sizeof(float));
+    if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+        can_task_add_rx_counter();
+        change_can_task_period(100U);
+    }
 }

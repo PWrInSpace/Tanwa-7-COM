@@ -94,6 +94,11 @@ typedef enum {
     CAN_TERMO_RX_DATA = 0x0EB,
 } can_termo_commands_t;
 
+typedef enum {
+    CAN_REQ_NONE = 0x0,
+    CAN_REQ_SOFT_RESET = 0x1,
+} can_req_t;
+
 ///===-----------------------------------------------------------------------------------------===//
 // CAN predefined messages
 ///===-----------------------------------------------------------------------------------------===//

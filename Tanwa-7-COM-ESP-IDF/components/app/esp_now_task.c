@@ -78,27 +78,122 @@ void esp_now_task(void* pvParameters) {
                         char state_text[20];
                         get_state_text(state, state_text);
                         ESP_LOGI(TAG, "ESP-NOW | State change | %s", state_text);
+                        tanwa_state_change((uint8_t) state);
                         break;
                     }
                     case NOW_ABORT: {
                         ESP_LOGI(TAG, "ESP-NOW | Abort");
+                        tanwa_abort();
                         break;
                     }
                     case NOW_HOLD_IN: {
                         ESP_LOGI(TAG, "ESP-NOW | Hold in");
+                        tanwa_hold_in();
                         break;
                     }
                     case NOW_HOLD_OUT: {
                         ESP_LOGI(TAG, "ESP-NOW | Hold out");
-                        if (state_machine_get_current_state() == HOLD) {
-                            ESP_LOGW(TAG, "SM | Not in HOLD state");
-                            break;
+                        tanwa_hold_out();
+                        break;
+                    }
+                    case NOW_FILL: {
+                        if (obc_command.commandArg == NOW_VALVE_OPEN) {
+                            ESP_LOGI(TAG, "ESP-NOW | Fill open ");
                         } else {
-                            state_machine_status_t sm_status = state_machine_change_to_previous_state(true);
-                            if (sm_status != STATE_MACHINE_OK) {
-                                ESP_LOGE(TAG, "SM | State change error | %d", sm_status);
+                            ESP_LOGI(TAG, "ESP-NOW | Fill close ");
+                        }
+                        tanwa_fill((uint8_t) obc_command.commandArg);
+                        break;
+                    }
+                    case NOW_FILL_TIME: {
+                        ESP_LOGI(TAG, "ESP-NOW | Fill time open | %d", obc_command.commandArg);
+                        tanwa_fill_time((uint8_t) obc_command.commandArg);
+                        break;
+                    }
+                    case NOW_DEPR: {
+                        if (obc_command.commandArg == NOW_VALVE_OPEN) {
+                            ESP_LOGI(TAG, "ESP-NOW | Depr open ");
+                        } else {
+                            ESP_LOGI(TAG, "ESP-NOW | Depr close ");
+                        }
+                        tanwa_depr((uint8_t) obc_command.commandArg);
+                        break;
+                    }
+                    case NOW_QD: {
+                        switch ((uint8_t) obc_command.commandArg) {
+                            case NOW_QD_PUSH: {
+                                ESP_LOGI(TAG, "ESP-NOW | QD push");
+                                break;
+                            }
+                            case NOW_QD_PULL: {
+                                ESP_LOGI(TAG, "ESP-NOW | QD pull");
+                                break;
+                            }
+                            case NOW_QD_STOP: {
+                                ESP_LOGI(TAG, "ESP-NOW | QD stop");
+                                break;
+                            }
+                            default: {
+                                ESP_LOGW(TAG, "ESP-NOW | Unknown QD command");
+                                break;
                             }
                         }
+                        tanwa_qd_1((uint8_t) obc_command.commandArg);
+                        break;
+                    }
+                    case NOW_SOFT_RESTART_RCK: {
+                        ESP_LOGI(TAG, "ESP-NOW | Soft restart RCK");
+                        tanwa_soft_restart_rck();
+                        break;
+                    }
+                    case NOW_SOFT_RESTART_OXI: {
+                        ESP_LOGI(TAG, "ESP-NOW | Soft restart OXI");
+                        tanwa_soft_restart_oxi();
+                        break;
+                    }
+                    case NOW_SOFT_RESTART_ESP: {
+                        ESP_LOGI(TAG, "ESP-NOW | Soft restart ESP");
+                        tanwa_soft_restart_esp();
+                        break;
+                    }
+                    case NOW_CALIBRATE_RCK: {
+                        ESP_LOGI(TAG, "ESP-NOW | Calibrate RCK | Weight: %d", obc_command.commandArg);
+                        tanwa_calibrate_rck((float) obc_command.commandArg);
+                        break;
+                    }
+                    case NOW_TARE_RCK: {
+                        ESP_LOGI(TAG, "ESP-NOW | Tare RCK");
+                        tanwa_tare_rck();
+                        break;
+                    }
+                    case NOW_SET_CAL_FACTOR_RCK: {
+                        ESP_LOGI(TAG, "ESP-NOW | Set cal factor RCK | %d", obc_command.commandArg);
+                        tanwa_set_cal_factor_rck((float) obc_command.commandArg);
+                        break;
+                    }
+                    case NOW_SET_OFFSET_RCK: {
+                        ESP_LOGI(TAG, "ESP-NOW | Set offset RCK | %d", obc_command.commandArg);
+                        tanwa_set_offset_rck((float) obc_command.commandArg);
+                        break;
+                    }
+                    case NOW_CALIBRATE_OXI: {
+                        ESP_LOGI(TAG, "ESP-NOW | Calibrate OXI | Weight: %d", obc_command.commandArg);
+                        tanwa_calibrate_oxi((float) obc_command.commandArg);
+                        break;
+                    }
+                    case NOW_TARE_OXI: {
+                        ESP_LOGI(TAG, "ESP-NOW | Tare OXI");
+                        tanwa_tare_oxi();
+                        break;
+                    } 
+                    case NOW_SET_CAL_FACTOR_OXI: {
+                        ESP_LOGI(TAG, "ESP-NOW | Set cal factor OXI | %d", obc_command.commandArg);
+                        tanwa_set_cal_factor_oxi((float) obc_command.commandArg);
+                        break;
+                    }
+                    case NOW_SET_OFFSET_OXI: {
+                        ESP_LOGI(TAG, "ESP-NOW | Set offset OXI | %d", obc_command.commandArg);
+                        tanwa_set_offset_oxi((float) obc_command.commandArg);
                         break;
                     }
                     default: {

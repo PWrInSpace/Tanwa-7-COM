@@ -101,4 +101,20 @@ void tanwa_soft_restart_rck(void);
 
 void tanwa_soft_restart_oxi(void);
 
+void tanwa_calibrate_rck(float weight);
+
+void tanwa_tare_rck(void);
+
+void tanwa_set_cal_factor_rck(float weight);
+
+void tanwa_set_offset_rck(float offset);
+
+void tanwa_calibrate_oxi(float weight);
+
+void tanwa_tare_oxi(void);
+
+void tanwa_set_cal_factor_oxi(float weight);
+
+void tanwa_set_offset_oxi(float offset);
+
 #endif /* PWRINSPACE_TANWA_NOW_COMMANDS_H_ */

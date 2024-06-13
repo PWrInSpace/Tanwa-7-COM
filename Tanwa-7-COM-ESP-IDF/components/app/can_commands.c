@@ -14,6 +14,7 @@
 #include "esp_log.h"
 
 #include "TANWA_data.h"
+#include "can_task.h"
 
 #define TAG "CAN_COMMANDS"
 
@@ -55,6 +56,13 @@ void parse_can_hx_rck_status(twai_message_t rx_message) {
     };
     ESP_LOGI(TAG, "HX RCK status: status: %d, request: %d, temperature: %d", hx_rck_status.status, hx_rck_status.request, hx_rck_status.temperature);
     tanwa_data_update_can_hx_rocket_status(&hx_rck_status);
+    if (hx_rck_status.request == CAN_REQ_SOFT_RESET) {
+        const twai_message_t hx_oxi_mess = CAN_HX_RCK_SOFT_RESET();
+        if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            can_task_add_rx_counter();
+            change_can_task_period(100U);
+        }
+    }
 }
 
 void parse_can_hx_rck_data(twai_message_t rx_message) {
@@ -76,6 +84,13 @@ void parse_can_hx_oxi_status(twai_message_t rx_message) {
     };
     ESP_LOGI(TAG, "HX OXI status: status: %d, request: %d, temperature: %d", hx_oxi_status.status, hx_oxi_status.request, hx_oxi_status.temperature);
     tanwa_data_update_can_hx_oxidizer_status(&hx_oxi_status);
+    if (hx_oxi_status.request == CAN_REQ_SOFT_RESET) {
+        const twai_message_t hx_oxi_mess = CAN_HX_OXI_SOFT_RESET();
+        if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            can_task_add_rx_counter();
+            change_can_task_period(100U);
+        }
+    }
 }
 
 void parse_can_hx_oxi_data(twai_message_t rx_message) {
@@ -100,6 +115,13 @@ void parse_can_fac_status(twai_message_t rx_message) {
     };
     ESP_LOGI(TAG, "FAC status: status: %d, request: %d, motor state 1: %d, motor state 2: %d, limit switch 1: %d, limit switch 2: %d", fac_status.status, fac_status.request, fac_status.motor_state_1, fac_status.motor_state_2, fac_status.limit_switch_1, fac_status.limit_switch_2);
     tanwa_data_update_can_fac_status(&fac_status);
+    if (fac_status.request == CAN_REQ_SOFT_RESET) {
+        const twai_message_t fac_mess = CAN_FAC_SOFT_RESET();
+        if (twai_transmit(&fac_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            can_task_add_rx_counter();
+            change_can_task_period(100U);
+        }
+    }
 }
 
 void parse_can_flc_status(twai_message_t rx_message) {
@@ -111,7 +133,13 @@ void parse_can_flc_status(twai_message_t rx_message) {
     };
     ESP_LOGI(TAG, "FLC status: status: %d, request: %d, temperature: %d", flc_status.status, flc_status.request, flc_status.temperature);
     tanwa_data_update_can_flc_status(&flc_status);
-
+    if (flc_status.request == CAN_REQ_SOFT_RESET) {
+        const twai_message_t flc_mess = CAN_FLC_SOFT_RESET();
+        if (twai_transmit(&flc_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            can_task_add_rx_counter();
+            change_can_task_period(100U);
+        }
+    }
 }
 
 void parse_can_flc_data(twai_message_t rx_message) {
@@ -134,6 +162,13 @@ void parse_can_termo_status(twai_message_t rx_message) {
     };
     ESP_LOGI(TAG, "TERMO status: status: %d, request: %d", termo_status.status, termo_status.request);
     tanwa_data_update_can_termo_status(&termo_status);
+    if (termo_status.request == CAN_REQ_SOFT_RESET) {
+        const twai_message_t termo_mess = CAN_TERMO_SOFT_RESET();
+        if (twai_transmit(&termo_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            can_task_add_rx_counter();
+            change_can_task_period(100U);
+        }
+    }
 }
 
 void parse_can_termo_data(twai_message_t rx_message) {
