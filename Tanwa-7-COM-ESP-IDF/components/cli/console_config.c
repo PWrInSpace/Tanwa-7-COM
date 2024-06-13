@@ -14,6 +14,7 @@
 #include "TANWA_config.h"
 #include "TANWA_data.h"
 #include "mcu_adc_config.h"
+#include "mcu_twai_config.h"
 #include "state_machine_config.h"
 
 #include "measure_task.h"
@@ -25,6 +26,16 @@ extern TANWA_utility_t TANWA_utility;
 
 static int reset_device(int argc, char **arg) {
     esp_restart();
+    return 0;
+}
+
+static int reset_hx_rck(int argc, char **arg) {
+    const twai_message_t hx_oxi_mess = {
+        .identifier = 0x0A9, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100));
     return 0;
 }
 
@@ -529,9 +540,11 @@ static int get_tanwa_data(int argc, char **argv) {
                   tanwa_data.com_data.temperature_2);
     CONSOLE_WRITE("  Igniters: [0] %d, [1] %d", tanwa_data.com_data.igniter_cont_1, tanwa_data.com_data.igniter_cont_2);
     CONSOLE_WRITE("HX OXI: ");
+    CONSOLE_WRITE("  Temp: %d", tanwa_data.can_hx_oxidizer_status.temperature);
     CONSOLE_WRITE("  Weight: %.2f, Weight Raw: %d", tanwa_data.can_hx_oxidizer_data.weight,
                   tanwa_data.can_hx_oxidizer_data.weight_raw);
     CONSOLE_WRITE("HX RCK: ");
+    CONSOLE_WRITE("  Temp: %d", tanwa_data.can_hx_rocket_status.temperature);
     CONSOLE_WRITE("  Weight: %.2f, Weight Raw: %d", tanwa_data.can_hx_rocket_data.weight,
                   tanwa_data.can_hx_rocket_data.weight_raw);
     CONSOLE_WRITE("FLC: ");
@@ -595,6 +608,7 @@ static int get_termo_data(int argc, char **argv) {
 static esp_console_cmd_t cmd[] = {
     // system commands
     {"reset-dev", "restart device", NULL, reset_device, NULL},
+    {"reset-rck", "reset hx rck", NULL, reset_hx_rck, NULL},
     {"log-enable", "enable logs", NULL, enable_log, NULL},
     {"log-disable", "disable logs", NULL, disable_log, NULL},
     // state machine commands

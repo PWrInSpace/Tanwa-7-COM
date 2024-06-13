@@ -20,7 +20,7 @@
 
 #define CAN_HX_STATUS_POS 0
 #define CAN_HX_STATUS_REQUEST_POS 2
-#define CAN_HX_TATUS_TEMP_POS 6
+#define CAN_HX_STATUS_TEMP_POS 6
 
 #define CAN_HX_DATA_WEIGHT_POS 0
 #define CAN_HX_DATA_WEIGHT_RAW_POS 4
@@ -52,7 +52,7 @@ void parse_can_hx_rck_status(twai_message_t rx_message) {
     can_hx_rocket_status_t hx_rck_status = {
         .status = *((uint16_t*)rx_message.data + CAN_HX_STATUS_POS),
         .request = *((uint8_t*)(rx_message.data + CAN_HX_STATUS_REQUEST_POS)),
-        .temperature = *((int16_t*)(rx_message.data + CAN_HX_TATUS_TEMP_POS)),
+        .temperature = *((int16_t*)(rx_message.data + CAN_HX_STATUS_TEMP_POS)),
     };
     ESP_LOGI(TAG, "HX RCK status: status: %d, request: %d, temperature: %d", hx_rck_status.status, hx_rck_status.request, hx_rck_status.temperature);
     tanwa_data_update_can_hx_rocket_status(&hx_rck_status);
@@ -80,7 +80,7 @@ void parse_can_hx_oxi_status(twai_message_t rx_message) {
     can_hx_oxidizer_status_t hx_oxi_status = {
         .status = *((uint16_t*)rx_message.data + CAN_HX_STATUS_POS),
         .request = *((uint8_t*)(rx_message.data + CAN_HX_STATUS_REQUEST_POS)),
-        .temperature = *((int16_t*)(rx_message.data + CAN_HX_TATUS_TEMP_POS)),
+        .temperature = *((int16_t*)(rx_message.data + CAN_HX_STATUS_TEMP_POS)),
     };
     ESP_LOGI(TAG, "HX OXI status: status: %d, request: %d, temperature: %d", hx_oxi_status.status, hx_oxi_status.request, hx_oxi_status.temperature);
     tanwa_data_update_can_hx_oxidizer_status(&hx_oxi_status);
