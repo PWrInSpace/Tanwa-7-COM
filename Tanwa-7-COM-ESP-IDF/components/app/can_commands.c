@@ -54,7 +54,7 @@ void parse_can_hx_rck_status(twai_message_t rx_message) {
         .request = *((uint8_t*)(rx_message.data + CAN_HX_STATUS_REQUEST_POS)),
         .temperature = *((int16_t*)(rx_message.data + CAN_HX_STATUS_TEMP_POS)),
     };
-    ESP_LOGI(TAG, "HX RCK status: status: %d, request: %d, temperature: %d", hx_rck_status.status, hx_rck_status.request, hx_rck_status.temperature);
+    // ESP_LOGI(TAG, "HX RCK status: status: %d, request: %d, temperature: %d", hx_rck_status.status, hx_rck_status.request, hx_rck_status.temperature);
     tanwa_data_update_can_hx_rocket_status(&hx_rck_status);
     if (hx_rck_status.request == CAN_REQ_SOFT_RESET) {
         const twai_message_t hx_oxi_mess = CAN_HX_RCK_SOFT_RESET();
@@ -71,7 +71,7 @@ void parse_can_hx_rck_data(twai_message_t rx_message) {
         .weight = *((float*)rx_message.data + CAN_HX_DATA_WEIGHT_POS),
         .weight_raw = *((uint32_t*)(rx_message.data + CAN_HX_DATA_WEIGHT_RAW_POS)),
     };
-    ESP_LOGI(TAG, "HX RCK data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
+    // ESP_LOGI(TAG, "HX RCK data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
     tanwa_data_update_can_hx_rocket_data(&hx_rck_data);
 }
 
@@ -82,7 +82,7 @@ void parse_can_hx_oxi_status(twai_message_t rx_message) {
         .request = *((uint8_t*)(rx_message.data + CAN_HX_STATUS_REQUEST_POS)),
         .temperature = *((int16_t*)(rx_message.data + CAN_HX_STATUS_TEMP_POS)),
     };
-    ESP_LOGI(TAG, "HX OXI status: status: %d, request: %d, temperature: %d", hx_oxi_status.status, hx_oxi_status.request, hx_oxi_status.temperature);
+    // ESP_LOGI(TAG, "HX OXI status: status: %d, request: %d, temperature: %d", hx_oxi_status.status, hx_oxi_status.request, hx_oxi_status.temperature);
     tanwa_data_update_can_hx_oxidizer_status(&hx_oxi_status);
     if (hx_oxi_status.request == CAN_REQ_SOFT_RESET) {
         const twai_message_t hx_oxi_mess = CAN_HX_OXI_SOFT_RESET();
@@ -99,7 +99,7 @@ void parse_can_hx_oxi_data(twai_message_t rx_message) {
         .weight = *((float*)rx_message.data + CAN_HX_DATA_WEIGHT_POS),
         .weight_raw = *((uint32_t*)(rx_message.data + CAN_HX_DATA_WEIGHT_RAW_POS)),
     };
-    ESP_LOGI(TAG, "HX OXI data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
+    // ESP_LOGI(TAG, "HX OXI data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
     tanwa_data_update_can_hx_oxidizer_data(&hx_rck_data);
 }
 

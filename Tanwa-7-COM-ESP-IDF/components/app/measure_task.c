@@ -26,7 +26,7 @@
 #define TAG "MEASURE_TASK"
 
 #define MEASURE_TASK_STACK_SIZE 4096
-#define MEASURE_TASK_PRIORITY 5
+#define MEASURE_TASK_PRIORITY 1
 #define MEASURE_TASK_CORE 1
 
 extern TANWA_hardware_t TANWA_hardware;
@@ -147,18 +147,18 @@ void measure_task(void* pvParameters) {
             tanwa_data_update_com_data(&com_data);
 
             // Oxidizer board status
-            const twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
-            if (twai_transmit(&hx_oxi_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
-                can_task_add_rx_counter();
-                change_can_task_period(100U);
-            }
+            // const twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
+            // if (twai_transmit(&hx_oxi_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
+            //     can_task_add_rx_counter();
+            //     change_can_task_period(100U);
+            // }
 
             // Oxidizer weight measurement
-            const twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
-            if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
-                can_task_add_rx_counter();
-                change_can_task_period(100U);
-            }
+            // const twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
+            // if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            //     can_task_add_rx_counter();
+            //     change_can_task_period(100U);
+            // }
 
             // Rocket board status 
             const twai_message_t hx_rck_stat = CAN_HX_RCK_GET_STATUS();

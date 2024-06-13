@@ -109,7 +109,7 @@ void tanwa_fill_time(uint16_t open_time) {
     if (sol_status != SOLENOID_DRIVER_OK) {
         ESP_LOGE(TAG, "SOL | Solenoid driver fill error | %d", sol_status);
     }
-    vTaskDelay(pdMS_TO_TICKS(time));
+    vTaskDelay(pdMS_TO_TICKS(open_time));
     sol_status = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FILL);
     if (sol_status != SOLENOID_DRIVER_OK) {
         ESP_LOGE(TAG, "SOL | Solenoid driver fill error | %d", (uint8_t)sol_status);

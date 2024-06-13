@@ -24,7 +24,7 @@
 #define TAG "CAN_TASK"
 
 #define CAN_TASK_STACK_SIZE 4096
-#define CAN_TASK_PRIORITY 5
+#define CAN_TASK_PRIORITY 2
 #define CAN_TASK_CORE 1
 #define CAN_TASK_DEFAULT_FREQ 1000
 
@@ -107,25 +107,25 @@ void can_task(void* pvParameters) {
                 // Parse the received message
                 switch (rx_message.identifier) {
                     case CAN_HX_RCK_RX_STATUS: {
-                        ESP_LOGI(TAG, "Received HX RCK status");
+                        // ESP_LOGI(TAG, "Received HX RCK status");
                         can_task_sub_rx_counter();
                         parse_can_hx_rck_status(rx_message);
                         break;
                     }
                     case CAN_HX_RCK_RX_DATA: {
-                        ESP_LOGI(TAG, "Received HX RCK data");
+                        // ESP_LOGI(TAG, "Received HX RCK data");
                         can_task_sub_rx_counter();
                         parse_can_hx_rck_data(rx_message);
                         break;
                     }
                     case CAN_HX_OXI_RX_STATUS: {
-                        ESP_LOGI(TAG, "Received HX OXI status");
+                        // ESP_LOGI(TAG, "Received HX OXI status");
                         can_task_sub_rx_counter();
                         parse_can_hx_oxi_status(rx_message);
                         break;
                     }
                     case CAN_HX_OXI_RX_DATA: {
-                        ESP_LOGI(TAG, "Received HX OXI data");
+                        // ESP_LOGI(TAG, "Received HX OXI data");
                         can_task_sub_rx_counter();
                         parse_can_hx_oxi_data(rx_message);
                         break;

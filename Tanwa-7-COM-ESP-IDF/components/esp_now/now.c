@@ -6,6 +6,8 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 
+#include "state_machine_config.h"
+
 #include "esp_log.h"
 
 #define TAG "NOW"
@@ -69,15 +71,19 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 /**********************************************************************************************/
 
 void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, int len) {
+    uint8_t obcState;
     DataFromObc obc_data;
     if (adressCompare(info->src_addr, adress_obc)) {
-        if (len == sizeof(uint8_t)) {
-            return;
+        if (len == sizeof(obcState)) {
+            memcpy((void*) &obcState, (uint16_t *)incomingData, sizeof(obcState));
+            ESP_LOGI(TAG, "OBC state: %d", obcState);
+            state_machine_change_state((state_id) obcState);
+        } else {
+            memcpy((void*) &obc_data, incomingData, sizeof(DataFromObc));
+            if (xQueueSendToBack(obc_now_rx_queue, &obc_data, 0) != pdTRUE) {
+                ESP_LOGE(TAG, "ESP-NOW RX queue error sending to back");
+            }
         }
-        memcpy((void*) &obc_data, incomingData, sizeof(DataFromObc));
-        // if (xQueueSendToBack(obc_now_rx_queue, &obc_data, 0) != pdTRUE) {
-        //     ESP_LOGE(TAG, "ESP-NOW RX queue error sending to back");
-        // }
     }
 }
 

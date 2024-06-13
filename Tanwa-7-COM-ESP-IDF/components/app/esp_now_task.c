@@ -25,7 +25,7 @@
 #define TAG "ESP_NOW_TASK"
 
 #define NOW_TASK_STACK_SIZE 4096
-#define NOW_TASK_PRIORITY 5
+#define NOW_TASK_PRIORITY 1
 #define NOW_TASK_CORE 0
 #define NOW_TASK_DEFAULT_FREQ 100
 
@@ -94,6 +94,21 @@ void esp_now_task(void* pvParameters) {
                     case NOW_HOLD_OUT: {
                         ESP_LOGI(TAG, "ESP-NOW | Hold out");
                         tanwa_hold_out();
+                        break;
+                    }
+                    case NOW_SOFT_ARM: {
+                        ESP_LOGI(TAG, "ESP-NOW | Soft arm");
+                        tanwa_soft_arm();
+                        break;
+                    }
+                    case NOW_SOFT_DISARM: {
+                        ESP_LOGI(TAG, "ESP-NOW | Soft disarm");
+                        tanwa_soft_disarm();
+                        break;
+                    }
+                    case NOW_FIRE: {
+                        ESP_LOGI(TAG, "ESP-NOW | Fire");
+                        tanwa_fire();
                         break;
                     }
                     case NOW_FILL: {
