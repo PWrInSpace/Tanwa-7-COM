@@ -34,7 +34,7 @@
                    .quadwp_io_num = -1,            \
                    .quadhd_io_num = -1,            \
                    .max_transfer_sz = 4000},       \
-    .dev_config = {.clock_speed_hz = 9000000,      \
+    .dev_config = {.clock_speed_hz = 400000,       \
                    .mode = 0,                      \
                    .spics_io_num = -1,             \
                    .queue_size = 1,                \
@@ -70,6 +70,6 @@ esp_err_t mcu_spi_deinit(void);
  * \param[in] _in input buffer
  * \param[out] _out output buffer
  */
-bool _lora_SPI_transmit(uint8_t _in[2], uint8_t _out[2]);
+bool _lora_spi_transmit(uint8_t _in[2], uint8_t _out[2]);
 
 #endif /* PWRINSPACE_MCU_SPI_CONFIG_H_ */

@@ -3,13 +3,11 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdbool.h>
 
-/*!
- * \file lora.h
- * \brief RFM95w LoRa library - multi-MCU
- */
+#include "esp_log.h"
+#include "esp_system.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 /*
  * IRQ masks
@@ -87,6 +85,13 @@ typedef enum {
   LORA_GPIO_MODE_OUTPUT
 } lora_gpio_mode_t;
 
+
+typedef enum {
+  LORA_IRQ_D0_RXDONE = 0x00,
+  LORA_IRQ_D0_TXDONE = 0x01,
+  LORA_IRQ_D0_CADDONE = 0x10,
+} lora_dio0_mapping_t;
+
 /*!
  * \brief Enum for LoRa bandwith in Hz
  */
@@ -127,7 +132,7 @@ typedef enum {
 } lora_tx_power_t;
 
 typedef bool (*lora_SPI_transmit)(uint8_t _in[2], uint8_t _val[2]);
-typedef void (*lora_delay)(size_t _ms);
+typedef void (*lora_delay)(uint32_t _ms);
 typedef bool (*lora_GPIO_set_level)(uint8_t _gpio_num, uint8_t _level);
 typedef void (*lora_log)(const char *info);
 
@@ -325,6 +330,8 @@ int16_t lora_packet_rssi(lora_struct_t *lora);
  * \returns last packet's SNR (signal to noise ratio).
  */
 float lora_packet_snr(lora_struct_t *lora);
+
+lora_err_t lora_map_d0_interrupt(lora_struct_t *lora, lora_dio0_mapping_t mode);
 
 /*!
  * \brief Shutdown hardware.

@@ -13,10 +13,14 @@
 
 #include <stdint.h>
 
-void _LED_delay_ms(uint32_t ms);
+void _led_delay_ms(uint32_t ms);
 
-void _IGNITER_delay_ms(uint32_t ms);
+void _igniter_delay_ms(uint32_t ms);
 
-void _LORA_delay_ms(uint32_t ms);
+void _lora_delay_ms(uint32_t ms);
+
+uint32_t _get_uptime_ms(void);
+
+void _lora_log(const char* info);
 
 #endif /* PWRINSPACE_MCU_MISC_CONFIG_H_ */

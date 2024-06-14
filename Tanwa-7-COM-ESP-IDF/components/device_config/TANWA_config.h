@@ -59,24 +59,10 @@ esp_err_t TANWA_utility_init();
 
 esp_err_t TANWA_esp_now_init();
 
-esp_err_t TANWA_lora_init();
-
 // esp_err_t TANWA_get_hardware(TANWA_hardware_t** hardware);
 
 // esp_err_t TANWA_get_utility(TANWA_utility_t** utility);
 
 esp_err_t TANWA_get_vbat(float* vbat);
-
-/**
- * \brief Delay function for LoRa
- * \param[in] _ms delay in milliseconds
- */
-void _lora_delay(size_t _ms);
-
-/**
- * \brief Log function for LoRa
- * \param[in] info information to log
- */
-void _lora_log(const char* info);
 
 #endif /* PWRINSPACE_TANWA_CONFIG_H_*/

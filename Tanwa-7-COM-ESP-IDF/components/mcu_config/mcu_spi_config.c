@@ -14,6 +14,7 @@
 #define TAG "MCU_SPI"
 
 static mcu_spi_config_t spi_config = MCU_SPI_DEFAULT_CONFIG();
+SemaphoreHandle_t mutex_spi;
 
 esp_err_t mcu_spi_init(void) {
     esp_err_t ret = ESP_OK;
@@ -28,6 +29,7 @@ esp_err_t mcu_spi_init(void) {
     ret = spi_bus_add_device(spi_config.host_id, &spi_config.dev_config,
                             &spi_config.spi_handle);
     ESP_ERROR_CHECK(ret);
+    mutex_spi = xSemaphoreCreateMutex();
     spi_config.spi_init_flag = true;
     return ret;
 }
@@ -45,15 +47,15 @@ esp_err_t mcu_spi_deinit(void) {
     return ret;
 }
 
-bool _lora_SPI_transmit(uint8_t _in[2], uint8_t _out[2]) {
+bool _lora_spi_transmit(uint8_t _in[2], uint8_t _out[2]) {
     spi_transaction_t t = {.flags = 0,
                           .length = 8 * sizeof(uint8_t) * 2,
                           .tx_buffer = _out,
                           .rx_buffer = _in};
-
+    xSemaphoreTake(mutex_spi, portMAX_DELAY);
     _mcu_gpio_set_level(LORA_CS_GPIO_INDEX, 0);
-    // TODO(Gliwus): implement thread safe SPI (also with SD card and flash)
     spi_device_transmit(spi_config.spi_handle, &t);
     _mcu_gpio_set_level(LORA_CS_GPIO_INDEX, 1);
+    xSemaphoreGive(mutex_spi);
     return true;
 }

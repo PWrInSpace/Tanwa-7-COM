@@ -1,0 +1,35 @@
+syntax = "proto2";
+
+message LoRaFrame {
+    // tanwa frame
+    required uint32 tanWaState = 1;
+    required uint32 pressureSensor = 2;
+    required uint32 solenoid_fill= 3;
+    required uint32 solenoid_depr = 4;
+    required bool abortButton = 5;
+    required bool igniterContinouity_1 = 6;
+    required bool igniterContinouity_2 = 7;
+    required uint32 hxRequest_RCK = 8; // arduino string
+    required uint32 hxRequest_TANK = 9; // arduino string
+    required float vbat = 10;
+    required uint32 motorState_1 = 11;
+    required uint32 motorState_2 = 12;
+    required uint32 motorState_3 = 13;
+    required uint32 motorState_4 = 14;
+    required float rocketWeight_temp = 15;
+    required float tankWeight_temp = 16;
+    required float rocketWeight_val = 17;
+    required float tankWeight_val = 18; 
+    required uint32 rocketWeightRaw_val = 19;
+    required uint32 tankWeightRaw_val = 20;
+    required bool interface_rck = 21;
+    required bool interface_tank = 22;
+    required bool interface_mcu = 23;
+}
+
+message LoRaCommand {
+    required uint32 lora_dev_id = 1;
+    required uint32 sys_dev_id = 2;
+    required uint32 command = 3;
+    required int32 payload = 4;
+}

@@ -174,6 +174,13 @@ void measure_task(void* pvParameters) {
                 change_can_task_period(100U);
             }
 
+            // Filling arm status
+            const twai_message_t filling_arm_stat = CAN_FAC_GET_STATUS();
+            if (twai_transmit(&filling_arm_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
+                can_task_add_rx_counter();
+                change_can_task_period(100U);
+            }
+
             // Fetch data from CAN bus
             // ToDo
 

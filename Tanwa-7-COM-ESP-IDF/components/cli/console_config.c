@@ -547,6 +547,9 @@ static int get_tanwa_data(int argc, char **argv) {
     CONSOLE_WRITE("  Temp: %d", tanwa_data.can_hx_rocket_status.temperature);
     CONSOLE_WRITE("  Weight: %.2f, Weight Raw: %d", tanwa_data.can_hx_rocket_data.weight,
                   tanwa_data.can_hx_rocket_data.weight_raw);
+    CONSOLE_WRITE("FAC: ");
+    CONSOLE_WRITE("  Motor: [0] %d, [1] %d", tanwa_data.can_fac_status.motor_state_1, tanwa_data.can_fac_status.motor_state_2);
+    CONSOLE_WRITE("  Limit: [0] %d, [1] %d", tanwa_data.can_fac_status.limit_switch_1, tanwa_data.can_fac_status.limit_switch_2);
     CONSOLE_WRITE("FLC: ");
     CONSOLE_WRITE("  Temperatures: [0] %d, [1] %d, [2] %d, [3] %d", tanwa_data.can_flc_data.temperature_1,
                   tanwa_data.can_flc_data.temperature_2, tanwa_data.can_flc_data.temperature_3,

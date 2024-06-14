@@ -22,6 +22,9 @@
 #include "mcu_adc_config.h"
 #include "state_machine_config.h"
 
+#include "lora_task.h"
+#include "lora_task_config.h"
+
 #include "console_config.h"
 
 #include "can_task.h"
@@ -95,15 +98,6 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "### ESP-NOW initialization success ###");
   }
 
-  ESP_LOGI(TAG, "Initializing LoRa...");
-
-  ret |= TANWA_lora_init();
-  if (ret != ESP_OK) {
-    ESP_LOGE(TAG, "LoRa initialization failed");
-  } else {
-    ESP_LOGI(TAG, "### LoRa initialization success ###");
-  }
-
   ESP_LOGI(TAG, "Initializing shared memory...");
 
   if (!tanwa_data_init()) {
@@ -111,6 +105,14 @@ void app_init_task(void* pvParameters) {
   } else {
     ESP_LOGI(TAG, "### Shared memory initialization success ###");
   }
+
+  ESP_LOGI(TAG, "Initializing LoRa...");
+
+  if (!initialize_lora(LORA_TASK_FREQUENCY_KHZ, LORA_TASK_TRANSMIT_MS)) {
+    ESP_LOGE(TAG, "LoRa initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### LoRa initialization success ###");
+  } 
 
   ESP_LOGI(TAG, "### App initialization finished ###");
 
@@ -122,6 +124,8 @@ void app_init_task(void* pvParameters) {
   } else {
     ESP_LOGI(TAG, "Console initialized");
   }
+
+  state_machine_change_state(IDLE);
 
   run_can_task();
   vTaskDelay(pdMS_TO_TICKS(10));
