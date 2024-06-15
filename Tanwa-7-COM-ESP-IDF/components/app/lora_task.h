@@ -16,6 +16,8 @@
 #define PRIVILAGE_MASK 0x01
 #define BORADCAST_DEV_ID 0x00
 
+#define PACKET_PREFIX "SP3MIK"
+
 typedef uint8_t lora_dev_id;
 typedef void (*lora_task_process_rx_packet)(uint8_t *packet, size_t packet_size);
 typedef size_t (*lora_task_get_tx_packet)(uint8_t *buffer, size_t buffer_size);
@@ -36,13 +38,14 @@ typedef struct {
 } lora_api_config_t;
 
 /**
- * @brief Initialize lora task
- *
- * @param cfg pointer to config
+ * @brief Initialize lora api and run lora task
+ *q
+ * @param frequency_khz lora frequency kzh
+ * @param transmiting_period lora transmiting period
  * @return true :D
  * @return false :C
  */
-bool lora_task_init(lora_api_config_t *cfg);
+bool initialize_lora(uint32_t frequency_khz, uint32_t transmiting_period);
 
 /**
  * @brief Attach this function to d0 interrupt handler
@@ -51,8 +54,17 @@ bool lora_task_init(lora_api_config_t *cfg);
  */
 void lora_task_irq_notify(void *arg);
 
-bool lora_change_receive_window_period(uint32_t period_ms);
-
 bool lora_change_frequency(uint32_t frequency_khz);
+
+/**
+ * @brief Initialize lora task
+ *
+ * @param cfg pointer to config
+ * @return true :D
+ * @return false :C
+ */
+bool lora_task_init(lora_api_config_t *cfg);
+
+void lora_task(void* pvParameters);
 
 #endif

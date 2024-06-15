@@ -23,7 +23,6 @@
 #include "state_machine_config.h"
 
 #include "lora_task.h"
-#include "lora_task_config.h"
 
 #include "console_config.h"
 
