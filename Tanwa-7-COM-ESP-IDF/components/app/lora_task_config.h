@@ -18,7 +18,4 @@
  */
 bool initialize_lora(uint32_t frequency_khz, uint32_t transmiting_period);
 
-
-void lora_send_settings_frame(void);
-
 #endif

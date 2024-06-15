@@ -37,6 +37,13 @@ static mcu_gpio_config_t mcu_gpio_config = {
             .intr_type = GPIO_INTR_DISABLE,
         },
         {
+            .pin_bit_mask = (1ULL << LORA_D0_GPIO),
+            .mode = GPIO_MODE_INPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_ENABLE,
+            .intr_type = GPIO_INTR_POSEDGE,
+        },
+        {
             .pin_bit_mask = (1ULL << ABORT_GPIO),
             .mode = GPIO_MODE_INPUT,
             .pull_up_en = GPIO_PULLUP_ENABLE,
@@ -63,13 +70,6 @@ static mcu_gpio_config_t mcu_gpio_config = {
             .pull_up_en = GPIO_PULLUP_DISABLE,
             .pull_down_en = GPIO_PULLDOWN_DISABLE,
             .intr_type = GPIO_INTR_DISABLE,
-        },
-        {
-            .pin_bit_mask = (1ULL << LORA_D0_GPIO),
-            .mode = GPIO_MODE_INPUT,
-            .pull_up_en = GPIO_PULLUP_DISABLE,
-            .pull_down_en = GPIO_PULLDOWN_ENABLE,
-            .intr_type = GPIO_INTR_POSEDGE,
         },
     },
 };
@@ -108,6 +108,10 @@ bool _mcu_gpio_get_level(uint8_t gpio, uint8_t* level) {
     }
     *level = (uint8_t)res;
     return true;
+}
+
+bool _lora_gpio_set_level(uint8_t gpio, uint8_t level) {
+    return gpio_set_level(gpio, level) == ESP_OK ? true : false;
 }
 
 bool _lora_gpio_attach_d0_isr(gpio_isr_t interrupt_cb) {

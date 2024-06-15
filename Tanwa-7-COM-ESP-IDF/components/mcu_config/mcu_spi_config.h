@@ -65,6 +65,8 @@ esp_err_t mcu_spi_init(void);
 */
 esp_err_t mcu_spi_deinit(void);
 
+bool _lora_add_device(void);
+
 /**
  * \brief SPI transmit function for LoRa
  * \param[in] _in input buffer

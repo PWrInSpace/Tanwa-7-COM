@@ -26,8 +26,8 @@ esp_err_t mcu_spi_init(void) {
                             SPI_DMA_CH_AUTO);
     ESP_ERROR_CHECK(ret);
 
-    ret = spi_bus_add_device(spi_config.host_id, &spi_config.dev_config,
-                            &spi_config.spi_handle);
+    // ret = spi_bus_add_device(spi_config.host_id, &spi_config.dev_config,
+    //                         &spi_config.spi_handle);
     ESP_ERROR_CHECK(ret);
     mutex_spi = xSemaphoreCreateMutex();
     spi_config.spi_init_flag = true;
@@ -45,6 +45,21 @@ esp_err_t mcu_spi_deinit(void) {
     ESP_ERROR_CHECK(ret);
     spi_config.spi_init_flag = false;
     return ret;
+}
+
+bool _lora_add_device(void) {
+    esp_err_t ret;
+
+    spi_device_interface_config_t dev = {.clock_speed_hz = 400000,
+                                         .mode = 0,
+                                         .spics_io_num = -1,
+                                         .queue_size = 1,
+                                         .flags = 0,
+                                         .pre_cb = NULL};
+    ret = spi_bus_add_device(spi_config.host_id, &dev, &spi_config.spi_handle);
+    ESP_ERROR_CHECK(ret);
+
+    return ret == ESP_OK ? true : false;
 }
 
 bool _lora_spi_transmit(uint8_t _in[2], uint8_t _out[2]) {
