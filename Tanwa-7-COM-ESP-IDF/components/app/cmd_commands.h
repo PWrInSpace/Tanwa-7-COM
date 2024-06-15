@@ -16,62 +16,67 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define LORA_DEV_ID_ALL 0x00
+#define LORA_DEV_ID_TANWA 0x04
+
+#define LORA_DEV_ID_SUDO_MASK 0x01
+
 ///===-----------------------------------------------------------------------------------------===//
-// ESP-NOW commands IDs
+// ESP-NOW & LORA commands IDs
 ///===-----------------------------------------------------------------------------------------===//
 
 typedef enum {
     // State commands 
-    NOW_STATE_CHANGE = 0x00,
-    NOW_ABORT = 0x01,
-    NOW_HOLD_IN = 0x02,
-    NOW_HOLD_OUT = 0x03,
+    CMD_STATE_CHANGE = 0x00,
+    CMD_ABORT = 0x01,
+    CMD_HOLD_IN = 0x02,
+    CMD_HOLD_OUT = 0x03,
     // Filling process commands
-    NOW_FILL = 0x10,
-    NOW_FILL_TIME = 0x15,
-    NOW_DEPR = 0x20,
-    NOW_QD = 0x30,
+    CMD_FILL = 0x10,
+    CMD_FILL_TIME = 0x15,
+    CMD_DEPR = 0x20,
+    CMD_QD = 0x30,
     // Firing commands
-    NOW_SOFT_ARM = 0x04,
-    NOW_SOFT_DISARM = 0x05,
-    NOW_FIRE = 0x88,
+    CMD_SOFT_ARM = 0x04,
+    CMD_SOFT_DISARM = 0x05,
+    CMD_FIRE = 0x88,
     // Restart commands
-    NOW_SOFT_RESTART_RCK = 0x61,
-    NOW_SOFT_RESTART_OXI = 0x62,
-    NOW_SOFT_RESTART_ESP = 0x06,
+    CMD_SOFT_RESTART_RCK = 0x61,
+    CMD_SOFT_RESTART_OXI = 0x62,
+    CMD_SOFT_RESTART_ESP = 0x06,
     // Rocket weight calibration commands
-    NOW_CALIBRATE_RCK = 0x40,
-    NOW_TARE_RCK = 0x41,
-    NOW_SET_CAL_FACTOR_RCK = 0x42,
-    NOW_SET_OFFSET_RCK = 0x43,
+    CMD_CALIBRATE_RCK = 0x40,
+    CMD_TARE_RCK = 0x41,
+    CMD_SET_CAL_FACTOR_RCK = 0x42,
+    CMD_SET_OFFSET_RCK = 0x43,
     // Oxidizer weight calibration commands
-    NOW_CALIBRATE_OXI = 0x50,
-    NOW_TARE_OXI = 0x51,
-    NOW_SET_CAL_FACTOR_OXI = 0x52,
-    NOW_SET_OFFSET_OXI = 0x53,
+    CMD_CALIBRATE_OXI = 0x50,
+    CMD_TARE_OXI = 0x51,
+    CMD_SET_CAL_FACTOR_OXI = 0x52,
+    CMD_SET_OFFSET_OXI = 0x53,
     // PLSS command
-    NOW_PLSS = 0x60,
+    CMD_PLSS = 0x60,
     // LoRa config commands
-    NOW_LORA_FREQ = 0x80,
-    NOW_LORA_TIME = 0x81
-} esp_now_command_t;
+    CMD_LORA_FREQ = 0x80,
+    CMD_LORA_TIME = 0x81
+} cmd_command_t;
 
 typedef enum {
-    NOW_VALVE_OPEN = 0x01,
-    NOW_VALVE_CLOSE = 0x00
-} esp_now_valve_cmd_t;
+    CMD_VALVE_OPEN = 0x01,
+    CMD_VALVE_CLOSE = 0x00
+} cmd_valve_t;
 
 typedef enum {
-    NOW_QD_PUSH = 0x01,
-    NOW_QD_STOP = 0x22,
-    NOW_QD_PULL = 0x00
-} esp_now_qd_cmd_t;
+    CMD_QD_PUSH = 0x01,
+    CMD_QD_STOP = 0x22,
+    CMD_QD_PULL = 0x00
+} cmd_qd_t;
 
 ///===-----------------------------------------------------------------------------------------===//
-// ESP-NOW message parsing
+// Command message parsing
 ///===-----------------------------------------------------------------------------------------===//
 
-void tanwa_state_change(uint8_t state);
+void tanwa_state_change(int32_t state);
 
 void tanwa_abort(void);
 
@@ -116,5 +121,11 @@ void tanwa_tare_oxi(void);
 void tanwa_set_cal_factor_oxi(float weight);
 
 void tanwa_set_offset_oxi(float offset);
+
+///===-----------------------------------------------------------------------------------------===//
+/// LORA message switch
+///===-----------------------------------------------------------------------------------------===//
+
+void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload);
 
 #endif /* PWRINSPACE_TANWA_NOW_COMMANDS_H_ */

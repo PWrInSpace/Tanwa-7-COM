@@ -113,7 +113,7 @@ bool initialize_state_machine(void) {
     return status == STATE_MACHINE_OK ? true : false;
 }
 
-void get_state_text(state_t state, char *text) {
+void get_state_text(int32_t state, char *text) {
     switch (state) {
         case INIT:
             strcpy(text, "INIT");

@@ -77,7 +77,7 @@ void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, in
         if (len == sizeof(obcState)) {
             memcpy((void*) &obcState, (uint16_t *)incomingData, sizeof(obcState));
             ESP_LOGI(TAG, "OBC state: %d", obcState);
-            state_machine_change_state((state_id) obcState);
+            // state_machine_change_state((state_id) obcState);
         } else {
             memcpy((void*) &obc_data, incomingData, sizeof(DataFromObc));
             if (xQueueSendToBack(obc_now_rx_queue, &obc_data, 0) != pdTRUE) {

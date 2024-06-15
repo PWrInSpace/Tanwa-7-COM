@@ -7,7 +7,7 @@
 #include "mcu_spi_config.h"
 #include "mcu_misc_config.h"
 
-#include "commands.h"
+#include "cmd_commands.h"
 
 #include "esp_log.h"
 
@@ -61,14 +61,9 @@ static void lora_process(uint8_t* packet, size_t packet_size) {
     if (received != NULL) {
         ESP_LOGI(TAG, "Received LORA_ID %d, DEV_ID %d, COMMAND %d, PLD %d", received->lora_dev_id,
                  received->sys_dev_id, received->command, received->payload);
-        cmd_message_t received_command = cmd_create_message(received->command, received->payload);
+        // cmd_message_t received_command = cmd_create_message(received->command, received->payload);
+        lora_command_parsing(received->lora_dev_id, received->command, received->payload);
         lo_ra_command__free_unpacked(received, NULL);
-        // if (lora_cmd_process_command(received->lora_dev_id, received->sys_dev_id,
-        //                              &received_command) == false) {
-        //     // errors_add(ERROR_TYPE_LAST_EXCEPTION, ERROR_EXCP_COMMAND_NOT_FOUND, 200);
-        //     ESP_LOGE(TAG, "Unable to process command :C");
-        //     return;
-        // }
     } else {
         ESP_LOGE(TAG, "Unable to decode received package");
     }

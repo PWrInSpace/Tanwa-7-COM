@@ -40,6 +40,6 @@ bool initialize_state_machine(void);
  * @param state state number
  * @param text pointer to char array
  */
-void get_state_text(state_t state, char *text);
+void get_state_text(int32_t state, char *text);
 
 #endif /* PWRINSPACE_STATE_MACHINE_CONFIG_H_*/
