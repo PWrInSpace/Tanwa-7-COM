@@ -22,6 +22,7 @@
 #include "can_commands.h"
 #include "TANWA_config.h"
 #include "TANWA_data.h"
+#include "state_machine_config.h"
 
 #define TAG "MEASURE_TASK"
 
@@ -104,6 +105,9 @@ void measure_task(void* pvParameters) {
             xSemaphoreGive(measure_task_freq_mutex);
         
             vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(local_freq));
+
+            // Update state from state machine
+            tanwa_data_update_state((uint8_t) state_machine_get_current_state());
 
             com_data_t com_data;
 

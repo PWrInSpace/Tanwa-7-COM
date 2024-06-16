@@ -15,7 +15,8 @@
 #include <stdbool.h>
 
 #include "driver/gpio.h"
-#include "driver/spi_master.h"
+#include "driver/spi_common.h"
+#include "driver/sdspi_host.h"
 #include "esp_log.h"
 #include "esp_rom_gpio.h"
 #include "freertos/task.h"
@@ -27,7 +28,7 @@
 
 #define MCU_SPI_DEFAULT_CONFIG()                   \
   {                                                \
-    .host_id = SPI2_HOST,                          \
+    .host_id = HSPI_HOST,                          \
     .bus_config = {.miso_io_num = CONFIG_SPI_MISO, \
                    .mosi_io_num = CONFIG_SPI_MOSI, \
                    .sclk_io_num = CONFIG_SPI_SCK,  \

@@ -5,7 +5,23 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "sd_test_io.h"
+
+#include "esp_log.h"
+
 #define TAG "SDCARD"
+
+const char* names[] = {"CLK ", "MOSI", "MISO", "CS  "};
+const int pins[] = {CONFIG_SPI_SCK,
+                    CONFIG_SPI_MOSI,
+                    CONFIG_SPI_MISO,
+                    CONFIG_SD_CS};
+const int pin_count = sizeof(pins)/sizeof(pins[0]);
+
+pin_configuration_t config = {
+    .names = names,
+    .pins = pins,
+};
 
 bool SD_init(sd_card_t *sd_card, sd_card_config_t *cfg) {
   sd_card->spi_host = cfg->spi_host;
@@ -38,8 +54,8 @@ bool SD_mount(sd_card_t *sd_card) {
       .allocation_unit_size = 16 * 1024};
 
   sdmmc_host_t host = SDSPI_HOST_DEFAULT();
-  host.slot = sd_card->spi_host;
-  host.max_freq_khz = SDMMC_FREQ_PROBING;
+  // host.slot = sd_card->spi_host;
+  // host.max_freq_khz = SDMMC_FREQ_PROBING;
   sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
   slot_config.gpio_cs = sd_card->cs_pin;
   slot_config.host_id = host.slot;
@@ -57,6 +73,7 @@ bool SD_mount(sd_card_t *sd_card) {
                "Failed to initialize the card (%s). "
                "Make sure SD card lines have pull-up resistors in place.",
                esp_err_to_name(res));
+               check_sd_card_pins(&config, pin_count);
     }
     return false;
   }

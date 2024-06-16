@@ -10,17 +10,17 @@
 #include "freertos/queue.h"
 #include "freertos/task.h"
 
-#define SD_LOG_BUFFER_MAX_SIZE CONFIG_SD_LOG_BUFFER_MAX_SIZE
-#define SD_DATA_BUFFER_MAX_SIZE CONFIG_SD_DATA_BUFFER_MAX_SIZE
-#define SD_MOUNT_POINT CONFIG_SD_MOUNT_POINT
+#define SD_LOG_BUFFER_MAX_SIZE 256
+#define SD_DATA_BUFFER_MAX_SIZE 512
+#define SD_MOUNT_POINT "/sdcard"
 
-#define SD_DATA_QUEUE_SIZE CONFIG_SD_DATA_QUEUE_SIZE
-#define SD_LOG_QUEUE_SIZE CONFIG_SD_LOG_QUEUE_SIZE
-#define SD_MAX_DATA_RECEIVE CONFIG_SD_MAX_DATA_RECEIVE
-#define SD_TRY_TO_REMOUNT_DELAY CONFIG_SD_TASK_TRY_TO_MOUNT_DELAY
-#define SD_DATA_DROP_VALUE CONFIG_SD_DATA_DROP_VALUE
+#define SD_DATA_QUEUE_SIZE 20
+#define SD_LOG_QUEUE_SIZE 20
+#define SD_MAX_DATA_RECEIVE 25
+#define SD_TRY_TO_REMOUNT_DELAY 1000
+#define SD_DATA_DROP_VALUE 10
 
-#define SD_PATH_SIZE CONFIG_SD_PATH_SIZE
+#define SD_PATH_SIZE 40
 
 typedef enum {
     SD_INIT,
@@ -53,6 +53,14 @@ typedef struct {
     error_handler error_handler_fnc;
     create_sd_frame create_sd_frame_fnc;
 } sd_task_cfg_t;
+
+/**
+ * @brief Initalize sd card task
+ * 
+ * @return true :D
+ * @return false :C
+ */
+bool init_sd_card(void);
 
 /**
  * @brief Initialzie sd task

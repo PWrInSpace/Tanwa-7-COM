@@ -22,8 +22,7 @@ esp_err_t mcu_spi_init(void) {
       return ESP_OK;
     }
 
-    ret = spi_bus_initialize(spi_config.host_id, &spi_config.bus_config,
-                            SPI_DMA_CH_AUTO);
+    ret = spi_bus_initialize(spi_config.host_id, &spi_config.bus_config, SDSPI_DEFAULT_DMA);
     ESP_ERROR_CHECK(ret);
 
     // ret = spi_bus_add_device(spi_config.host_id, &spi_config.dev_config,

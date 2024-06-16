@@ -530,6 +530,7 @@ static int check_igniter_continuity(int argc, char **argv) {
 static int get_tanwa_data(int argc, char **argv) {
     tanwa_data_t tanwa_data = tanwa_data_read();
     CONSOLE_WRITE("TANWA Data:");
+    CONSOLE_WRITE("STATE: %d", tanwa_data.state);
     CONSOLE_WRITE("COM: ");
     CONSOLE_WRITE("  Vbat: %.2f", tanwa_data.com_data.vbat);
     CONSOLE_WRITE("  Valves: [F] %d, [D] %d", tanwa_data.com_data.solenoid_state_fill, tanwa_data.com_data.solenoid_state_depr);

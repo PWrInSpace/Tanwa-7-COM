@@ -21,14 +21,15 @@
 #include "TANWA_data.h"
 #include "mcu_adc_config.h"
 #include "state_machine_config.h"
+#include "timers_config.h"
 
+#include "sd_task.h"
 #include "lora_task.h"
-
-#include "console_config.h"
-
 #include "can_task.h"
 #include "measure_task.h"
 #include "esp_now_task.h"
+
+#include "console_config.h"
 
 #define TAG "APP_INIT_TASK"
 
@@ -60,6 +61,14 @@ void app_init_task(void* pvParameters) {
     ESP_LOGE(TAG, "MCU configuration failed");
   } else {
     ESP_LOGI(TAG, "### MCU configuration success ###");
+  }
+
+  ESP_LOGI(TAG, "Initializing SD Card...");
+
+  if (!init_sd_card()) {
+    ESP_LOGE(TAG, "SD Card initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### SD Card initialization success ###");
   }
 
   ESP_LOGI(TAG, "Initializing hardware...");
@@ -103,6 +112,19 @@ void app_init_task(void* pvParameters) {
     ESP_LOGE(TAG, "Shared memory initialization failed");
   } else {
     ESP_LOGI(TAG, "### Shared memory initialization success ###");
+  }
+
+  if (!initialize_timers()) {
+    ESP_LOGE(TAG, "Timers initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### Timers initialization success ###");
+  }
+
+  // Start timers
+  if (!sys_timer_start(TIMER_SD_DATA, 50, TIMER_TYPE_PERIODIC)) {
+    ESP_LOGE(TAG, "SD CARD | Timer start failed");
+  } else {
+    ESP_LOGI(TAG, "SD CARD | Timer started");
   }
 
   ESP_LOGI(TAG, "Initializing LoRa...");

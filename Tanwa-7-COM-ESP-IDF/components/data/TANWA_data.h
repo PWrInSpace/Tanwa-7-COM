@@ -19,7 +19,7 @@
 #include "slave_structs.h"
 
 typedef struct {
-    uint16_t state;
+    uint8_t state;
     // COM
     com_data_t com_data;
     can_connected_slaves_t can_connected_slaves;
@@ -44,6 +44,8 @@ bool tanwa_data_init(void);
 ///===-----------------------------------------------------------------------------------------===//
 /// update functions
 ///===-----------------------------------------------------------------------------------------===//
+
+void tanwa_data_update_state(uint8_t state);
 
 void tanwa_data_update_com_data(com_data_t *data);
 

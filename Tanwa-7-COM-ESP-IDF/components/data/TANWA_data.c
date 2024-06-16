@@ -34,6 +34,15 @@ bool tanwa_data_init(void) {
 /// update functions
 ///===-----------------------------------------------------------------------------------------===//
 
+void tanwa_data_update_state(uint8_t state) {
+    if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
+        tanwa_data.state = state;
+        xSemaphoreGive(tanwa_data_mutex);
+    } else {
+        ESP_LOGE(TAG, "Update TANWA | Failed mutex");
+    }
+}
+
 void tanwa_data_update_com_data(com_data_t *data) {
     if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
         memcpy(&tanwa_data.com_data, data, sizeof(com_data_t));
