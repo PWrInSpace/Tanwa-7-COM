@@ -28,7 +28,7 @@
 
 #define MCU_SPI_DEFAULT_CONFIG()                   \
   {                                                \
-    .host_id = HSPI_HOST,                          \
+    .host_id = SDSPI_DEFAULT_HOST,                          \
     .bus_config = {.miso_io_num = CONFIG_SPI_MISO, \
                    .mosi_io_num = CONFIG_SPI_MOSI, \
                    .sclk_io_num = CONFIG_SPI_SCK,  \

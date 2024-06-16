@@ -19,6 +19,7 @@
 
 #include "TANWA_config.h"
 #include "TANWA_data.h"
+#include "mcu_spi_config.h"
 #include "mcu_adc_config.h"
 #include "state_machine_config.h"
 #include "timers_config.h"
@@ -32,12 +33,6 @@
 #include "console_config.h"
 
 #define TAG "APP_INIT_TASK"
-
-// static sdmmc_card_t sdmmc_card;
-
-// static sd_card_t sd_card = SD_CARD_DEFAULT_CONFIG(sdmmc_card);
-
-// static sd_card_config_t sd_card_conf = SD_CARD_CONFIG_DEFAULT_CONFIG();
 
 #define APP_INIT_TASK_STACK_SIZE 4096
 #define APP_INIT_TASK_PRIORITY 1
@@ -54,13 +49,13 @@ void app_init_task(void* pvParameters) {
   ESP_LOGI(TAG, "### App initialization task started ###");
   esp_err_t ret = ESP_OK;
 
-  ESP_LOGI(TAG, "Initializing MCU configuration...");
+  ESP_LOGI(TAG, "Initializing SPI...");
 
-  ret |= TANWA_mcu_config_init();
+  ret |= mcu_spi_init();
   if (ret != ESP_OK) {
-    ESP_LOGE(TAG, "MCU configuration failed");
+      ESP_LOGE(TAG, "Failed to initialize SPI");
   } else {
-    ESP_LOGI(TAG, "### MCU configuration success ###");
+      ESP_LOGI(TAG, "SPI initialized");
   }
 
   ESP_LOGI(TAG, "Initializing SD Card...");
@@ -69,6 +64,15 @@ void app_init_task(void* pvParameters) {
     ESP_LOGE(TAG, "SD Card initialization failed");
   } else {
     ESP_LOGI(TAG, "### SD Card initialization success ###");
+  }
+
+  ESP_LOGI(TAG, "Initializing MCU configuration...");
+
+  ret |= TANWA_mcu_config_init();
+  if (ret != ESP_OK) {
+    ESP_LOGE(TAG, "MCU configuration failed");
+  } else {
+    ESP_LOGI(TAG, "### MCU configuration success ###");
   }
 
   ESP_LOGI(TAG, "Initializing hardware...");
