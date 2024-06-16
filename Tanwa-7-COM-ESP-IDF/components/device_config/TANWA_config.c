@@ -85,6 +85,13 @@ TANWA_hardware_t TANWA_hardware = {
             .state = IGNITER_STATE_WAITING,
         },
     },
+    .buzzer = {
+        ._gpio_set_level = _mcu_gpio_set_level,
+        ._delay = _buzzer_delay_ms,
+        .gpio_idx = BUZZER_GPIO_INDEX,
+        .polarity = BUZZER_POLARITY_ACTIVE_HIGH,
+        .state = BUZZER_STATE_OFF,
+    },
 };
 
 TANWA_utility_t TANWA_utility = {
@@ -165,6 +172,13 @@ esp_err_t TANWA_hardware_init() {
         return ESP_FAIL;
     } else {
         ESP_LOGI(TAG, "PCA9574 initialized");
+    }
+    ret = buzzer_init(&(TANWA_hardware.buzzer));
+    if (ret != BUZZER_OK) {
+        ESP_LOGE(TAG, "Failed to initialize buzzer");
+        return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "Buzzer initialized");
     }
     return ESP_OK;
 }

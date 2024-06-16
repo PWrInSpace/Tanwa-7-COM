@@ -14,6 +14,8 @@
 
 #include "TANWA_config.h"
 
+#include "timers_config.h"
+
 #define TAG "SMC"
 
 extern TANWA_utility_t TANWA_utility;
@@ -39,21 +41,25 @@ static void on_fueling(void *arg) {
 
 static void on_armed_to_launch(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ARMED_TO_LAUNCH);
+    buzzer_timer_change_period(3000);
     ESP_LOGI(TAG, "ON ARMED TO LAUNCH");
 }
 
 static void on_ready_to_lauch(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_RDY_TO_LAUNCH);
+    buzzer_timer_change_period(2000);
     ESP_LOGI(TAG, "ON READY_TO_LAUNCH");
 }
 
 static void on_countdown(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_COUTDOWN);
+    buzzer_timer_change_period(1000);
     ESP_LOGI(TAG, "ON COUNTDOWN");
 }
 
 static void on_flight(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_FLIGHT);
+    sys_timer_stop(TIMER_BUZZER);
     ESP_LOGI(TAG, "----> ON FLIGHT <----");
 }
 

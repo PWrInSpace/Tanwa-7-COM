@@ -7,6 +7,7 @@
 
 typedef enum {
     TIMER_SD_DATA = 0,
+    TIMER_BUZZER = 1,
 } timers_id_def;
 
 /**
@@ -16,5 +17,7 @@ typedef enum {
  * @return false :C
  */
 bool initialize_timers(void);
+
+bool buzzer_timer_change_period(uint32_t period_ms);
 
 #endif

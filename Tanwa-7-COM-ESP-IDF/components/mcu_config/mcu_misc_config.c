@@ -28,6 +28,10 @@ void _lora_delay_ms(uint32_t ms) {
     vTaskDelay(pdMS_TO_TICKS(ms));
 }
 
+void _buzzer_delay_ms(uint32_t ms) {
+    vTaskDelay(pdMS_TO_TICKS(ms));
+}
+
 uint32_t _get_uptime_ms(void) {
     return esp_timer_get_time() / 1000.0;
 }

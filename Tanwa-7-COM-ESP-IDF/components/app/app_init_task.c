@@ -124,11 +124,18 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "### Timers initialization success ###");
   }
 
-  // Start timers
+  // SD CARD TIMER
   if (!sys_timer_start(TIMER_SD_DATA, 50, TIMER_TYPE_PERIODIC)) {
     ESP_LOGE(TAG, "SD CARD | Timer start failed");
   } else {
     ESP_LOGI(TAG, "SD CARD | Timer started");
+  }
+
+  // BUZZER TIMER
+  if (!sys_timer_start(TIMER_BUZZER, 5000, TIMER_TYPE_PERIODIC)) {
+    ESP_LOGE(TAG, "BUZZER | Timer start failed");
+  } else {
+    ESP_LOGI(TAG, "BUZZER | Timer started");
   }
 
   ESP_LOGI(TAG, "Initializing LoRa...");

@@ -19,6 +19,7 @@
 #include "pca9574.h"
 #include "sdcard.h"
 #include "igniter_driver.h"
+#include "buzzer_driver.h"
 
 #include "led_state_display.h"
 #include "pressure_driver.h"
@@ -35,6 +36,7 @@ typedef struct {
     ads1115_struct_t ads1115;
     pca9574_struct_t pca9574;
     igniter_struct_t igniter[2];
+    buzzer_struct_t buzzer;
 } TANWA_hardware_t;
 
 // TANWA utilities 

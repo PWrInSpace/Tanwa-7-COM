@@ -11,8 +11,7 @@
 #define TAG "MCU_GPIO"
 
 static mcu_gpio_config_t mcu_gpio_config = {
-    .pins = {LED_GPIO, LORA_RST_GPIO, LORA_CS_GPIO, ABORT_GPIO, ARM_GPIO, FIRE_1_GPIO, FIRE_2_GPIO, 
-             LORA_D0_GPIO},
+    .pins = {LED_GPIO, LORA_RST_GPIO, LORA_CS_GPIO, LORA_D0_GPIO, ABORT_GPIO, BUZZER_GPIO, ARM_GPIO, FIRE_1_GPIO, FIRE_2_GPIO},
     .num_pins = MAX_GPIO_INDEX,
     .configs = {
         {
@@ -49,6 +48,13 @@ static mcu_gpio_config_t mcu_gpio_config = {
             .pull_up_en = GPIO_PULLUP_ENABLE,
             .pull_down_en = GPIO_PULLDOWN_DISABLE,
             .intr_type = GPIO_INTR_NEGEDGE,
+        },
+        {
+            .pin_bit_mask = (1ULL << BUZZER_GPIO),
+            .mode = GPIO_MODE_OUTPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_DISABLE,
         },
         {
             .pin_bit_mask = (1ULL << ARM_GPIO),
@@ -97,6 +103,7 @@ esp_err_t mcu_gpio_init() {
 }
 
 bool _mcu_gpio_set_level(uint8_t gpio, uint8_t level) {
+    // ESP_LOGI(TAG, "Setting GPIO pin %d to %d", mcu_gpio_config.pins[gpio], level);
     return gpio_set_level(mcu_gpio_config.pins[gpio], level) == ESP_OK ? true : false;
 }
 
