@@ -45,7 +45,7 @@ static mcu_gpio_config_t mcu_gpio_config = {
         {
             .pin_bit_mask = (1ULL << ABORT_GPIO),
             .mode = GPIO_MODE_INPUT,
-            .pull_up_en = GPIO_PULLUP_ENABLE,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
             .pull_down_en = GPIO_PULLDOWN_DISABLE,
             .intr_type = GPIO_INTR_NEGEDGE,
         },
@@ -129,6 +129,16 @@ bool _lora_gpio_attach_d0_isr(gpio_isr_t interrupt_cb) {
         return false;
     }
     res = gpio_isr_handler_add(LORA_D0_GPIO, interrupt_cb, NULL); 
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "GPIO ISR handler add failed!");
+        return false;
+    }
+    return true;
+}
+
+bool _lora_gpio_attach_abort_isr(gpio_isr_t interrupt_cb) {
+    esp_err_t res = ESP_OK;
+    res = gpio_isr_handler_add(ABORT_GPIO, interrupt_cb, NULL);
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "GPIO ISR handler add failed!");
         return false;

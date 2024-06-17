@@ -131,13 +131,24 @@ void tanwa_depr(uint8_t valve_cmd) {
 }
 
 void tanwa_qd_1(uint8_t qd_cmd) {
-    // ToDo: send command to FAC vid CAN to push/pull quick disconnect
     if (qd_cmd == CMD_QD_PUSH) {
-        // ToDo: send push command to FAC
+        const twai_message_t fac_mess = CAN_FAC_QD_PUSH();
+        if (twai_transmit(&fac_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            can_task_add_rx_counter();
+            change_can_task_period(100U);
+        }
     } else if (qd_cmd == CMD_QD_STOP) {
-        // ToDo: send stop command to FAC
+        const twai_message_t fac_mess = CAN_FAC_QD_STOP();
+        if (twai_transmit(&fac_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            can_task_add_rx_counter();
+            change_can_task_period(100U);
+        }
     } else if (qd_cmd == CMD_QD_PULL) {
-        // ToDo: send pull command to FAC
+        const twai_message_t fac_mess = CAN_FAC_QD_PULL();
+        if (twai_transmit(&fac_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+            can_task_add_rx_counter();
+            change_can_task_period(100U);
+        }
     } else {
         ESP_LOGE(TAG, "QD | Invalid command | %d", qd_cmd);
     }
@@ -152,7 +163,7 @@ void tanwa_qd_2(uint8_t qd_cmd) {
     } else if (qd_cmd == CMD_QD_PULL) {
         // ToDo: send pull command to FAC
     } else {
-        ESP_LOGE(TAG, "QD | Invalid command | %d", qd_cmd);
+        ESP_LOGE(TAG, "QD 2 | Invalid command | %d", qd_cmd);
     }
 }
 

@@ -131,7 +131,7 @@ void can_task(void* pvParameters) {
                         break;
                     }
                     case CAN_FAC_RX_STATUS: {
-                        ESP_LOGI(TAG, "Received FAC status");
+                        // ESP_LOGI(TAG, "Received FAC status");
                         can_task_sub_rx_counter();
                         parse_can_fac_status(rx_message);
                         break;

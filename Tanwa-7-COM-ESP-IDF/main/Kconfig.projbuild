@@ -106,13 +106,13 @@ menu "TANWA +7 COM board config ESP32"
                 
         config IGNIT_CONT_1
             int "IGNIT_CONT_1 pin number"
-            default 34
+            default 35
             help
                 GPIO pin number for Igniter Continuity 1
 
         config IGNIT_CONT_2
             int "IGNIT_CONT_2 pin number"
-            default 35
+            default 34
             help
                 GPIO pin number for Igniter Continuity 2
         

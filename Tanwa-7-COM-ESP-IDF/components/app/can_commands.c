@@ -113,7 +113,7 @@ void parse_can_fac_status(twai_message_t rx_message) {
         .limit_switch_1 = *((uint8_t*)(rx_message.data + CON_FAC_STATUS_LIMIT_1_POS)),
         .limit_switch_2 = *((uint8_t*)(rx_message.data + CON_FAC_STATUS_LIMIT_2_POS)),
     };
-    ESP_LOGI(TAG, "FAC status: status: %d, request: %d, motor state 1: %d, motor state 2: %d, limit switch 1: %d, limit switch 2: %d", fac_status.status, fac_status.request, fac_status.motor_state_1, fac_status.motor_state_2, fac_status.limit_switch_1, fac_status.limit_switch_2);
+    // ESP_LOGI(TAG, "FAC status: status: %d, request: %d, motor state 1: %d, motor state 2: %d, limit switch 1: %d, limit switch 2: %d", fac_status.status, fac_status.request, fac_status.motor_state_1, fac_status.motor_state_2, fac_status.limit_switch_1, fac_status.limit_switch_2);
     tanwa_data_update_can_fac_status(&fac_status);
     if (fac_status.request == CAN_REQ_SOFT_RESET) {
         const twai_message_t fac_mess = CAN_FAC_SOFT_RESET();

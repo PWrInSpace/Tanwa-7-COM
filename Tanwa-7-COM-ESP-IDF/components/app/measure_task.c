@@ -68,10 +68,10 @@ void copy_tanwa_data_to_now_struct(DataToObc *now_struct){
     now_struct->hxRequest_RCK = 0; // TODO: Implement
     now_struct->hxRequest_TANK = 0; // TODO: Implement
     now_struct->vbat = tanwa_data.com_data.vbat;
-    now_struct->motorState_1 = 0; // TODO: Implement
-    now_struct->motorState_2 = 0; // TODO: Implement
-    now_struct->motorState_3 = 0; // TODO: Implement
-    now_struct->motorState_4 = 0; // TODO: Implement
+    now_struct->motorState_1 = tanwa_data.com_data.solenoid_state_fill;
+    now_struct->motorState_2 = tanwa_data.com_data.solenoid_state_depr;
+    now_struct->motorState_3 = tanwa_data.can_fac_status.motor_state_1;
+    now_struct->motorState_4 = tanwa_data.can_fac_status.motor_state_2;
     now_struct->rocketWeight_blink = 0; // TODO: Implement
     now_struct->rocketWeight_temp = tanwa_data.can_hx_rocket_status.temperature;
     now_struct->tankWeight_blink = 0; // TODO: Implement
@@ -151,18 +151,18 @@ void measure_task(void* pvParameters) {
             tanwa_data_update_com_data(&com_data);
 
             // Oxidizer board status
-            // const twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
-            // if (twai_transmit(&hx_oxi_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
-            //     can_task_add_rx_counter();
-            //     change_can_task_period(100U);
-            // }
+            const twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
+            if (twai_transmit(&hx_oxi_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
+                can_task_add_rx_counter();
+                change_can_task_period(100U);
+            }
 
             // Oxidizer weight measurement
-            // const twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
-            // if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
-            //     can_task_add_rx_counter();
-            //     change_can_task_period(100U);
-            // }
+            const twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
+            if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+                can_task_add_rx_counter();
+                change_can_task_period(100U);
+            }
 
             // Rocket board status 
             const twai_message_t hx_rck_stat = CAN_HX_RCK_GET_STATUS();
