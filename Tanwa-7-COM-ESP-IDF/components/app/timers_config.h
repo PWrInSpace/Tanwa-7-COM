@@ -18,6 +18,8 @@ typedef enum {
  */
 bool initialize_timers(void);
 
+bool buzzer_timer_start(uint32_t period_ms);
+
 bool buzzer_timer_change_period(uint32_t period_ms);
 
 #endif

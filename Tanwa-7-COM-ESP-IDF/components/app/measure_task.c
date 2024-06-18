@@ -65,8 +65,8 @@ void copy_tanwa_data_to_now_struct(DataToObc *now_struct){
     now_struct->abortButton = 0; // TODO: Implement abort button state
     now_struct->igniterContinouity_1 = tanwa_data.com_data.igniter_cont_1;
     now_struct->igniterContinouity_2 = tanwa_data.com_data.igniter_cont_2;
-    now_struct->hxRequest_RCK = 0; // TODO: Implement
-    now_struct->hxRequest_TANK = 0; // TODO: Implement
+    now_struct->hxRequest_RCK = tanwa_data.can_hx_rocket_status.request;
+    now_struct->hxRequest_TANK = tanwa_data.can_hx_oxidizer_status.request;
     now_struct->vbat = tanwa_data.com_data.vbat;
     now_struct->motorState_1 = tanwa_data.com_data.solenoid_state_fill;
     now_struct->motorState_2 = tanwa_data.com_data.solenoid_state_depr;

@@ -41,6 +41,10 @@ bool initialize_timers(void) {
     return sys_timer_init(timers, sizeof(timers) / sizeof(timers[0]));
 }
 
+bool buzzer_timer_start(uint32_t period_ms) {
+    return sys_timer_start(TIMER_BUZZER, period_ms, TIMER_TYPE_PERIODIC);
+}
+
 bool buzzer_timer_change_period(uint32_t period_ms) {
     if (!sys_timer_stop(TIMER_BUZZER)) {
         ESP_LOGE(TAG, "Failed to stop buzzer timer");

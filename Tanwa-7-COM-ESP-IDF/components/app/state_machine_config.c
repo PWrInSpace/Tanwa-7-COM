@@ -36,6 +36,7 @@ static void on_recovery_arm(void *arg) {
 
 static void on_fueling(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_FUELING);
+    buzzer_timer_start(5000);
     ESP_LOGI(TAG, "ON FUELING");
 }
 
