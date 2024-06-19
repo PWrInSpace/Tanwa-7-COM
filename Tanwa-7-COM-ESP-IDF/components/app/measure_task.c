@@ -29,13 +29,14 @@
 #define MEASURE_TASK_STACK_SIZE 4096
 #define MEASURE_TASK_PRIORITY 1
 #define MEASURE_TASK_CORE 1
+#define MEASURE_TASK_DEFAULT_FREQ 500
 
 extern TANWA_hardware_t TANWA_hardware;
 extern TANWA_utility_t TANWA_utility;
 
 static TaskHandle_t measure_task_handle = NULL;
 static SemaphoreHandle_t measure_task_freq_mutex = NULL;
-static volatile TickType_t measure_task_freq = 10000;
+static volatile TickType_t measure_task_freq = MEASURE_TASK_DEFAULT_FREQ;
 
 void run_measure_task(void) {
     measure_task_freq_mutex = xSemaphoreCreateMutex();
@@ -185,8 +186,19 @@ void measure_task(void* pvParameters) {
                 change_can_task_period(100U);
             }
 
-            // Fetch data from CAN bus
-            // ToDo
+            // Termo control status
+            const twai_message_t termo_stat = CAN_TERMO_GET_STATUS();
+            if (twai_transmit(&termo_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
+                can_task_add_rx_counter();
+                change_can_task_period(100U);
+            }
+
+            // Termo control data
+            const twai_message_t termo_mess = CAN_TERMO_GET_DATA();
+            if (twai_transmit(&termo_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
+                can_task_add_rx_counter();
+                change_can_task_period(100U);
+            }
 
             // Update esp now data structure
             DataToObc now_data_struct;

@@ -39,6 +39,16 @@ static int reset_hx_rck(int argc, char **arg) {
     return 0;
 }
 
+static int reset_hx_oxi(int argc, char **arg) {
+    const twai_message_t hx_oxi_mess = {
+        .identifier = 0x0B9, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
 static int enable_log(int argc, char **argv) {
     if (argc == 2) {
         esp_log_level_set(argv[1], ESP_LOG_DEBUG);
@@ -101,17 +111,6 @@ static int change_to_previous_state(int argc, char **argv) {
 
 static int get_state(int argc, char **argv) {
     CONSOLE_WRITE_G("Current state -> %d", state_machine_get_current_state());
-    return 0;
-}
-
-static int change_measure_period(int argc, char **argv) {
-    if (argc < 2) {
-        return -1;
-    }
-
-    uint32_t period = atoi(argv[1]);
-    change_measure_task_period(period);
-
     return 0;
 }
 
@@ -527,6 +526,207 @@ static int check_igniter_continuity(int argc, char **argv) {
     return 0;
 }
 
+static int qd_pull(int argc, char **argv) {
+    const twai_message_t fac_mess = {
+        .identifier = 0x0C1, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int qd_stop(int argc, char **argv) {
+    const twai_message_t fac_mess = {
+        .identifier = 0x0C2,
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int qd_push(int argc, char **argv) {
+    const twai_message_t fac_mess = {
+        .identifier = 0x0C3,
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int hx_rck_tare(int argc, char **argv) {
+    const twai_message_t hx_rck_mess = {
+        .identifier = 0x0A2, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int hx_rck_calibrate(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+    float calib = atoi(argv[1]);
+    twai_message_t hx_rck_mess = {
+        .identifier = 0x0A3, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    memcpy(hx_rck_mess.data, &calib, sizeof(float));
+    twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int hx_rck_set_calib_factor(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+    float calib = atoi(argv[1]);
+    twai_message_t hx_rck_mess = {
+        .identifier = 0x0A4, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    memcpy(hx_rck_mess.data, &calib, sizeof(float));
+    twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int hx_rck_set_offset(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+    float offset = atoi(argv[1]);
+    twai_message_t hx_rck_mess = {
+        .identifier = 0x0A5, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    memcpy(hx_rck_mess.data, &offset, sizeof(float));
+    twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int hx_oxi_tare(int argc, char **argv) {
+    const twai_message_t hx_oxi_mess = {
+        .identifier = 0x0B2, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int hx_oxi_calibrate(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+    float calib = atoi(argv[1]);
+    twai_message_t hx_oxi_mess = {
+        .identifier = 0x0B3, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    memcpy(hx_oxi_mess.data, &calib, sizeof(float));
+    twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int hx_oxi_set_calib_factor(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+    float calib = atoi(argv[1]);
+    twai_message_t hx_oxi_mess = {
+        .identifier = 0x0B4, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    memcpy(hx_oxi_mess.data, &calib, sizeof(float));
+    twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int hx_oxi_set_offset(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+    float offset = atoi(argv[1]);
+    twai_message_t hx_oxi_mess = {
+        .identifier = 0x0B5, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    memcpy(hx_oxi_mess.data, &offset, sizeof(float));
+    twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int termo_heat_start(int argc, char **argv) {
+    const twai_message_t termo_mess = {
+        .identifier = 0x0E2, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&termo_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int termo_heat_stop(int argc, char **argv) {
+    const twai_message_t termo_mess = {
+        .identifier = 0x0E3, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&termo_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int termo_set_max_pressure(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+    float pressure = atoi(argv[1]);
+    twai_message_t termo_mess = {
+        .identifier = 0x0E6, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    memcpy(termo_mess.data, &pressure, sizeof(float));
+    twai_transmit(&termo_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int termo_set_min_pressure(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+    float pressure = atoi(argv[1]);
+    twai_message_t termo_mess = {
+        .identifier = 0x0E7, 
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    memcpy(termo_mess.data, &pressure, sizeof(float));
+    twai_transmit(&termo_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int change_measure_period(int argc, char **argv) {
+    if (argc < 2) {
+        return -1;
+    }
+
+    uint32_t period = atoi(argv[1]);
+    change_measure_task_period(period);
+
+    return 0;
+}
+
 static int get_tanwa_data(int argc, char **argv) {
     tanwa_data_t tanwa_data = tanwa_data_read();
     CONSOLE_WRITE("TANWA Data:");
@@ -634,6 +834,25 @@ static esp_console_cmd_t cmd[] = {
     {"igniter-fire", "fire igniter", "1|2|a", fire_igniter, NULL},
     {"igniter-reset", "reset igniter", "1|2|a", reset_igniter, NULL},
     {"igniter-continuity", "check igniters continuity", NULL, check_igniter_continuity, NULL},
+    // hx rck commands
+    {"rck-tare", "tare hx rck", NULL, hx_rck_tare, NULL},
+    {"rck-calibrate", "calibrate hx rck", NULL, hx_rck_calibrate, NULL},
+    {"rck-set-calib", "set the calibration factor", "factor", hx_rck_set_calib_factor, NULL},
+    {"rck-set-offset", "set the offset", "offset", hx_rck_set_offset, NULL},
+    // hx oxi commands
+    {"oxi-tare", "tare hx oxi", NULL, hx_oxi_tare, NULL},
+    {"oxi-calibrate", "calibrate hx oxi", NULL, hx_oxi_calibrate, NULL},
+    {"oxi-set-calib", "set the calibration factor", "factor", hx_oxi_set_calib_factor, NULL},
+    {"oxi-set-offset", "set the offset", "offset", hx_oxi_set_offset, NULL},
+    // quick disconnect commands
+    {"qd-pull", "pull quick disconnect", NULL, qd_pull, NULL},
+    {"qd-stop", "stop quick disconnect", NULL, qd_stop, NULL},
+    {"qd-push", "push quick disconnect", NULL, qd_push, NULL},
+    // termo commands
+    {"termo-heat-start", "start termo heating", NULL, termo_heat_start, NULL},
+    {"termo-heat-stop", "stop termo heating", NULL, termo_heat_stop, NULL},
+    {"termo-set-max", "set termo max pressure", "max_pressure", termo_set_max_pressure, NULL},
+    {"termo-set-min", "set termo min pressure", "min_pressure", termo_set_min_pressure, NULL},
     // measument task commands
     {"measure-period", "change measurement period", "period", change_measure_period, NULL},
     // tanwa data commands
