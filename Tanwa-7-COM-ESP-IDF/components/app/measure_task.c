@@ -15,14 +15,19 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 
-#include "esp_log.h"
-
-#include "now.h"
-#include "can_task.h"
-#include "can_commands.h"
 #include "TANWA_config.h"
 #include "TANWA_data.h"
+
+#include "now.h"
+
+#include "mcu_gpio_config.h"
 #include "state_machine_config.h"
+
+#include "can_commands.h"
+#include "can_task.h"
+#include "timers_config.h"
+
+#include "esp_log.h"
 
 #define TAG "MEASURE_TASK"
 

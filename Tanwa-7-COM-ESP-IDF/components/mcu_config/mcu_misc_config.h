@@ -21,6 +21,8 @@ void _lora_delay_ms(uint32_t ms);
 
 void _buzzer_delay_ms(uint32_t ms);
 
+void _abort_button_delay_ms(uint32_t ms);
+
 uint32_t _get_uptime_ms(void);
 
 void _lora_log(const char* info);

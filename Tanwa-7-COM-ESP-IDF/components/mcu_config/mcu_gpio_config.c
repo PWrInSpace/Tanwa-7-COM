@@ -108,12 +108,7 @@ bool _mcu_gpio_set_level(uint8_t gpio, uint8_t level) {
 }
 
 bool _mcu_gpio_get_level(uint8_t gpio, uint8_t* level) {
-    uint8_t res = gpio_get_level(mcu_gpio_config.pins[gpio]);
-    if (res != ESP_OK) {
-        ESP_LOGE(TAG, "GPIO pin %d read failed!", mcu_gpio_config.pins[gpio]);
-        return false;
-    }
-    *level = (uint8_t)res;
+    *level = (uint8_t) gpio_get_level(mcu_gpio_config.pins[gpio]);;
     return true;
 }
 
@@ -136,7 +131,7 @@ bool _lora_gpio_attach_d0_isr(gpio_isr_t interrupt_cb) {
     return true;
 }
 
-bool _lora_gpio_attach_abort_isr(gpio_isr_t interrupt_cb) {
+bool _abort_gpio_attach_isr(gpio_isr_t interrupt_cb) {
     esp_err_t res = ESP_OK;
     res = gpio_isr_handler_add(ABORT_GPIO, interrupt_cb, NULL);
     if (res != ESP_OK) {

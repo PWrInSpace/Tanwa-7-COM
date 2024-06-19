@@ -19,8 +19,10 @@
 
 #include "TANWA_config.h"
 #include "TANWA_data.h"
+#include "mcu_gpio_config.h"
 #include "mcu_spi_config.h"
 #include "mcu_adc_config.h"
+#include "mcu_misc_config.h"
 #include "state_machine_config.h"
 #include "timers_config.h"
 
@@ -29,6 +31,8 @@
 #include "can_task.h"
 #include "measure_task.h"
 #include "esp_now_task.h"
+
+#include "abort_button.h"
 
 #include "console_config.h"
 
@@ -137,7 +141,7 @@ void app_init_task(void* pvParameters) {
     ESP_LOGE(TAG, "LoRa initialization failed");
   } else {
     ESP_LOGI(TAG, "### LoRa initialization success ###");
-  } 
+  }
 
   ESP_LOGI(TAG, "### App initialization finished ###");
 
@@ -157,6 +161,14 @@ void app_init_task(void* pvParameters) {
   run_measure_task();
   vTaskDelay(pdMS_TO_TICKS(100));
   run_esp_now_task();
+
+  ESP_LOGI(TAG, "Initializating abort button...");
+  ret |= abort_button_init();
+  if (ret != ABORT_BUTTON_OK) {
+    ESP_LOGE(TAG, "Abort button initialization failed");
+  } else {
+    ESP_LOGI(TAG, "Abort button initialized");
+  }
 
   vTaskDelete(NULL);
 }
