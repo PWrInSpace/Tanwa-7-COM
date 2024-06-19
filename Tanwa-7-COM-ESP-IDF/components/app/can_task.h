@@ -15,6 +15,8 @@
 
 #include <stdint.h>
 
+#include "mcu_twai_config.h"
+
 /**
  * @brief Function for starting the can bus task.
  */
@@ -26,20 +28,18 @@ void run_can_task(void);
 void stop_can_task(void);
 
 /**
- * @brief Function for changing the period of the can bus task.
- * @param period_ms New period in milliseconds.
+ * @brief Function for adding the CAN message to the queue
+ * @param message Pointer to the message.
  */
-void change_can_task_period(uint32_t period_ms);
+bool can_task_add_message(twai_message_t* message);
 
 /**
- * @brief Function for add a message to the counter.
+ * @brief Function for adding the CAN message to the queue, with adding the rx counter.
+ * @param message Pointer to the message.
  */
-void can_task_add_rx_counter(void);
+bool can_task_add_message_with_rx(twai_message_t* message);
 
-/**
- * @brief Function for subtract a message from the counter.
- */
-void can_task_sub_rx_counter(void);
+bool can_task_check_alerts_and_recover(void);
 
 /**
  * @brief Task for receiving and parsing the CAN BUS messages.

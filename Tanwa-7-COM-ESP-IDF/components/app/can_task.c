@@ -15,11 +15,9 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 
-#include "esp_log.h"
-
-#include "mcu_twai_config.h"
-
 #include "can_commands.h"
+
+#include "esp_log.h"
 
 #define TAG "CAN_TASK"
 
@@ -60,7 +58,7 @@ void stop_can_task(void) {
     }
 }
 
-void change_can_task_period(uint32_t period_ms) {
+static void change_can_task_period(uint32_t period_ms) {
     if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
         can_task_freq = (TickType_t) period_ms;
         xSemaphoreGive(can_task_freq_mutex);
@@ -68,7 +66,7 @@ void change_can_task_period(uint32_t period_ms) {
     }
 }
 
-void can_task_add_rx_counter(void) {
+static void can_task_add_rx_counter(void) {
     if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
         can_task_rx_counter++;
         xSemaphoreGive(can_task_freq_mutex);
@@ -76,7 +74,25 @@ void can_task_add_rx_counter(void) {
     }
 }
 
-void can_task_sub_rx_counter(void) {
+bool can_task_add_message(twai_message_t *message) {
+    if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to send the message");
+        return false;
+    }
+    return true;
+}
+
+bool can_task_add_message_with_rx(twai_message_t *message) {
+    if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to send the message");
+        return false;
+    }
+    can_task_add_rx_counter();
+    change_can_task_period(100U);
+    return true;
+}
+
+static void can_task_sub_rx_counter(void) {
     if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
         can_task_rx_counter--;
         xSemaphoreGive(can_task_freq_mutex);

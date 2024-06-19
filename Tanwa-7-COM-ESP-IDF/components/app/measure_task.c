@@ -157,53 +157,32 @@ void measure_task(void* pvParameters) {
             tanwa_data_update_com_data(&com_data);
 
             // Oxidizer board status
-            const twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
-            if (twai_transmit(&hx_oxi_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
-                can_task_add_rx_counter();
-                change_can_task_period(100U);
-            }
+            twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
+            can_task_add_message_with_rx(&hx_oxi_stat);
 
             // Oxidizer weight measurement
-            const twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
-            if (twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
-                can_task_add_rx_counter();
-                change_can_task_period(100U);
-            }
+            twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
+            can_task_add_message_with_rx(&hx_oxi_mess);
 
             // Rocket board status 
-            const twai_message_t hx_rck_stat = CAN_HX_RCK_GET_STATUS();
-            if (twai_transmit(&hx_rck_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
-                can_task_add_rx_counter();
-                change_can_task_period(100U);
-            }
+            twai_message_t hx_rck_stat = CAN_HX_RCK_GET_STATUS();
+            can_task_add_message_with_rx(&hx_rck_stat);
 
             // Rocket weight measurement
-            const twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
-            if (twai_transmit(&hx_rck_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
-                can_task_add_rx_counter();
-                change_can_task_period(100U);
-            }
+            twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
+            can_task_add_message_with_rx(&hx_rck_mess);
 
             // Filling arm status
-            const twai_message_t filling_arm_stat = CAN_FAC_GET_STATUS();
-            if (twai_transmit(&filling_arm_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
-                can_task_add_rx_counter();
-                change_can_task_period(100U);
-            }
+            twai_message_t filling_arm_stat = CAN_FAC_GET_STATUS();
+            can_task_add_message_with_rx(&filling_arm_stat);
 
             // Termo control status
-            const twai_message_t termo_stat = CAN_TERMO_GET_STATUS();
-            if (twai_transmit(&termo_stat, pdMS_TO_TICKS(100)) == ESP_OK) {
-                can_task_add_rx_counter();
-                change_can_task_period(100U);
-            }
+            twai_message_t termo_stat = CAN_TERMO_GET_STATUS();
+            can_task_add_message_with_rx(&termo_stat);
 
             // Termo control data
-            const twai_message_t termo_mess = CAN_TERMO_GET_DATA();
-            if (twai_transmit(&termo_mess, pdMS_TO_TICKS(100)) == ESP_OK) {
-                can_task_add_rx_counter();
-                change_can_task_period(100U);
-            }
+            twai_message_t termo_mess = CAN_TERMO_GET_DATA();
+            can_task_add_message_with_rx(&termo_mess);
 
             // Update esp now data structure
             DataToObc now_data_struct;
