@@ -733,6 +733,7 @@ static int get_tanwa_data(int argc, char **argv) {
     CONSOLE_WRITE("STATE: %d", tanwa_data.state);
     CONSOLE_WRITE("COM: ");
     CONSOLE_WRITE("  Vbat: %.2f", tanwa_data.com_data.vbat);
+    CONSOLE_WRITE("  Abort button: %d", tanwa_data.com_data.abort_button);
     CONSOLE_WRITE("  Valves: [F] %d, [D] %d", tanwa_data.com_data.solenoid_state_fill, tanwa_data.com_data.solenoid_state_depr);
     CONSOLE_WRITE("  Pressures: [0] %.2f, [1] %.2f, [2] %.2f, [3] %.2f",
                   tanwa_data.com_data.pressure_1, tanwa_data.com_data.pressure_2,

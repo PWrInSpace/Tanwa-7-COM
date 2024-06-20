@@ -26,6 +26,7 @@
 #include "can_commands.h"
 #include "can_task.h"
 #include "timers_config.h"
+#include "abort_button.h"
 
 #include "esp_log.h"
 
@@ -68,7 +69,7 @@ void copy_tanwa_data_to_now_struct(DataToObc *now_struct){
     now_struct->pressureSensor = (uint16_t) tanwa_data.com_data.pressure_1;
     now_struct->solenoid_fill = tanwa_data.com_data.solenoid_state_fill;
     now_struct->solenoid_depr = tanwa_data.com_data.solenoid_state_depr;
-    now_struct->abortButton = 0; // TODO: Implement abort button state
+    now_struct->abortButton = tanwa_data.com_data.abort_button;
     now_struct->igniterContinouity_1 = tanwa_data.com_data.igniter_cont_1;
     now_struct->igniterContinouity_2 = tanwa_data.com_data.igniter_cont_2;
     now_struct->hxRequest_RCK = tanwa_data.can_hx_rocket_status.request;
@@ -121,6 +122,15 @@ void measure_task(void* pvParameters) {
             TANWA_get_vbat(&vbat);
             // ESP_LOGI(TAG, "Battery voltage: %.2f", vbat);
             com_data.vbat = vbat;
+
+            // Abort button state
+            uint8_t abort_button_state;
+            abort_button_get_level(&abort_button_state);
+            if (abort_button_state == 0) {
+                com_data.abort_button = true;
+            } else {
+                com_data.abort_button = false;
+            }
 
             // Check solenoid states
             solenoid_driver_valve_get_state(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FILL, &sol_fill);

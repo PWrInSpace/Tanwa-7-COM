@@ -47,5 +47,5 @@ void abort_button_callback(void* arg) {
     // Disable the interrupt to prevent re-triggering during debounce period
     gpio_intr_disable(ABORT_GPIO);
     // Start the debounce timer with a delay of 50 ms
-    abort_button_timer_start_once(50);
+    abort_button_timer_start_once(500);
 }

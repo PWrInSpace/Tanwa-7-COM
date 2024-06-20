@@ -1,12 +1,13 @@
 // Copyright 2022 PWrInSpace, Kuba
 #include "timers_config.h"
 
+#include "buzzer_driver.h"
+
 #include "TANWA_config.h"
 #include "TANWA_data.h"
 
 #include "mcu_gpio_config.h"
-
-#include "buzzer_driver.h"
+#include "state_machine_config.h"
 
 #include "sd_task.h"
 
@@ -41,8 +42,9 @@ void on_abort_button_timer(void *arg){
     uint8_t level;
     _mcu_gpio_get_level(ABORT_GPIO_INDEX, &level);
     if (level == 0) {
-        ESP_LOGW(TAG, "Abort Button pressed!");
+        ESP_LOGW(TAG, "ABORT BUTTON PRESSED!");
         // Handle the button press event (e.g., send a message to a task)
+        state_machine_force_change_state(ABORT);
     }
     // Re-enable the interrupt
     gpio_intr_enable(ABORT_GPIO);

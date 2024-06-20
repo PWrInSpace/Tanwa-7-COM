@@ -87,6 +87,8 @@ static void on_hold(void *arg) {
 static void on_abort(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ABORT);
     ESP_LOGI(TAG, "ON ABORT");
+    solenoid_driver_valve_close(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
+    solenoid_driver_valve_open(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
 }
 
 static state_config_t states_cfg[] = {
