@@ -265,8 +265,8 @@ void tanwa_set_offset_oxi(float offset) {
 }
 
 void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
-    if (lora_id == LORA_DEV_ID_ALL || lora_id == LORA_DEV_ID_TANWA || 
-        lora_id == (LORA_DEV_ID_TANWA | LORA_DEV_ID_SUDO_MASK)) { 
+    if (lora_id == LORA_DEV_ID_ALL || lora_id == LORA_DEV_ID_ALL_SUDO || 
+        lora_id == LORA_DEV_ID_TANWA || lora_id == LORA_DEV_ID_TANWA_SUDO) { 
         // Check if the command is for this device
         ESP_LOGI(TAG, "LORA | Command for TANWA");
         switch (command) {

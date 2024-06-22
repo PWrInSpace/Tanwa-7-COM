@@ -17,10 +17,9 @@
 #include <stdbool.h>
 
 #define LORA_DEV_ID_ALL 0x00
+#define LORA_DEV_ID_ALL_SUDO 0x01
 #define LORA_DEV_ID_TANWA 0x04
-
-#define LORA_DEV_ID_SUDO_MASK 0x01
-
+#define LORA_DEV_ID_TANWA_SUDO 0x05
 ///===-----------------------------------------------------------------------------------------===//
 // ESP-NOW & LORA commands IDs
 ///===-----------------------------------------------------------------------------------------===//

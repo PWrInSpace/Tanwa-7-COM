@@ -67,8 +67,8 @@ void copy_tanwa_data_to_now_struct(DataToObc *now_struct){
     // Copy data to now struct
     now_struct->tanWaState = tanwa_data.state;
     now_struct->pressureSensor = (uint16_t) tanwa_data.com_data.pressure_1;
-    now_struct->solenoid_fill = tanwa_data.com_data.solenoid_state_fill;
-    now_struct->solenoid_depr = tanwa_data.com_data.solenoid_state_depr;
+    now_struct->solenoid_fill = 0;
+    now_struct->solenoid_depr = 0;
     now_struct->abortButton = tanwa_data.com_data.abort_button;
     now_struct->igniterContinouity_1 = tanwa_data.com_data.igniter_cont_1;
     now_struct->igniterContinouity_2 = tanwa_data.com_data.igniter_cont_2;
