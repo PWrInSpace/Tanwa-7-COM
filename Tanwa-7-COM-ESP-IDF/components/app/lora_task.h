@@ -7,7 +7,7 @@
 #include "lora.h"
 
 #define LORA_TASK_CRC_ENABLE 0
-#define LORA_TASK_FREQUENCY_KHZ 868000
+#define LORA_TASK_FREQUENCY_KHZ 923000
 #define LORA_TASK_BANDWIDTH 8
 #define LORA_TASK_SPREADING_FACTOR 1
 #define LORA_TASK_RECEIVE_WINDOW 1500
@@ -16,7 +16,7 @@
 #define PRIVILAGE_MASK 0x01
 #define BORADCAST_DEV_ID 0x00
 
-#define PACKET_PREFIX "SP3MIK"
+#define PACKET_PREFIX "W5SP3MIK"
 
 typedef uint8_t lora_dev_id;
 typedef void (*lora_task_process_rx_packet)(uint8_t *packet, size_t packet_size);
