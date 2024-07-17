@@ -36,6 +36,8 @@
 
 #include "console_config.h"
 
+#include "lora_task_config.h"
+
 #define TAG "APP_INIT_TASK"
 
 #define APP_INIT_TASK_STACK_SIZE 4096
