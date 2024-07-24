@@ -64,6 +64,10 @@ typedef struct {
     uint8_t motor_state_2;
     uint8_t limit_switch_1;
     uint8_t limit_switch_2;
+    uint8_t limit_switch_3;
+    uint8_t limit_switch_4;
+    uint8_t servo_state_1;
+    uint8_t servo_state_2;
 } can_fac_status_t;
 
 ///===-----------------------------------------------------------------------------------------===//

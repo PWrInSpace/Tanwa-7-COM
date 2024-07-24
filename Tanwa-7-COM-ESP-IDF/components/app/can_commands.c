@@ -14,6 +14,7 @@
 #include "esp_log.h"
 
 #include "TANWA_data.h"
+#include "LiQUID_data.h"
 #include "can_task.h"
 
 #define TAG "CAN_COMMANDS"
@@ -70,6 +71,7 @@ void parse_can_hx_rck_data(twai_message_t rx_message) {
     };
     // ESP_LOGI(TAG, "HX RCK data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
     tanwa_data_update_can_hx_rocket_data(&hx_rck_data);
+    liquid_data_update_can_hx_rocket_data(&hx_rck_data);
 }
 
 void parse_can_hx_oxi_status(twai_message_t rx_message) {
@@ -95,6 +97,7 @@ void parse_can_hx_oxi_data(twai_message_t rx_message) {
     };
     // ESP_LOGI(TAG, "HX OXI data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
     tanwa_data_update_can_hx_oxidizer_data(&hx_rck_data);
+    liquid_data_update_can_hx_oxidizer_data(&hx_rck_data);
 }
 
 void parse_can_fac_status(twai_message_t rx_message) {
@@ -109,6 +112,7 @@ void parse_can_fac_status(twai_message_t rx_message) {
     };
     // ESP_LOGI(TAG, "FAC status: status: %d, request: %d, motor state 1: %d, motor state 2: %d, limit switch 1: %d, limit switch 2: %d", fac_status.status, fac_status.request, fac_status.motor_state_1, fac_status.motor_state_2, fac_status.limit_switch_1, fac_status.limit_switch_2);
     tanwa_data_update_can_fac_status(&fac_status);
+    liquid_data_update_can_fac_status(&fac_status);
     if (fac_status.request == CAN_REQ_SOFT_RESET) {
         twai_message_t fac_mess = CAN_FAC_SOFT_RESET();
         can_task_add_message(&fac_mess);
@@ -140,6 +144,7 @@ void parse_can_flc_data(twai_message_t rx_message) {
     };
     ESP_LOGI(TAG, "FLC data: temperature 1: %d, temperature 2: %d, temperature 3: %d, temperature 4: %d", flc_data.temperature_1, flc_data.temperature_2, flc_data.temperature_3, flc_data.temperature_4);
     tanwa_data_update_can_flc_data(&flc_data);
+    liquid_data_update_can_flc_data(&flc_data);
 }
 
 void parse_can_termo_status(twai_message_t rx_message) {
@@ -164,4 +169,5 @@ void parse_can_termo_data(twai_message_t rx_message) {
     };
     ESP_LOGI(TAG, "TERMO data: pressure: %.2f, temperature: %d", termo_data.pressure, termo_data.temperature);
     tanwa_data_update_can_termo_data(&termo_data);
+    liquid_data_update_can_termo_data(&termo_data);
 }
