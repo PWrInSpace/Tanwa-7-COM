@@ -30,4 +30,13 @@ typedef struct {
     bool igniter_cont_2;
 } com_data_t;
 
+typedef struct {
+    uint16_t solenoid_state_oxy;
+    uint16_t solenoid_state_fuel;
+    uint16_t solenoid_state_vent;
+    bool arm_state;
+    bool abort_button;
+    uint32_t time_to_start;
+} com_liquid_data_t;
+
 #endif // PWRINSPACE_TANWA_COM_STRUCTS_H_

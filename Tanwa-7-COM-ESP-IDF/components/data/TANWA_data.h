@@ -18,6 +18,24 @@
 #include "com_structs.h"
 #include "slave_structs.h"
 
+///===-----------------------------------------------------------------------------------------===//
+/// ESP-Now structs
+///===-----------------------------------------------------------------------------------------===//
+
+typedef struct {
+    float pressure_1;
+    float pressure_2;
+} now_main_valve_pressure_data_t;
+
+typedef struct {
+    float temperature_1;
+    float temperature_2;
+} now_main_valve_temperature_data_t;
+
+///===-----------------------------------------------------------------------------------------===//
+/// TANWA data
+///===-----------------------------------------------------------------------------------------===//
+
 typedef struct {
     uint8_t state;
     // COM
@@ -37,6 +55,9 @@ typedef struct {
     // TERMO
     can_termo_status_t can_termo_status;
     can_termo_data_t can_termo_data;
+    // ESP-Now
+    now_main_valve_pressure_data_t now_main_valve_pressure_data;
+    now_main_valve_temperature_data_t now_main_valve_temperature_data;
 } tanwa_data_t;
 
 bool tanwa_data_init(void);
@@ -69,6 +90,10 @@ void tanwa_data_update_can_termo_status(can_termo_status_t *data);
 
 void tanwa_data_update_can_termo_data(can_termo_data_t *data);
 
+void tanwa_data_update_now_main_valve_pressure_data(now_main_valve_pressure_data_t *data);
+
+void tanwa_data_update_now_main_valve_temperature_data(now_main_valve_temperature_data_t *data);
+
 ///===-----------------------------------------------------------------------------------------===//
 /// read functions
 ///===-----------------------------------------------------------------------------------------===//
@@ -96,5 +121,9 @@ can_flc_data_t tanwa_data_read_can_flc_data(void);
 can_termo_status_t tanwa_data_read_can_termo_status(void);
 
 can_termo_data_t tanwa_data_read_can_termo_data(void);
+
+now_main_valve_pressure_data_t tanwa_data_read_now_main_valve_pressure_data(void);
+
+now_main_valve_temperature_data_t tanwa_data_read_now_main_valve_temperature_data(void); //jebac kurwy z zarzadu
 
 #endif // PWRINSPACE_TANWA_DATA_H_
