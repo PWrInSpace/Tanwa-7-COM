@@ -31,22 +31,11 @@ typedef struct {
 } com_data_t;
 
 typedef struct {
-    float vbat;
-    uint16_t solenoid_state_fill;
-    uint16_t solenoid_state_depr;
-    bool solenoid_state_oxy;
-    bool solenoid_state_fuel;
-    bool solenoid_state_vent;
-    bool igniter_cont_1;
-    bool igniter_cont_2;
-    float pressure_1;
-    float pressure_2;
-    float pressure_3;
-    float pressure_4;
+    uint16_t solenoid_state_oxy;
+    uint16_t solenoid_state_fuel;
+    uint16_t solenoid_state_vent;
     bool arm_state;
     bool abort_button;
-    float temperature_1;
-    float temperature_2;
     uint32_t time_to_start;
 } com_liquid_data_t;
 
