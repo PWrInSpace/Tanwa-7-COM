@@ -143,6 +143,24 @@ void tanwa_data_update_can_termo_data(can_termo_data_t *data) {
     }
 }
 
+void tanwa_data_update_now_main_valve_pressure_data(now_main_valve_pressure_data_t *data) {
+    if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
+        memcpy(&tanwa_data.now_main_valve_pressure_data, data, sizeof(now_main_valve_pressure_data_t));
+        xSemaphoreGive(tanwa_data_mutex);
+    } else {
+        ESP_LOGE(TAG, "Update Main Valve Pressure data | Failed mutex");
+    }
+}
+
+void tanwa_data_update_now_main_valve_temperature_data(now_main_valve_temperature_data_t *data) {
+    if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
+        memcpy(&tanwa_data.now_main_valve_temperature_data, data, sizeof(now_main_valve_temperature_data_t));
+        xSemaphoreGive(tanwa_data_mutex);
+    } else {
+        ESP_LOGE(TAG, "Update Main Valve Temperature data | Failed mutex");
+    }
+}
+
 ///===-----------------------------------------------------------------------------------------===//
 /// read functions
 ///===-----------------------------------------------------------------------------------------===//
@@ -275,6 +293,28 @@ can_termo_data_t tanwa_data_read_can_termo_data(void) {
         xSemaphoreGive(tanwa_data_mutex);
     } else {
         ESP_LOGE(TAG, "Read TERMO data | Failed mutex");
+    }
+    return data;
+}
+
+now_main_valve_pressure_data_t tanwa_data_read_now_main_valve_pressure_data(void) {
+    now_main_valve_pressure_data_t data = {0};
+    if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
+        data = tanwa_data.now_main_valve_pressure_data;
+        xSemaphoreGive(tanwa_data_mutex);
+    } else {
+        ESP_LOGE(TAG, "Read Main Valve Pressure data | Failed mutex");
+    }
+    return data;
+}
+
+now_main_valve_temperature_data_t tanwa_data_read_now_main_valve_temperature_data(void) {
+    now_main_valve_temperature_data_t data = {0};
+    if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
+        data = tanwa_data.now_main_valve_temperature_data;
+        xSemaphoreGive(tanwa_data_mutex);
+    } else {
+        ESP_LOGE(TAG, "Read Main Valve Temperature data | Failed mutex");
     }
     return data;
 }
