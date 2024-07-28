@@ -18,8 +18,6 @@
 #include "TANWA_config.h"
 #include "TANWA_data.h"
 
-#include "LiQUID_data.h"
-
 #include "now.h"
 
 #include "mcu_gpio_config.h"
@@ -119,23 +117,19 @@ void measure_task(void* pvParameters) {
             tanwa_data_update_state((uint8_t) state_machine_get_current_state());
 
             com_data_t com_data;
-            com_liquid_data_t com_liquid_data;
 
             // Measure battery voltage
             TANWA_get_vbat(&vbat);
             // ESP_LOGI(TAG, "Battery voltage: %.2f", vbat);
             com_data.vbat = vbat;
-            com_liquid_data.vbat = vbat;
 
             // Abort button state
             uint8_t abort_button_state;
             abort_button_get_level(&abort_button_state);
             if (abort_button_state == 0) {
                 com_data.abort_button = true;
-                com_liquid_data.abort_button = true;
             } else {
                 com_data.abort_button = false;
-                com_liquid_data.abort_button = false;
             }
 
             // Check solenoid states
@@ -143,8 +137,6 @@ void measure_task(void* pvParameters) {
             solenoid_driver_valve_get_state(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR, &sol_depr);
             com_data.solenoid_state_fill = sol_fill;
             com_data.solenoid_state_depr = sol_depr;
-            com_liquid_data.solenoid_state_fill = sol_fill;
-            com_liquid_data.solenoid_state_depr = sol_depr;
 
             // Measure pressure
             pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_1, &pressure[0]);
@@ -157,11 +149,6 @@ void measure_task(void* pvParameters) {
             com_data.pressure_3 = pressure[2];
             com_data.pressure_4 = pressure[3];
 
-            com_liquid_data.pressure_1 = pressure[0];
-            com_liquid_data.pressure_2 = pressure[1];
-            com_liquid_data.pressure_3 = pressure[2];
-            com_liquid_data.pressure_4 = pressure[3];
-
             // Measure temperature
             for (int i = 0; i < 2; ++i) {
                 tmp1075_get_temp_celsius(&(TANWA_hardware.tmp1075[i]), &temp[i]);
@@ -170,17 +157,11 @@ void measure_task(void* pvParameters) {
             com_data.temperature_1 = temp[0];
             com_data.temperature_2 = temp[1];
 
-            com_liquid_data.temperature_1 = temp[0];
-            com_liquid_data.temperature_2 = temp[1];
-
             // Check igniter continuity
             igniter_check_continuity(&(TANWA_hardware.igniter[0]), &ign_cont_1);
             igniter_check_continuity(&(TANWA_hardware.igniter[1]), &ign_cont_2);
             com_data.igniter_cont_1 = (bool) ign_cont_1;
             com_data.igniter_cont_2 = (bool) ign_cont_2;
-
-            com_liquid_data.igniter_cont_1 = (bool) ign_cont_1;
-            com_liquid_data.igniter_cont_2 = (bool) ign_cont_2;
 
             // Update COM data
             tanwa_data_update_com_data(&com_data);
