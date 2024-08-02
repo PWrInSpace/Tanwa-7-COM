@@ -28,6 +28,7 @@
 #include "timers_config.h"
 #include "abort_button.h"
 
+#include "esp_now.h"
 #include "esp_log.h"
 
 #define TAG "MEASURE_TASK"
@@ -193,6 +194,11 @@ void measure_task(void* pvParameters) {
             // Termo control data
             twai_message_t termo_mess = CAN_TERMO_GET_DATA();
             can_task_add_message_with_rx(&termo_mess);
+
+            uint8_t data_to_send = {NOW_GET_DATA};
+            esp_now_send(adress_main_valve_1, &data_to_send, sizeof(data_to_send));
+
+            esp_now_send(adress_main_valve_2, &data_to_send, sizeof(data_to_send));
 
             // Update esp now data structure
             DataToObc now_data_struct;

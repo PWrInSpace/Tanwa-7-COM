@@ -15,8 +15,14 @@
 
 #include "now_structs.h"
 
+#define NOW_GET_DATA 0x01
+
 extern const uint8_t adress_obc[];
+extern const uint8_t adress_main_valve_1[];
+extern const uint8_t adress_main_valve_2[];
 extern QueueHandle_t obc_now_rx_queue;
+extern QueueHandle_t main_valve_1_now_rx_queue;
+extern QueueHandle_t main_valve_2_now_rx_queue;
 
 // Init:
 bool nowInit();

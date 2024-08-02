@@ -31,6 +31,7 @@
 #include "can_task.h"
 #include "measure_task.h"
 #include "esp_now_task.h"
+#include "esp_now_slaves_task.h"
 
 #include "abort_button.h"
 
@@ -161,6 +162,8 @@ void app_init_task(void* pvParameters) {
   run_measure_task();
   vTaskDelay(pdMS_TO_TICKS(100));
   run_esp_now_task();
+  vTaskDelay(pdMS_TO_TICKS(100));
+  run_esp_now_slaves_task();
 
   ESP_LOGI(TAG, "Initializating abort button...");
   ret |= abort_button_init();

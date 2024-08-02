@@ -65,6 +65,16 @@ typedef struct {
     int32_t commandArg;
 } DataFromObc;
 
+typedef struct {
+    float pressure_1;
+    float pressure_2;
+} DataFromMainValve1;
+
+typedef struct {
+    float temperature_1;
+    float temperature_2;
+} DataFromMainValve2;
+
 // typedef struct {
 //     DataToObc dataToObc;
 //     DataFromObc dataFromObc;
