@@ -12,11 +12,12 @@
 #define LORA_TASK_SPREADING_FACTOR 1
 #define LORA_TASK_RECEIVE_WINDOW 1500
 #define LORA_TASK_TRANSMIT_MS 1800
+#define LORA_TASK_STACK_SIZE 8192
+#define LORA_TASK_PRIORITY 2
+#define LORA_TASK_CORE 0
 
 #define PRIVILAGE_MASK 0x01
 #define BORADCAST_DEV_ID 0x00
-
-#define PACKET_PREFIX "W5SP3MIK"
 
 typedef uint8_t lora_dev_id;
 typedef void (*lora_task_process_rx_packet)(uint8_t *packet, size_t packet_size);
@@ -38,25 +39,6 @@ typedef struct {
 } lora_api_config_t;
 
 /**
- * @brief Initialize lora api and run lora task
- *q
- * @param frequency_khz lora frequency kzh
- * @param transmiting_period lora transmiting period
- * @return true :D
- * @return false :C
- */
-bool initialize_lora(uint32_t frequency_khz, uint32_t transmiting_period);
-
-/**
- * @brief Attach this function to d0 interrupt handler
- *
- * @param arg nothing
- */
-void lora_task_irq_notify(void *arg);
-
-bool lora_change_frequency(uint32_t frequency_khz);
-
-/**
  * @brief Initialize lora task
  *
  * @param cfg pointer to config
@@ -65,6 +47,15 @@ bool lora_change_frequency(uint32_t frequency_khz);
  */
 bool lora_task_init(lora_api_config_t *cfg);
 
-void lora_task(void* pvParameters);
+/**
+ * @brief Attach this function to d0 interrupt handler
+ *
+ * @param arg nothing
+ */
+void lora_task_irq_notify(void *arg);
+
+bool lora_change_receive_window_period(uint32_t period_ms);
+
+bool lora_change_frequency(uint32_t frequency_khz);
 
 #endif
