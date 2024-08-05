@@ -250,6 +250,30 @@ static int open_solenoid(int argc, char **argv) {
             }
             CONSOLE_WRITE("Solenoid valve open ADD");
             break;
+        case 'fl':
+            ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FUEL);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            CONSOLE_WRITE("Solenoid valve close ADD");
+            break;
+        case 'o':
+            ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_OXY);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            CONSOLE_WRITE("Solenoid valve close ADD");
+            break;
+        case 'v':
+            ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_VENT);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            CONSOLE_WRITE("Solenoid valve close ADD");
+            break;
         default:
             ESP_LOGE(TAG, "Invalid solenoid valve identifier");
             break;
@@ -282,6 +306,30 @@ static int close_solenoid(int argc, char **argv) {
             break;
         case 'a':
             ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_ADD);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            CONSOLE_WRITE("Solenoid valve close ADD");
+            break;
+        case 'fl':
+            ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FUEL);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            CONSOLE_WRITE("Solenoid valve close ADD");
+            break;
+        case 'o':
+            ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_OXY);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            CONSOLE_WRITE("Solenoid valve close ADD");
+            break;
+        case 'v':
+            ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_VENT);
             if (ret != SOLENOID_DRIVER_OK) {
                 ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
                 return -1;
@@ -325,6 +373,30 @@ static int toggle_solenoid(int argc, char **argv) {
                 return -1;
             }
             CONSOLE_WRITE("Solenoid driver toggle valve ADD");
+            break;
+        case 'fl':
+            ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FUEL);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            CONSOLE_WRITE("Solenoid valve close ADD");
+            break;
+        case 'o':
+            ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_OXY);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            CONSOLE_WRITE("Solenoid valve close ADD");
+            break;
+        case 'v':
+            ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_VENT);
+            if (ret != SOLENOID_DRIVER_OK) {
+                ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
+                return -1;
+            }
+            CONSOLE_WRITE("Solenoid valve close ADD");
             break;
         default:
             ESP_LOGE(TAG, "Invalid solenoid valve identifier");
@@ -810,6 +882,22 @@ static int get_termo_data(int argc, char **argv) {
     return 0;
 }
 
+static int get_valve_pressure_data(int argc, char **argv) {
+    now_main_valve_pressure_data_t valve_pressure_data = tanwa_data_read_now_main_valve_pressure_data();
+    CONSOLE_WRITE("Valve Pressure Data:");
+    CONSOLE_WRITE("Pressure 1: %.2f", valve_pressure_data.pressure_1);
+    CONSOLE_WRITE("Pressure 2: %.2f", valve_pressure_data.pressure_2);
+    return 0;
+}
+
+static int get_valve_temperature_data(int argc, char **argv) {
+    now_main_valve_temperature_data_t valve_temperature_data = tanwa_data_read_now_main_valve_temperature_data();
+    CONSOLE_WRITE("Valve Temperature Data:");
+    CONSOLE_WRITE("Temperature 1: %.2f", valve_temperature_data.temperature_1);
+    CONSOLE_WRITE("Temperature 2: %.2f", valve_temperature_data.temperature_2);
+    return 0;
+}
+
 static esp_console_cmd_t cmd[] = {
     // system commands
     {"reset-dev", "restart device", NULL, reset_device, NULL},
@@ -826,9 +914,9 @@ static esp_console_cmd_t cmd[] = {
     {"pressure-read", "read pressure", NULL, read_pressure, NULL},
     {"vbat-read", "read vbat voltage", NULL, read_vbat, NULL},
     // solenoid valve commands
-    {"valve-open", "open solenoid valve", "f|d|a", open_solenoid, NULL},
-    {"valve-close", "close solenoid valve", "f|d|a", close_solenoid, NULL},
-    {"valve-toggle", "toggle solenoid valve", "f|d|a", toggle_solenoid, NULL},
+    {"valve-open", "open solenoid valve", "f|d|a|fl|o|v", open_solenoid, NULL},
+    {"valve-close", "close solenoid valve", "f|d|a|fl|o|v", close_solenoid, NULL},
+    {"valve-toggle", "toggle solenoid valve", "f|d|a|fl|o|v", toggle_solenoid, NULL},
     // igniter commands
     {"igniter-arm", "arm igniter", "1|2|a", arm_igniter, NULL},
     {"igniter-disarm", "disarm igniter", "1|2|a", disarm_igniter, NULL},
@@ -863,6 +951,8 @@ static esp_console_cmd_t cmd[] = {
     {"rck-data", "get hx rck data", NULL, get_hx_rck_data, NULL},
     {"flc-data", "get flc data", NULL, get_flc_data, NULL},
     {"termo-data", "get termo data", NULL, get_termo_data, NULL},
+    {"pressure-valve-data", "get valve pressure data", NULL, get_valve_pressure_data, NULL},
+    {"temperature-valve-data", "get valve temperature data", NULL, get_valve_temperature_data, NULL},
 };
 
 esp_err_t console_config_init() {
