@@ -217,6 +217,8 @@ esp_err_t TANWA_esp_now_init() {
         ESP_LOGI(TAG, "ESP-NOW initialized");
     }
     nowAddPeer(adress_obc, 0);
+    nowAddPeer(adress_main_valve_1, 0);
+    nowAddPeer(adress_main_valve_2, 0);
     return ESP_OK;
 }
 
