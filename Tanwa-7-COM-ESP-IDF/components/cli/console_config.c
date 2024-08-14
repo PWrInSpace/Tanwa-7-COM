@@ -250,7 +250,7 @@ static int open_solenoid(int argc, char **argv) {
             }
             CONSOLE_WRITE("Solenoid valve open ADD");
             break;
-        case 'fl':
+        case 'l':
             ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FUEL);
             if (ret != SOLENOID_DRIVER_OK) {
                 ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
@@ -312,7 +312,7 @@ static int close_solenoid(int argc, char **argv) {
             }
             CONSOLE_WRITE("Solenoid valve close ADD");
             break;
-        case 'fl':
+        case 'l':
             ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FUEL);
             if (ret != SOLENOID_DRIVER_OK) {
                 ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
@@ -374,7 +374,7 @@ static int toggle_solenoid(int argc, char **argv) {
             }
             CONSOLE_WRITE("Solenoid driver toggle valve ADD");
             break;
-        case 'fl':
+        case 'l':
             ret = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FUEL);
             if (ret != SOLENOID_DRIVER_OK) {
                 ESP_LOGE(TAG, "Solenoid driver close valve ADD failed - status: %d", ret);
@@ -628,6 +628,41 @@ static int qd_push(int argc, char **argv) {
     return 0;
 }
 
+static int fac_servo_open(int argc, char **argv){
+    const twai_message_t fac_mess = {
+        .identifier = 0x0C4,
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int fac_servo_close(int argc, char **argv){
+    const twai_message_t fac_mess = {
+        .identifier = 0x0C5,
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+static int fac_servo_open_angle(int argc, char **argv){
+    if (argc < 2) {
+        return -1;
+    }
+    uint16_t angle = atoi(argv[1]);
+    twai_message_t fac_mess = {
+        .identifier = 0x0C6,
+        .data_length_code = 0,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+    };
+    memcpy(fac_mess.data, &angle, sizeof(uint16_t));
+    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
 static int hx_rck_tare(int argc, char **argv) {
     const twai_message_t hx_rck_mess = {
         .identifier = 0x0A2, 
@@ -823,7 +858,9 @@ static int get_tanwa_data(int argc, char **argv) {
                   tanwa_data.can_hx_rocket_data.weight_raw);
     CONSOLE_WRITE("FAC: ");
     CONSOLE_WRITE("  Motor: [0] %d, [1] %d", tanwa_data.can_fac_status.motor_state_1, tanwa_data.can_fac_status.motor_state_2);
-    CONSOLE_WRITE("  Limit: [0] %d, [1] %d", tanwa_data.can_fac_status.limit_switch_1, tanwa_data.can_fac_status.limit_switch_2);
+    CONSOLE_WRITE("  Limit: [0] %d, [1] %d, [2] %d, [3] %d", tanwa_data.can_fac_status.limit_switch_1, tanwa_data.can_fac_status.limit_switch_2, 
+                  tanwa_data.can_fac_status.limit_switch_3, tanwa_data.can_fac_status.limit_switch_4);
+    CONSOLE_WRITE("  Servo: [0] %d, [1] %d", tanwa_data.can_fac_status.servo_state_1, tanwa_data.can_fac_status.servo_state_2);
     CONSOLE_WRITE("FLC: ");
     CONSOLE_WRITE("  Temperatures: [0] %d, [1] %d, [2] %d, [3] %d", tanwa_data.can_flc_data.temperature_1,
                   tanwa_data.can_flc_data.temperature_2, tanwa_data.can_flc_data.temperature_3,
@@ -937,6 +974,10 @@ static esp_console_cmd_t cmd[] = {
     {"qd-pull", "pull quick disconnect", NULL, qd_pull, NULL},
     {"qd-stop", "stop quick disconnect", NULL, qd_stop, NULL},
     {"qd-push", "push quick disconnect", NULL, qd_push, NULL},
+    // liquid servo commands
+    {"fac-servo-open", "open FAC servo", NULL, fac_servo_open, NULL},
+    {"fac-servo-close", "close FAC servo", NULL, fac_servo_close, NULL},
+    {"fac-servo-open-angle", "open FAC servo to angle", "angle", fac_servo_open_angle, NULL},
     // termo commands
     {"termo-heat-start", "start termo heating", NULL, termo_heat_start, NULL},
     {"termo-heat-stop", "stop termo heating", NULL, termo_heat_stop, NULL},

@@ -140,11 +140,11 @@ void app_init_task(void* pvParameters) {
 
   ESP_LOGI(TAG, "Initializing LoRa...");
 
-  if (!initialize_lora(LORA_TASK_FREQUENCY_KHZ, LORA_TASK_TRANSMIT_MS)) {
-    ESP_LOGE(TAG, "LoRa initialization failed");
-  } else {
-    ESP_LOGI(TAG, "### LoRa initialization success ###");
-  }
+  // if (!initialize_lora(LORA_TASK_FREQUENCY_KHZ, LORA_TASK_TRANSMIT_MS)) {
+  //   ESP_LOGE(TAG, "LoRa initialization failed");
+  // } else {
+  //   ESP_LOGI(TAG, "### LoRa initialization success ###");
+  // }
 
   ESP_LOGI(TAG, "### App initialization finished ###");
 

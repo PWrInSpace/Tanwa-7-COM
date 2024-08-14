@@ -59,13 +59,13 @@ void esp_now_slaves_task(void* pvParameters) {
         // check if there is any data in the queue
         now_main_valve_pressure_data_t data_from_main_valve_1;
         if (xQueueReceive(main_valve_1_now_rx_queue, &data_from_main_valve_1, 0) == pdTRUE) {
-            ESP_LOGI(TAG, "Received data from MAIN_VALVE_1: %d", data_from_main_valve_1.data);
+            ESP_LOGI(TAG, "Received data from MAIN_VALVE_1: \n PRESSURE_1: %d, PRESSURE_2: ", data_from_main_valve_1.pressure_1, data_from_main_valve_1.pressure_2);
             tanwa_data_update_now_main_valve_pressure_data(&data_from_main_valve_1);
         }
 
         now_main_valve_temperature_data_t data_from_main_valve_2;
         if (xQueueReceive(main_valve_2_now_rx_queue, &data_from_main_valve_2, 0) == pdTRUE) {
-            ESP_LOGI(TAG, "Received data from MAIN_VALVE_2: %d", data_from_main_valve_2.data);
+            ESP_LOGI(TAG, "Received data from MAIN_VALVE_2: TEMPERATURE 1: %d, TEMPERATURE 2: %d", data_from_main_valve_2.temperature_1, data_from_main_valve_2.temperature_2);
             tanwa_data_update_now_main_valve_temperature_data(&data_from_main_valve_2);
         }
     }

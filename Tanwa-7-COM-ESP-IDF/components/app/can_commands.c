@@ -27,15 +27,12 @@
 
 #define CAN_FAC_STATUS_POS 0
 #define CAN_FAC_STATUS_REQUEST_POS 2
-#define CAN_FAC_STATUS_MOTOR_1_POS 3
-#define CAN_FAC_STATUS_MOTOR_2_POS 3
-#define CON_FAC_STATUS_LIMIT_1_POS 5
-#define CON_FAC_STATUS_LIMIT_2_POS 5
-#define CAN_FAC_STATUS_LIMIT_3_POS 6
-#define CAN_FAC_STATUS_LIMIT_4_POS 6
-#define CAN_FAC_STATUS_SERVO_1_POS 4
-#define CAN_FAC_STATUS_SERVO_2_POS 4
+#define CAN_FAC_STATUS_MOTOR_POS 3
+#define CAN_FAC_STATUS_LIMIT_1_2_POS 5
+#define CAN_FAC_STATUS_LIMIT_3_4_POS 6
+#define CAN_FAC_STATUS_SERVO_POS 4
 #define CAN_FAC_DATA_OFFSET 4
+#define CAN_FAC_DATA_MASK 0x0F
 
 
 #define CAN_FLC_STATUS_POS 0
@@ -108,10 +105,14 @@ void parse_can_fac_status(twai_message_t rx_message) {
     can_fac_status_t fac_status = {
         .status = *((uint16_t*)rx_message.data + CAN_FAC_STATUS_POS),
         .request = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_REQUEST_POS)),
-        .motor_state_1 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_MOTOR_1_POS)),
-        .motor_state_2 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_MOTOR_2_POS)),
-        .limit_switch_1 = *((uint8_t*)(rx_message.data + CON_FAC_STATUS_LIMIT_1_POS)),
-        .limit_switch_2 = *((uint8_t*)(rx_message.data + CON_FAC_STATUS_LIMIT_2_POS)),
+        .motor_state_1 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_MOTOR_POS)) >> CAN_FAC_DATA_OFFSET,
+        .motor_state_2 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_MOTOR_POS)) & CAN_FAC_DATA_MASK,
+        .limit_switch_1 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_LIMIT_1_2_POS)) >> CAN_FAC_DATA_OFFSET,
+        .limit_switch_2 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_LIMIT_1_2_POS)) & CAN_FAC_DATA_MASK,
+        .limit_switch_3 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_LIMIT_3_4_POS)) >> CAN_FAC_DATA_OFFSET,
+        .limit_switch_4 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_LIMIT_3_4_POS)) & CAN_FAC_DATA_MASK,
+        .servo_state_1 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_SERVO_POS)) >> CAN_FAC_DATA_OFFSET,
+        .servo_state_2 = *((uint8_t*)(rx_message.data + CAN_FAC_STATUS_SERVO_POS)) & CAN_FAC_DATA_MASK,
     };
     // ESP_LOGI(TAG, "FAC status: status: %d, request: %d, motor state 1: %d, motor state 2: %d, limit switch 1: %d, limit switch 2: %d", fac_status.status, fac_status.request, fac_status.motor_state_1, fac_status.motor_state_2, fac_status.limit_switch_1, fac_status.limit_switch_2);
     tanwa_data_update_can_fac_status(&fac_status);
