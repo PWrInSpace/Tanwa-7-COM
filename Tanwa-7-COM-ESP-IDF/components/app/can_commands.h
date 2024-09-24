@@ -68,12 +68,14 @@ typedef enum {
     // Commands to the FLC submodule
     CAN_FLC_TX_GET_STATUS = 0x0D0,
     CAN_FLC_TX_GET_DATA = 0x0D1,
+    CAN_FLC_TX_GET_PRESSURE_DATA = 0x0D2,
     // place for new commands
     CAN_FLC_TX_SOFT_RESET = 0x0D9,
     CAN_FLC_TX_NOTHING = 0x0DF,
     // Responses from the FLC submodule
     CAN_FLC_RX_STATUS = 0x0DA,
     CAN_FLC_RX_DATA = 0x0DB,
+    CAN_FLC_RX_PRESSURE_DATA = 0x0DC,
 } can_flc_commands_t;
 
 typedef enum {
@@ -237,6 +239,12 @@ typedef enum {
     .data = {0, 0, 0, 0, 0, 0, 0, 0}     \
 }
 
+#define CAN_FLC_GET_PRESSURE_DATA() {    \
+    .identifier = CAN_FLC_TX_GET_PRESSURE_DATA, \
+    .data_length_code = 0,               \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}     \
+}
+
 #define CAN_FLC_SOFT_RESET() {           \
     .identifier = CAN_FLC_TX_SOFT_RESET, \
     .data_length_code = 0,               \
@@ -316,6 +324,8 @@ void parse_can_fac_status(twai_message_t rx_message);
 void parse_can_flc_status(twai_message_t rx_message);
 
 void parse_can_flc_data(twai_message_t rx_message);
+
+void parse_can_flc_pressure_data(twai_message_t rx_message);
 
 void parse_can_termo_status(twai_message_t rx_message);
 

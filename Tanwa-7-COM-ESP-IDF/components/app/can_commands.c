@@ -44,6 +44,11 @@
 #define CAN_FLC_DATA_TEMP_3_POS 4
 #define CAN_FLC_DATA_TEMP_4_POS 6
 
+#define CAN_FLC_DATA_PRESSURE_1_POS 0
+#define CAN_FLC_DATA_PRESSURE_2_POS 2
+#define CAN_FLC_DATA_PRESSURE_3_POS 4
+#define CAN_FLC_DATA_PRESSURE_4_POS 6
+
 #define CAN_TERMO_STATUS_POS 0
 #define CAN_TERMO_STATUS_REQUEST_POS 2
 
@@ -68,7 +73,7 @@ void parse_can_hx_rck_status(twai_message_t rx_message) {
 void parse_can_hx_rck_data(twai_message_t rx_message) {
     // update hx oxi data
     can_hx_rocket_data_t hx_rck_data = {
-        .weight = *((float*)rx_message.data + CAN_HX_DATA_WEIGHT_POS),
+        .weight = *((float*)(rx_message.data + CAN_HX_DATA_WEIGHT_POS)),
         .weight_raw = *((uint32_t*)(rx_message.data + CAN_HX_DATA_WEIGHT_RAW_POS)),
     };
     // ESP_LOGI(TAG, "HX RCK data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
@@ -78,7 +83,7 @@ void parse_can_hx_rck_data(twai_message_t rx_message) {
 void parse_can_hx_oxi_status(twai_message_t rx_message) {
     // update hx oxi status
     can_hx_oxidizer_status_t hx_oxi_status = {
-        .status = *((uint16_t*)rx_message.data + CAN_HX_STATUS_POS),
+        .status = *((uint16_t*)(rx_message.data + CAN_HX_STATUS_POS)),
         .request = *((uint8_t*)(rx_message.data + CAN_HX_STATUS_REQUEST_POS)),
         .temperature = *((int16_t*)(rx_message.data + CAN_HX_STATUS_TEMP_POS)),
     };
@@ -92,8 +97,9 @@ void parse_can_hx_oxi_status(twai_message_t rx_message) {
 
 void parse_can_hx_oxi_data(twai_message_t rx_message) {
     // update hx oxi data
+    //ESP_LOGI(TAG, "DLC: %d", rx_message.data_length_code);
     can_hx_oxidizer_data_t hx_rck_data = {
-        .weight = *((float*)rx_message.data + CAN_HX_DATA_WEIGHT_POS),
+        .weight = *((float*)(rx_message.data + CAN_HX_DATA_WEIGHT_POS)),
         .weight_raw = *((uint32_t*)(rx_message.data + CAN_HX_DATA_WEIGHT_RAW_POS)),
     };
     // ESP_LOGI(TAG, "HX OXI data: weight: %.2f, weight raw: %d", hx_rck_data.weight, hx_rck_data.weight_raw);
@@ -147,6 +153,18 @@ void parse_can_flc_data(twai_message_t rx_message) {
     };
     ESP_LOGI(TAG, "FLC data: temperature 1: %d, temperature 2: %d, temperature 3: %d, temperature 4: %d", flc_data.temperature_1, flc_data.temperature_2, flc_data.temperature_3, flc_data.temperature_4);
     tanwa_data_update_can_flc_data(&flc_data);
+}
+
+void parse_can_flc_pressure_data(twai_message_t rx_message) {
+    // update flc pressure data
+    can_flc_pressure_data_t flc_pressure_data = {
+        .pressure_1 = *((int16_t*)rx_message.data + CAN_FLC_DATA_PRESSURE_1_POS),
+        .pressure_2 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_2_POS)),
+        .pressure_3 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_3_POS)),
+        .pressure_4 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_4_POS)),
+    };
+    ESP_LOGI(TAG, "FLC pressure data: pressure 1: %.2f, pressure 2: %.2f", flc_pressure_data.pressure_1, flc_pressure_data.pressure_2);
+    tanwa_data_update_can_flc_pressure_data(&flc_pressure_data);
 }
 
 void parse_can_termo_status(twai_message_t rx_message) {

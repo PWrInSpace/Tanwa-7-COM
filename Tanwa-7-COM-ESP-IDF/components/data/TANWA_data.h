@@ -52,6 +52,7 @@ typedef struct {
     // FLC
     can_flc_status_t can_flc_status;
     can_flc_data_t can_flc_data;
+    can_flc_pressure_data_t can_flc_pressure_data;
     // TERMO
     can_termo_status_t can_termo_status;
     can_termo_data_t can_termo_data;
@@ -86,6 +87,8 @@ void tanwa_data_update_can_flc_status(can_flc_status_t *data);
 
 void tanwa_data_update_can_flc_data(can_flc_data_t *data);
 
+void tanwa_data_update_can_flc_pressure_data(can_flc_pressure_data_t *data);
+
 void tanwa_data_update_can_termo_status(can_termo_status_t *data);
 
 void tanwa_data_update_can_termo_data(can_termo_data_t *data);
@@ -117,6 +120,8 @@ can_fac_status_t tanwa_data_read_can_fac_status(void);
 can_flc_status_t tanwa_data_read_can_flc_status(void);
 
 can_flc_data_t tanwa_data_read_can_flc_data(void);
+
+can_flc_pressure_data_t tanwa_data_read_can_flc_pressure_data(void);
 
 can_termo_status_t tanwa_data_read_can_termo_status(void);
 

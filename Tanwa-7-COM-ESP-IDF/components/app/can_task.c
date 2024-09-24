@@ -164,6 +164,12 @@ void can_task(void* pvParameters) {
                         parse_can_flc_data(rx_message);
                         break;
                     }
+                    case CAN_FLC_RX_PRESSURE_DATA: {
+                        ESP_LOGI(TAG, "Received FLC pressure data");
+                        can_task_sub_rx_counter();
+                        parse_can_flc_pressure_data(rx_message);
+                        break;
+                    }
                     case CAN_TERMO_RX_STATUS: {
                         ESP_LOGI(TAG, "Received TERMO status");
                         can_task_sub_rx_counter();

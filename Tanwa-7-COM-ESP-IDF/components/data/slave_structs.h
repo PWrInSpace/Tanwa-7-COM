@@ -87,6 +87,13 @@ typedef struct {
     int16_t temperature_4;
 } can_flc_data_t;
 
+typedef struct {
+    int16_t pressure_1;
+    int16_t pressure_2;
+    int16_t pressure_3;
+    int16_t pressure_4;
+} can_flc_pressure_data_t;
+
 ///===-----------------------------------------------------------------------------------------===//
 /// TERMO - Oxidizer Tank Temperature Controller
 ///===-----------------------------------------------------------------------------------------===//
