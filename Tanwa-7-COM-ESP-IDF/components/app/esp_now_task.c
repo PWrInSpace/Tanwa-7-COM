@@ -211,6 +211,11 @@ void esp_now_task(void* pvParameters) {
                         tanwa_set_offset_oxi((float) obc_command.commandArg);
                         break;
                     }
+                    case CMD_HEATING: {
+                        ESP_LOGI(TAG, "ESP-NOW | Heating | %d", obc_command.commandArg);
+                        tanwa_heating((uint8_t) obc_command.commandArg);
+                        break;
+                    }
                     default: {
                         ESP_LOGI(TAG, "ESP-NOW command: %d", obc_command.commandNum);
                         ESP_LOGW(TAG, "ESP-NOW | Unknown command");

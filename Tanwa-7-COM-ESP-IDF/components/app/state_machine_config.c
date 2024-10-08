@@ -25,6 +25,7 @@ static void on_init(void *arg) {
 }
 
 static void on_idle(void *arg) {
+    sys_timer_stop(TIMER_BUZZER);
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
     ESP_LOGI(TAG, "ON IDLE");
 }
@@ -54,7 +55,7 @@ static void on_ready_to_lauch(void *arg) {
 
 static void on_countdown(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_COUTDOWN);
-    buzzer_timer_change_period(1000);
+    buzzer_timer_change_period(500);
     ESP_LOGI(TAG, "ON COUNTDOWN");
 }
 
@@ -86,6 +87,7 @@ static void on_hold(void *arg) {
 
 static void on_abort(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ABORT);
+    buzzer_timer_change_period(1000);
     ESP_LOGI(TAG, "ON ABORT");
     solenoid_driver_valve_close(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
     solenoid_driver_valve_open(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
