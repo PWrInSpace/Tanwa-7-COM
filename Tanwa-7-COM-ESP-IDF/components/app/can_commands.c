@@ -50,7 +50,11 @@
 #define CAN_FLC_DATA_PRESSURE_4_POS 6
 
 #define CAN_TERMO_STATUS_POS 0
-#define CAN_TERMO_STATUS_REQUEST_POS 2
+#define CAN_TERMO_STATUS_REQUEST_POS 1
+#define CAN_TERMO_HEATING_STATUS_POS 2
+#define CAN_TERMO_COOLING_STATUS_POS 3
+#define CAN_TERMO_MAX_PRESSURE_POS 4
+#define CAN_TERMO_MIN_PRESSURE_POS 5
 
 #define CAN_TERMO_DATA_PRESSURE_POS 0
 #define CAN_TERMO_DATA_TEMP_POS 4
@@ -135,7 +139,7 @@ void parse_can_flc_status(twai_message_t rx_message) {
         .request = *((uint8_t*)(rx_message.data + CAN_FLC_STATUS_REQUEST_POS)),
         .temperature = *((int16_t*)(rx_message.data + CAN_FLC_STATUS_TEMP_POS)),
     };
-    ESP_LOGI(TAG, "FLC status: status: %d, request: %d, temperature: %d", flc_status.status, flc_status.request, flc_status.temperature);
+    //ESP_LOGI(TAG, "FLC status: status: %d, request: %d, temperature: %d", flc_status.status, flc_status.request, flc_status.temperature);
     tanwa_data_update_can_flc_status(&flc_status);
     if (flc_status.request == CAN_REQ_SOFT_RESET) {
         twai_message_t flc_mess = CAN_FLC_SOFT_RESET();
@@ -151,7 +155,7 @@ void parse_can_flc_data(twai_message_t rx_message) {
         .temperature_3 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_TEMP_3_POS)),
         .temperature_4 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_TEMP_4_POS)),
     };
-    ESP_LOGI(TAG, "FLC data: temperature 1: %d, temperature 2: %d, temperature 3: %d, temperature 4: %d", flc_data.temperature_1, flc_data.temperature_2, flc_data.temperature_3, flc_data.temperature_4);
+    //ESP_LOGI(TAG, "FLC data: temperature 1: %d, temperature 2: %d, temperature 3: %d, temperature 4: %d", flc_data.temperature_1, flc_data.temperature_2, flc_data.temperature_3, flc_data.temperature_4);
     tanwa_data_update_can_flc_data(&flc_data);
 }
 
@@ -163,7 +167,7 @@ void parse_can_flc_pressure_data(twai_message_t rx_message) {
         .pressure_3 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_3_POS)),
         .pressure_4 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_4_POS)),
     };
-    ESP_LOGI(TAG, "FLC pressure data: pressure 1: %.2f, pressure 2: %.2f", flc_pressure_data.pressure_1, flc_pressure_data.pressure_2);
+    //ESP_LOGI(TAG, "FLC pressure data: pressure 1: %.2f, pressure 2: %.2f", flc_pressure_data.pressure_1, flc_pressure_data.pressure_2);
     tanwa_data_update_can_flc_pressure_data(&flc_pressure_data);
 }
 
@@ -172,13 +176,17 @@ void parse_can_termo_status(twai_message_t rx_message) {
     can_termo_status_t termo_status = {
         .status = *((uint16_t*)rx_message.data + CAN_TERMO_STATUS_POS),
         .request = *((uint8_t*)(rx_message.data + CAN_TERMO_STATUS_REQUEST_POS)),
+        .cooling_status = *((uint8_t*)(rx_message.data + CAN_TERMO_COOLING_STATUS_POS)),
+        .heating_status = *((uint8_t*)(rx_message.data + CAN_TERMO_HEATING_STATUS_POS)),
+        .max_pressure = *((uint8_t*)(rx_message.data + CAN_TERMO_MAX_PRESSURE_POS)),
+        .min_pressure = *((uint8_t*)(rx_message.data + CAN_TERMO_MIN_PRESSURE_POS)),
     };
-    ESP_LOGI(TAG, "TERMO status: status: %d, request: %d", termo_status.status, termo_status.request);
+    //ESP_LOGI(TAG, "TERMO status: status: %d, request: %d", termo_status.status, termo_status.request);
     tanwa_data_update_can_termo_status(&termo_status);
-    if (termo_status.request == CAN_REQ_SOFT_RESET) {
-        twai_message_t termo_mess = CAN_TERMO_SOFT_RESET();
-        can_task_add_message(&termo_mess);
-    }
+    // if (termo_status.request == CAN_REQ_SOFT_RESET) {
+    //     twai_message_t termo_mess = CAN_TERMO_SOFT_RESET();
+    //     can_task_add_message(&termo_mess);
+    // }
 }
 
 void parse_can_termo_data(twai_message_t rx_message) {
@@ -187,6 +195,6 @@ void parse_can_termo_data(twai_message_t rx_message) {
         .pressure = *((float*)rx_message.data + CAN_TERMO_DATA_PRESSURE_POS),
         .temperature = *((float*)(rx_message.data + CAN_TERMO_DATA_TEMP_POS)),
     };
-    ESP_LOGI(TAG, "TERMO data: pressure: %.2f, temperature: %d", termo_data.pressure, termo_data.temperature);
+    //ESP_LOGI(TAG, "TERMO data: pressure: %.2f, temperature: %d", termo_data.pressure, termo_data.temperature);
     tanwa_data_update_can_termo_data(&termo_data);
 }

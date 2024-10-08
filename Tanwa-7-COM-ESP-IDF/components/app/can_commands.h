@@ -33,6 +33,7 @@ typedef enum {
     // Responses from the HX submodule
     CAN_HX_RCK_RX_STATUS = 0x0AA,
     CAN_HX_RCK_RX_DATA = 0x0AB,
+    CAN_HX_RCK_RX_UPDATE = 0x0AE,
 } can_hx_rck_commands_t;
 
 typedef enum {
@@ -49,6 +50,7 @@ typedef enum {
     // Responses from the HX submodule
     CAN_HX_OXI_RX_STATUS = 0x0BA,
     CAN_HX_OXI_RX_DATA = 0x0BB,
+    CAN_HX_OXI_RX_UPDATE = 0x0BE,
 } can_hx_oxi_commands_t;
 
 typedef enum {
@@ -62,6 +64,7 @@ typedef enum {
     CAN_FAC_TX_NOTHING = 0x0CF,
     // Responses from the FAC submodule
     CAN_FAC_RX_STATUS = 0x0CA,
+    CAN_FAC_RX_UPDATE = 0x0CE,
 } can_fac_commands_t;
 
 typedef enum {
@@ -76,6 +79,7 @@ typedef enum {
     CAN_FLC_RX_STATUS = 0x0DA,
     CAN_FLC_RX_DATA = 0x0DB,
     CAN_FLC_RX_PRESSURE_DATA = 0x0DC,
+    CAN_FLC_RX_UPDATE = 0x0DE,
 } can_flc_commands_t;
 
 typedef enum {
@@ -94,6 +98,7 @@ typedef enum {
     // Responses from the TERMO submodule
     CAN_TERMO_RX_STATUS = 0x0EA,
     CAN_TERMO_RX_DATA = 0x0EB,
+    CAN_TERMO_RX_UPDATE = 0x0EE,
 } can_termo_commands_t;
 
 typedef enum {

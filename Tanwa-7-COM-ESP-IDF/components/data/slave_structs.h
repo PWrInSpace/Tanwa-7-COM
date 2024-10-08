@@ -101,6 +101,10 @@ typedef struct {
 typedef struct {
     uint16_t status;
     uint8_t request;
+    bool cooling_status: 1;
+    bool heating_status: 1;
+    uint8_t max_pressure;
+    uint8_t min_pressure;
 } can_termo_status_t;
 
 typedef struct {

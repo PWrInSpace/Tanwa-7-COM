@@ -27,15 +27,18 @@
 #include "can_task.h"
 #include "timers_config.h"
 #include "abort_button.h"
+#include "console_config.h"
 
 #include "esp_log.h"
+
+#include "driver/twai.h"
 
 #define TAG "MEASURE_TASK"
 
 #define MEASURE_TASK_STACK_SIZE 4096
 #define MEASURE_TASK_PRIORITY 1
-#define MEASURE_TASK_CORE 1
-#define MEASURE_TASK_DEFAULT_FREQ 500
+#define MEASURE_TASK_CORE 0
+#define MEASURE_TASK_DEFAULT_FREQ 1500
 
 extern TANWA_hardware_t TANWA_hardware;
 extern TANWA_utility_t TANWA_utility;
@@ -67,18 +70,17 @@ void copy_tanwa_data_to_now_struct(DataToObc *now_struct){
     // Copy data to now struct
     now_struct->vbat = tanwa_data.com_data.vbat;
     now_struct->tanWaState = tanwa_data.state;
-    now_struct->rocketWeight_val = tanwa_data.can_hx_rocket_data.rocket_weight;
-    now_struct->tankWeight_val = tanwa_data.can_hx_oxidizer_data.oxidizer_weight;
-    now_struct->tank_temp = tanwa_data.now_main_valve_temperature_data.temperature_1;
-    now_struct->fill_temp = tanwa_data.now_main_valve_temperature_data.temperature_2;
-    now_struct->preFill_pres = tanwa_data.now_main_valve_pressure_data.pressure_1;
-    now_struct->postFill_pres = tanwa_data.now_main_valve_pressure_data.pressure_2;
-    now_struct->tank_pres = tanwa_data.can_flc_pressure_data.pressure;
-    now_struct->canHxBtl_con = tanwa_data.can_connected_slaves.can_hx_bottle;
-    now_struct->canHxRck_con = tanwa_data.can_connected_slaves.can_hx_rocket;
-    now_struct->canFac_con = tanwa_data.can_connected_slaves.can_fac;
-    now_struct->canFlc_con = tanwa_data.can_connected_slaves.can_flc;
-    now_struct->canTermo_con = tanwa_data.can_connected_slaves.can_termo;
+    now_struct->rocketWeight_val = tanwa_data.can_hx_rocket_data.weight;
+    now_struct->tankWeight_val = tanwa_data.can_hx_oxidizer_data.weight;
+    now_struct->fill_temp = tanwa_data.can_flc_data.temperature_1;
+    now_struct->preFill_pres = tanwa_data.com_data.pressure_1;
+    now_struct->postFill_pres = tanwa_data.com_data.pressure_2;
+    now_struct->tank_pres = tanwa_data.com_data.pressure_3;
+    now_struct->canHxBtl_con = tanwa_data.can_connected_slaves.hx_oxidizer;
+    now_struct->canHxRck_con = tanwa_data.can_connected_slaves.hx_rocket;
+    now_struct->canFac_con = tanwa_data.can_connected_slaves.fac;
+    now_struct->canFlc_con = tanwa_data.can_connected_slaves.flc;
+    now_struct->canTermo_con = tanwa_data.can_connected_slaves.termo;
     now_struct->igniterContinouity_1 = tanwa_data.com_data.igniter_cont_1;
     now_struct->igniterContinouity_2 = tanwa_data.com_data.igniter_cont_2;
     now_struct->limitSwitch_1 = tanwa_data.can_fac_status.limit_switch_1;
@@ -87,8 +89,8 @@ void copy_tanwa_data_to_now_struct(DataToObc *now_struct){
     now_struct->deprState = tanwa_data.com_data.solenoid_state_depr;
     now_struct->facMotorState_1 = tanwa_data.can_fac_status.motor_state_1;
     now_struct->facMotorState_2 = tanwa_data.can_fac_status.motor_state_2;
-    now_struct->coolingState = tanwa_data.can_termo_status.cooling;
-    now_struct->heatingState = tanwa_data.can_termo_status.heating;
+    now_struct->coolingState = tanwa_data.can_termo_status.cooling_status;
+    now_struct->heatingState = tanwa_data.can_termo_status.heating_status;
     now_struct->abortButton = tanwa_data.com_data.abort_button;
 }
 
@@ -166,53 +168,74 @@ void measure_task(void* pvParameters) {
             // Update COM data
             tanwa_data_update_com_data(&com_data);
 
+
+            // Rocket weight measurement
             twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
             can_task_add_message_with_rx(&hx_rck_mess);
-
-
-            twai_message_t filling_arm_stat = CAN_FAC_GET_STATUS();
-            can_task_add_message_with_rx(&filling_arm_stat);
-
-            // Oxidizer board status
-            twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
-            can_task_add_message_with_rx(&hx_oxi_stat);
+            vTaskDelay(pdMS_TO_TICKS(10));
 
             // Oxidizer weight measurement
             twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
             can_task_add_message_with_rx(&hx_oxi_mess);
-
-            // Rocket board status 
-            twai_message_t hx_rck_stat = CAN_HX_RCK_GET_STATUS();
-            can_task_add_message_with_rx(&hx_rck_stat);
-
-            //ESP_LOGI(TAG, "DUPA");
-
-            // Rocket weight measurement
+            vTaskDelay(pdMS_TO_TICKS(10));
 
             // Filling arm status
-            
+            twai_message_t filling_arm_stat = CAN_FAC_GET_STATUS();
+            can_task_add_message_with_rx(&filling_arm_stat);
+            vTaskDelay(pdMS_TO_TICKS(10));
+
+            // Filling Control data
+            twai_message_t flc_mess1 = CAN_FLC_GET_DATA();
+            can_task_add_message_with_rx(&flc_mess1);
+            vTaskDelay(pdMS_TO_TICKS(10));
 
             // Termo control status
             twai_message_t termo_stat = CAN_TERMO_GET_STATUS();
             can_task_add_message_with_rx(&termo_stat);
+            vTaskDelay(pdMS_TO_TICKS(10));
+
+            // Filling Control temperature data
+            twai_message_t flc_mess2 = CAN_FLC_GET_PRESSURE_DATA();
+            can_task_add_message_with_rx(&flc_mess2);
+            vTaskDelay(pdMS_TO_TICKS(10));
+
+            // Oxidizer board status
+            twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
+            can_task_add_message_with_rx(&hx_oxi_stat);
+            vTaskDelay(pdMS_TO_TICKS(10));
+
+            // Rocket board status 
+            twai_message_t hx_rck_stat = CAN_HX_RCK_GET_STATUS();
+            can_task_add_message_with_rx(&hx_rck_stat);
+            vTaskDelay(pdMS_TO_TICKS(10));
+
+            //ESP_LOGI(TAG, "DUPA");
 
             // Termo control data
             twai_message_t termo_mess = CAN_TERMO_GET_DATA();
             can_task_add_message_with_rx(&termo_mess);
+            vTaskDelay(pdMS_TO_TICKS(10));
 
+            // FLC board status
             twai_message_t flc_stat = CAN_FLC_GET_STATUS();
             can_task_add_message_with_rx(&flc_stat);
+            vTaskDelay(pdMS_TO_TICKS(10));
 
-            twai_message_t flc_mess1 = CAN_FLC_GET_DATA();
-            can_task_add_message_with_rx(&flc_mess1);
+            uint32_t alerts;
 
-            twai_message_t flc_mess2 = CAN_FLC_GET_PRESSURE_DATA();
-            can_task_add_message_with_rx(&flc_mess2);
+            twai_read_alerts(&alerts, pdMS_TO_TICKS(100));
+
+            if(alerts & TWAI_ALERT_TX_FAILED) {
+                ESP_LOGI(TAG, "TX fault");
+            }
+            
 
             // Update esp now data structure
             DataToObc now_data_struct;
             copy_tanwa_data_to_now_struct(&now_data_struct);
             esp_now_send(adress_obc, (uint8_t*) &now_data_struct, sizeof(DataToObc));
+
+            //get_tanwa_data(0, NULL);
         }
     }
     vTaskDelete(NULL);

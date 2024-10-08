@@ -37,7 +37,6 @@ typedef struct DataToObc {
     uint8_t tanWaState;
     float rocketWeight_val;
     float tankWeight_val;
-    float tank_temp;
     float fill_temp;
     float preFill_pres;
     float postFill_pres;
