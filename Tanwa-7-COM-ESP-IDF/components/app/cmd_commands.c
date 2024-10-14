@@ -132,13 +132,12 @@ void tanwa_depr(uint8_t valve_cmd) {
 
 void tanwa_qd_1(uint8_t qd_cmd) {
     if (qd_cmd == CMD_QD_PUSH) {
-        twai_message_t fac_mess = CAN_FAC_QD_PUSH();
+        //twai_message_t fac_mess = CAN_FAC_QD_PUSH();
         can_task_add_message(&fac_mess);
     } else if (qd_cmd == CMD_QD_STOP) {
-        twai_message_t fac_mess = CAN_FAC_QD_STOP();
+        twai_message_t fac_mess = CAN_TERMO_COOL_STOP();
         can_task_add_message(&fac_mess);
-    } else if (qd_cmd == CMD_QD_PULL) {
-        twai_message_t fac_mess = CAN_FAC_QD_PULL();
+    } else if (qd_cmd == CMD_QD_PULL) CAN_TERMO_COOL_START();
         can_task_add_message(&fac_mess);
     } else {
         ESP_LOGE(TAG, "QD | Invalid command | %d", qd_cmd);
@@ -262,6 +261,22 @@ void tanwa_set_offset_oxi(float offset) {
     twai_message_t hx_oxi_mess = CAN_HX_OXI_SET_OFFSET();
     memcpy(hx_oxi_mess.data, &offset, sizeof(float));
     can_task_add_message(&hx_oxi_mess);
+}
+
+void tanwa_heating(uint8_t heating_cmd) {
+
+    if(heating_cmd == CMD_HEATING_START) {
+        twai_message_t termo_mess = CAN_TERMO_HEAT_START();
+        can_task_add_message(&termo_mess);
+        ESP_LOGI(TAG, "TERM | Heating start");
+    } else if(heating_cmd == CMD_HEATING_STOP) {
+        twai_message_t termo_mess = CAN_TERMO_HEAT_STOP();
+        can_task_add_message(&termo_mess);
+        ESP_LOGI(TAG, "TERM | Heating stop");
+    } else {
+        ESP_LOGE(TAG, "TERM | Invalid heating command | %d", heating_cmd);
+        return;
+    }
 }
 
 void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
@@ -409,6 +424,11 @@ void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
                 tanwa_set_offset_oxi((float) payload);
                 break;
             }
+            case CMD_HEATING: {
+                        ESP_LOGI(TAG, "ESP-NOW | Heating | %d", payload);
+                        tanwa_heating((uint8_t) payload);
+                        break;
+                    }
             default: {
                 ESP_LOGI(TAG, "LORA command: %d", command);
                 ESP_LOGW(TAG, "LORA | Unknown command");

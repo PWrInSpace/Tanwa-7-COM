@@ -57,7 +57,9 @@ typedef enum {
     CMD_PLSS = 0x60,
     // LoRa config commands
     CMD_LORA_FREQ = 0x80,
-    CMD_LORA_TIME = 0x81
+    CMD_LORA_TIME = 0x81,
+    //Bottle heating commands
+    CMD_HEATING = 0x47,
 } cmd_command_t;
 
 typedef enum {
@@ -70,6 +72,11 @@ typedef enum {
     CMD_QD_STOP = 0x22,
     CMD_QD_PULL = 0x00
 } cmd_qd_t;
+
+typedef enum {
+    CMD_HEATING_START = 0x01,
+    CMD_HEATING_STOP = 0x00
+} cmd_termo_t;
 
 ///===-----------------------------------------------------------------------------------------===//
 // Command message parsing
@@ -120,6 +127,8 @@ void tanwa_tare_oxi(void);
 void tanwa_set_cal_factor_oxi(float weight);
 
 void tanwa_set_offset_oxi(float offset);
+
+void tanwa_heating(uint8_t heating_cmd);
 
 ///===-----------------------------------------------------------------------------------------===//
 /// LORA message switch

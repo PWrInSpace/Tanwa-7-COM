@@ -91,6 +91,8 @@ void tanwa_data_update_can_hx_oxidizer_status(can_hx_oxidizer_status_t *data) {
 
 void tanwa_data_update_can_hx_oxidizer_data(can_hx_oxidizer_data_t *data) {
     if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
+        //ESP_LOGI(TAG, "Weight: %.2f", data->weight);
+        //ESP_LOGI(TAG, "Weight Raw: %d", data->weight_raw);
         memcpy(&tanwa_data.can_hx_oxidizer_data, data, sizeof(can_hx_oxidizer_data_t));
         xSemaphoreGive(tanwa_data_mutex);
     } else {
@@ -122,6 +124,15 @@ void tanwa_data_update_can_flc_data(can_flc_data_t *data) {
         xSemaphoreGive(tanwa_data_mutex);
     } else {
         ESP_LOGE(TAG, "Update FLC data | Failed mutex");
+    }
+}
+
+void tanwa_data_update_can_flc_pressure_data(can_flc_pressure_data_t *data) {
+    if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
+        memcpy(&tanwa_data.can_flc_pressure_data, data, sizeof(can_flc_pressure_data_t));
+        xSemaphoreGive(tanwa_data_mutex);
+    } else {
+        ESP_LOGE(TAG, "Update FLC pressure data | Failed mutex");
     }
 }
 

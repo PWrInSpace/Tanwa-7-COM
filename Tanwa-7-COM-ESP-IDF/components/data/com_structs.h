@@ -18,8 +18,8 @@
 typedef struct {
     float vbat;
     bool abort_button;
-    uint16_t solenoid_state_fill;
-    uint16_t solenoid_state_depr;
+    bool solenoid_state_fill: 1;
+    bool solenoid_state_depr: 1;
     float pressure_1;
     float pressure_2;
     float pressure_3;

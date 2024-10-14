@@ -284,6 +284,6 @@ esp_err_t TANWA_get_vbat(float* vbat){
         ESP_LOGE(TAG, "Failed to read VBAT voltage");
         return ESP_FAIL;
     }
-    *vbat = voltage * 6.26335877863f; // (10k + 50k) / 10k (voltage divider)
+    *vbat = voltage * 11.0f; // (10k + 50k) / 10k (voltage divider)
     return ESP_OK;
 }

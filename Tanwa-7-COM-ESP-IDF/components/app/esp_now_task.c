@@ -122,7 +122,7 @@ void esp_now_task(void* pvParameters) {
                     }
                     case CMD_FILL_TIME: {
                         ESP_LOGI(TAG, "ESP-NOW | Fill time open | %d", obc_command.commandArg);
-                        tanwa_fill_time((uint8_t) obc_command.commandArg);
+                        tanwa_fill_time((uint16_t) obc_command.commandArg);
                         break;
                     }
                     case CMD_DEPR: {
@@ -209,6 +209,11 @@ void esp_now_task(void* pvParameters) {
                     case CMD_SET_OFFSET_OXI: {
                         ESP_LOGI(TAG, "ESP-NOW | Set offset OXI | %d", obc_command.commandArg);
                         tanwa_set_offset_oxi((float) obc_command.commandArg);
+                        break;
+                    }
+                    case CMD_HEATING: {
+                        ESP_LOGI(TAG, "ESP-NOW | Heating | %d", obc_command.commandArg);
+                        tanwa_heating((uint8_t) obc_command.commandArg);
                         break;
                     }
                     default: {

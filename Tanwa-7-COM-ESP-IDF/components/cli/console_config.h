@@ -21,4 +21,6 @@
  */
 esp_err_t console_config_init();
 
+int get_tanwa_data(int argc, char **argv);
+
 #endif /* PWRINSPACE_CONSOLE_CONFIG_H_ */
