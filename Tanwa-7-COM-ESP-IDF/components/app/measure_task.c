@@ -28,6 +28,7 @@
 #include "timers_config.h"
 #include "abort_button.h"
 #include "console_config.h"
+#include "solenoid_driver.h"
 
 #include "esp_log.h"
 
@@ -85,13 +86,28 @@ void copy_tanwa_data_to_now_struct(DataToObc *now_struct){
     now_struct->igniterContinouity_2 = tanwa_data.com_data.igniter_cont_2;
     now_struct->limitSwitch_1 = tanwa_data.can_fac_status.limit_switch_1;
     now_struct->limitSwitch_2 = tanwa_data.can_fac_status.limit_switch_2;
-    now_struct->fillState = tanwa_data.com_data.solenoid_state_fill;
-    now_struct->deprState = tanwa_data.com_data.solenoid_state_depr;
     now_struct->facMotorState_1 = tanwa_data.can_fac_status.motor_state_1;
     now_struct->facMotorState_2 = tanwa_data.can_fac_status.motor_state_2;
     now_struct->coolingState = tanwa_data.can_termo_status.cooling_status;
     now_struct->heatingState = tanwa_data.can_termo_status.heating_status;
     now_struct->abortButton = tanwa_data.com_data.abort_button;
+
+    if(tanwa_data.com_data.solenoid_state_fill == SOLENOID_DRIVER_VALVE_STATE_OPEN){
+        now_struct->fillState = true;
+    } else {
+        now_struct->fillState = false;
+    }
+
+    if(tanwa_data.com_data.solenoid_state_depr == SOLENOID_DRIVER_VALVE_STATE_OPEN){
+        now_struct->deprState = true;
+    } else {
+        now_struct->deprState = false;
+    }
+
+    //ESP_LOGI(TAG, "FAC MOTOR STATE 1: %d", now_struct->facMotorState_1);
+    //ESP_LOGI(TAG, "FAC MOTOR STATE 2: %d", now_struct->facMotorState_2);
+
+    //ESP_LOGI(TAG, "Solenoid state: fill: %d, depr: %d", now_struct->fillState, now_struct->deprState);
 }
 
 void measure_task(void* pvParameters) {
@@ -139,6 +155,8 @@ void measure_task(void* pvParameters) {
             solenoid_driver_valve_get_state(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR, &sol_depr);
             com_data.solenoid_state_fill = sol_fill;
             com_data.solenoid_state_depr = sol_depr;
+
+            //ESP_LOGI(TAG, "Solenoid state: fill: %d, depr: %d", sol_fill, sol_depr);
 
             //Measure pressure
             pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_1, &pressure[0]);

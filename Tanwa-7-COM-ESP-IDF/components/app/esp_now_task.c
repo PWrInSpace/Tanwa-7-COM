@@ -122,7 +122,7 @@ void esp_now_task(void* pvParameters) {
                     }
                     case CMD_FILL_TIME: {
                         ESP_LOGI(TAG, "ESP-NOW | Fill time open | %d", obc_command.commandArg);
-                        tanwa_fill_time((uint8_t) obc_command.commandArg);
+                        tanwa_fill_time((uint16_t) obc_command.commandArg);
                         break;
                     }
                     case CMD_DEPR: {

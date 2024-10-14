@@ -126,10 +126,10 @@ void parse_can_fac_status(twai_message_t rx_message) {
     };
     // ESP_LOGI(TAG, "FAC status: status: %d, request: %d, motor state 1: %d, motor state 2: %d, limit switch 1: %d, limit switch 2: %d", fac_status.status, fac_status.request, fac_status.motor_state_1, fac_status.motor_state_2, fac_status.limit_switch_1, fac_status.limit_switch_2);
     tanwa_data_update_can_fac_status(&fac_status);
-    if (fac_status.request == CAN_REQ_SOFT_RESET) {
-        twai_message_t fac_mess = CAN_FAC_SOFT_RESET();
-        can_task_add_message(&fac_mess);
-    }
+    // if (fac_status.request == CAN_REQ_SOFT_RESET) {
+    //     twai_message_t fac_mess = CAN_FAC_SOFT_RESET();
+    //     can_task_add_message(&fac_mess);
+    // }
 }
 
 void parse_can_flc_status(twai_message_t rx_message) {
