@@ -128,7 +128,7 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "### Timers initialization success ###");
   }
 
-  // SD CARD TIMER
+ // SD CARD TIMER
   if (!sys_timer_start(TIMER_SD_DATA, 50, TIMER_TYPE_PERIODIC)) {
     ESP_LOGE(TAG, "SD CARD | Timer start failed");
   } else {

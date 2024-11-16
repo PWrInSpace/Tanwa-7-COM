@@ -573,7 +573,7 @@ static int hx_rck_calibrate(int argc, char **argv) {
     float calib = atoi(argv[1]);
     twai_message_t hx_rck_mess = {
         .identifier = 0x0A3, 
-        .data_length_code = 0,                  
+        .data_length_code = 4,                  
         .data = {0, 0, 0, 0, 0, 0, 0, 0} 
     };
     memcpy(hx_rck_mess.data, &calib, sizeof(float));
@@ -588,7 +588,7 @@ static int hx_rck_set_calib_factor(int argc, char **argv) {
     float calib = atoi(argv[1]);
     twai_message_t hx_rck_mess = {
         .identifier = 0x0A4, 
-        .data_length_code = 0,                  
+        .data_length_code = 4,                  
         .data = {0, 0, 0, 0, 0, 0, 0, 0} 
     };
     memcpy(hx_rck_mess.data, &calib, sizeof(float));
@@ -603,7 +603,7 @@ static int hx_rck_set_offset(int argc, char **argv) {
     float offset = atoi(argv[1]);
     twai_message_t hx_rck_mess = {
         .identifier = 0x0A5, 
-        .data_length_code = 0,                  
+        .data_length_code = 4,                  
         .data = {0, 0, 0, 0, 0, 0, 0, 0} 
     };
     memcpy(hx_rck_mess.data, &offset, sizeof(float));
@@ -628,11 +628,18 @@ static int hx_oxi_calibrate(int argc, char **argv) {
     float calib = atoi(argv[1]);
     twai_message_t hx_oxi_mess = {
         .identifier = 0x0B3, 
-        .data_length_code = 0,                  
+        .data_length_code = 4,                  
         .data = {0, 0, 0, 0, 0, 0, 0, 0} 
     };
     memcpy(hx_oxi_mess.data, &calib, sizeof(float));
     twai_transmit(&hx_oxi_mess, pdMS_TO_TICKS(100));
+    ESP_LOGI(TAG, "CALIBRATING: REMOVE ALL WEIGHTS");
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    ESP_LOGI(TAG, "CALIBRATING: PLACE KNOWN WEIGHT");
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    ESP_LOGI(TAG, "CALIBRATING: REMOVE KNOWN WEIGHT"); 
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    ESP_LOGI(TAG, "CALIBRATING: CALIBRATION DONE");
     return 0;
 }
 
@@ -643,7 +650,7 @@ static int hx_oxi_set_calib_factor(int argc, char **argv) {
     float calib = atoi(argv[1]);
     twai_message_t hx_oxi_mess = {
         .identifier = 0x0B4, 
-        .data_length_code = 0,                  
+        .data_length_code = 4,                  
         .data = {0, 0, 0, 0, 0, 0, 0, 0} 
     };
     memcpy(hx_oxi_mess.data, &calib, sizeof(float));
@@ -658,7 +665,7 @@ static int hx_oxi_set_offset(int argc, char **argv) {
     float offset = atoi(argv[1]);
     twai_message_t hx_oxi_mess = {
         .identifier = 0x0B5, 
-        .data_length_code = 0,                  
+        .data_length_code = 4,                  
         .data = {0, 0, 0, 0, 0, 0, 0, 0} 
     };
     memcpy(hx_oxi_mess.data, &offset, sizeof(float));
@@ -693,7 +700,7 @@ static int termo_set_max_pressure(int argc, char **argv) {
     float pressure = atoi(argv[1]);
     twai_message_t termo_mess = {
         .identifier = 0x0E6, 
-        .data_length_code = 0,                  
+        .data_length_code = 1,                  
         .data = {0, 0, 0, 0, 0, 0, 0, 0} 
     };
     memcpy(termo_mess.data, &pressure, sizeof(float));
@@ -708,7 +715,7 @@ static int termo_set_min_pressure(int argc, char **argv) {
     float pressure = atoi(argv[1]);
     twai_message_t termo_mess = {
         .identifier = 0x0E7, 
-        .data_length_code = 0,                  
+        .data_length_code = 1,                  
         .data = {0, 0, 0, 0, 0, 0, 0, 0} 
     };
     memcpy(termo_mess.data, &pressure, sizeof(float));
@@ -727,7 +734,7 @@ static int change_measure_period(int argc, char **argv) {
     return 0;
 }
 
-static int get_tanwa_data(int argc, char **argv) {
+int get_tanwa_data(int argc, char **argv) {
     tanwa_data_t tanwa_data = tanwa_data_read();
     CONSOLE_WRITE("TANWA Data:");
     CONSOLE_WRITE("STATE: %d", tanwa_data.state);
@@ -756,7 +763,15 @@ static int get_tanwa_data(int argc, char **argv) {
     CONSOLE_WRITE("  Temperatures: [0] %d, [1] %d, [2] %d, [3] %d", tanwa_data.can_flc_data.temperature_1,
                   tanwa_data.can_flc_data.temperature_2, tanwa_data.can_flc_data.temperature_3,
                   tanwa_data.can_flc_data.temperature_4);
+    CONSOLE_WRITE(" Pressures: [0] %d, [1] %d, [2] %d, [3] %d", tanwa_data.can_flc_pressure_data.pressure_1,
+                  tanwa_data.can_flc_pressure_data.pressure_2, tanwa_data.can_flc_pressure_data.pressure_3,
+                  tanwa_data.can_flc_pressure_data.pressure_4);
     CONSOLE_WRITE("TERMO: ");
+    CONSOLE_WRITE("  Status: %d", tanwa_data.can_termo_status.status);
+    CONSOLE_WRITE("  Heat: %d", tanwa_data.can_termo_status.heating_status);
+    CONSOLE_WRITE("  Cooling: %d", tanwa_data.can_termo_status.cooling_status);
+    CONSOLE_WRITE("  Max Pressure: %d, Min Pressure: %d", tanwa_data.can_termo_status.max_pressure,
+                  tanwa_data.can_termo_status.min_pressure);
     CONSOLE_WRITE("  Pressure: %.2f, Temperature: %d", tanwa_data.can_termo_data.pressure,
                   tanwa_data.can_termo_data.temperature);
     return 0;
@@ -807,6 +822,19 @@ static int get_termo_data(int argc, char **argv) {
     CONSOLE_WRITE("TERMO Data:");
     CONSOLE_WRITE("Pressure: %.2f", termo_data.pressure);
     CONSOLE_WRITE("Temperature: %d", termo_data.temperature);
+    return 0;
+}
+
+static int connected_slaves(int argc, char **argv) {
+
+    can_connected_slaves_t slaves = tanwa_data_read_can_connected_slaves();
+    
+    CONSOLE_WRITE("Connected slaves:");
+    CONSOLE_WRITE("HX OXI: %d", slaves.hx_oxidizer);
+    CONSOLE_WRITE("HX RCK: %d", slaves.hx_rocket);
+    CONSOLE_WRITE("FLC: %d", slaves.flc);
+    CONSOLE_WRITE("TERMO: %d", slaves.termo);
+    CONSOLE_WRITE("FAC: %d", slaves.fac);
     return 0;
 }
 
@@ -863,6 +891,7 @@ static esp_console_cmd_t cmd[] = {
     {"rck-data", "get hx rck data", NULL, get_hx_rck_data, NULL},
     {"flc-data", "get flc data", NULL, get_flc_data, NULL},
     {"termo-data", "get termo data", NULL, get_termo_data, NULL},
+    {"connected-slaves", "show connected slaves", NULL, connected_slaves, NULL},
 };
 
 esp_err_t console_config_init() {

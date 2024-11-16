@@ -264,6 +264,22 @@ void tanwa_set_offset_oxi(float offset) {
     can_task_add_message(&hx_oxi_mess);
 }
 
+void tanwa_heating(uint8_t heating_cmd) {
+
+    if(heating_cmd == CMD_HEATING_START) {
+        twai_message_t termo_mess = CAN_TERMO_HEAT_START();
+        can_task_add_message(&termo_mess);
+        ESP_LOGI(TAG, "TERM | Heating start");
+    } else if(heating_cmd == CMD_HEATING_STOP) {
+        twai_message_t termo_mess = CAN_TERMO_HEAT_STOP();
+        can_task_add_message(&termo_mess);
+        ESP_LOGI(TAG, "TERM | Heating stop");
+    } else {
+        ESP_LOGE(TAG, "TERM | Invalid heating command | %d", heating_cmd);
+        return;
+    }
+}
+
 void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
     if (lora_id == LORA_DEV_ID_ALL || lora_id == LORA_DEV_ID_ALL_SUDO || 
         lora_id == LORA_DEV_ID_TANWA || lora_id == LORA_DEV_ID_TANWA_SUDO) { 
@@ -409,6 +425,11 @@ void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
                 tanwa_set_offset_oxi((float) payload);
                 break;
             }
+            case CMD_HEATING: {
+                        ESP_LOGI(TAG, "ESP-NOW | Heating | %d", payload);
+                        tanwa_heating((uint8_t) payload);
+                        break;
+                    }
             default: {
                 ESP_LOGI(TAG, "LORA command: %d", command);
                 ESP_LOGW(TAG, "LORA | Unknown command");

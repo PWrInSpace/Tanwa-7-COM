@@ -94,6 +94,8 @@ static void lora_process(uint8_t* packet, size_t packet_size) {
         return;
     }
 
+    ESP_LOGI(TAG, "Received packet: %s", packet + prefix_size);
+
     LoRaCommand* received =
         lo_ra_command__unpack(NULL, packet_size - prefix_size - 1, packet + prefix_size);
     if (received != NULL) {
