@@ -175,6 +175,57 @@ static void lora_process(uint8_t* packet, size_t packet_size) {
         ESP_LOGE(TAG, "Unable to decode received package");
     }
 }
+static size_t add_prefix(uint8_t* buffer, size_t size) {
+    if (size < 6) {
+        return 0;
+    }
+
+    memcpy(buffer, PACKET_PREFIX, sizeof(PACKET_PREFIX) - 1);
+
+    return sizeof(PACKET_PREFIX) - 1;
+}
+
+// static size_t lora_create_settings_packet(uint8_t* buffer, size_t size) {
+//     LoRaSettings frame = LO_RA_SETTINGS__INIT;
+//     create_protobuf_settings_frame(&frame);
+
+//     uint8_t data_size = 0;
+//     uint8_t prefix_size = 0;
+//     prefix_size = add_prefix(buffer, size);
+//     data_size = lo_ra_settings__pack(&frame, buffer + prefix_size);
+
+//     return prefix_size + data_size;
+// }
+#include "TANWA_data.h"
+void create_porotobuf_data_frame(LoRaFrame *frame) {
+    tanwa_data_t tanwa_data = tanwa_data_read();
+    lo_ra_frame__init(frame);   // fill struct with 0
+    // mcb
+   // frame->obc_state = data.mcb.state;
+   frame->tanwastate = tanwa_data.state;
+    
+}
+
+static size_t lora_create_data_packet(uint8_t* buffer, size_t size) {
+    LoRaFrame frame;
+    create_porotobuf_data_frame(&frame);
+
+    uint8_t data_size = 0;
+    uint8_t prefix_size = 0;
+    prefix_size = add_prefix(buffer, size);
+    data_size = lo_ra_frame__pack(&frame, buffer + prefix_size);
+
+    return prefix_size + data_size;
+}
+
+static size_t lora_packet(uint8_t* buffer, size_t buffer_size) 
+{   size_t size = 0;
+    size = lora_create_data_packet(buffer, buffer_size);
+    ESP_LOGI(TAG, "Sending LoRa frame -> size: %d", size);
+
+    return size;
+}
+
 
 bool initialize_lora(uint32_t frequency_khz, uint32_t transmiting_period) {
     _lora_add_device();
@@ -193,6 +244,7 @@ bool initialize_lora(uint32_t frequency_khz, uint32_t transmiting_period) {
     lora_api_config_t cfg = {
         .lora = &lora,
         .process_rx_packet_fnc = lora_process,
+        .get_tx_packet_fnc = lora_packet,
         .frequency_khz = frequency_khz,
         .transmiting_period = transmiting_period,
     };
@@ -206,11 +258,12 @@ bool lora_task_init(lora_api_config_t *cfg) {
         return false;
     }
 
-    if (cfg->process_rx_packet_fnc == NULL) {
+    if (cfg->process_rx_packet_fnc == NULL || cfg->get_tx_packet_fnc == NULL) {
         return false;
     }
 
     gb.process_packet_fnc = cfg->process_rx_packet_fnc;
+    gb.get_tx_packet_fnc = cfg->get_tx_packet_fnc;
     memcpy(&gb.lora, cfg->lora, sizeof(lora_struct_t));
 
     lora_init(&gb.lora);
@@ -246,7 +299,8 @@ bool lora_task_init(lora_api_config_t *cfg) {
     return true;
 }
 
-bool lora_change_frequency(uint32_t frequency_khz) {
+bool lora_change_frequency(uint32_t frequency_khz) 
+{
     if (frequency_khz < 4e5 || frequency_khz > 1e6) {
         return false;
     }
