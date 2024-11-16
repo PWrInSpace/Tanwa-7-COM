@@ -132,12 +132,13 @@ void tanwa_depr(uint8_t valve_cmd) {
 
 void tanwa_qd_1(uint8_t qd_cmd) {
     if (qd_cmd == CMD_QD_PUSH) {
-        //twai_message_t fac_mess = CAN_FAC_QD_PUSH();
+        twai_message_t fac_mess = CAN_FAC_QD_PUSH();
         can_task_add_message(&fac_mess);
     } else if (qd_cmd == CMD_QD_STOP) {
-        twai_message_t fac_mess = CAN_TERMO_COOL_STOP();
+        twai_message_t fac_mess = CAN_FAC_QD_STOP();
         can_task_add_message(&fac_mess);
-    } else if (qd_cmd == CMD_QD_PULL) CAN_TERMO_COOL_START();
+    } else if (qd_cmd == CMD_QD_PULL) {
+        twai_message_t fac_mess = CAN_FAC_QD_PULL();
         can_task_add_message(&fac_mess);
     } else {
         ESP_LOGE(TAG, "QD | Invalid command | %d", qd_cmd);
