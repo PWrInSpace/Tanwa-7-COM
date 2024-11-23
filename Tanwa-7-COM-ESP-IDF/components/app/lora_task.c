@@ -202,8 +202,18 @@ void create_porotobuf_data_frame(LoRaFrame *frame) {
     lo_ra_frame__init(frame);   // fill struct with 0
     // mcb
    // frame->obc_state = data.mcb.state;
-   frame->tanwastate = tanwa_data.state;
-    
+   frame->tanwa_state = tanwa_data.state;
+   frame->pressure_injector_fuel = tanwa_data.com_data.pressure_1;
+   frame->pressure_injector_oxi = tanwa_data.com_data.pressure_2;
+   frame->pressure_combustion_chamber = tanwa_data.com_data.pressure_3;
+   frame->igniter_cont1 = tanwa_data.com_data.igniter_cont_1;
+   frame->igniter_cont2 = tanwa_data.com_data.igniter_cont_2;
+   frame->ststus_oxy= tanwa_data.com_liquid_data.solenoid_state_oxy;
+   frame->status_fuel = tanwa_data.com_liquid_data.solenoid_state_fuel;
+   frame->status_arm = tanwa_data.com_liquid_data.arm_state;
+   frame->tanwa_battery = tanwa_data.com_data.vbat;
+   frame->temp_injector = tanwa_data.can_flc_data.temperature_1;
+   frame->temp_combustion_chamber = tanwa_data.can_flc_data.temperature_2;
 }
 
 static size_t lora_create_data_packet(uint8_t* buffer, size_t size) {

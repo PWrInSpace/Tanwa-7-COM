@@ -31,9 +31,9 @@ typedef struct {
 } com_data_t;
 
 typedef struct {
-    uint16_t solenoid_state_oxy;
-    uint16_t solenoid_state_fuel;
-    uint16_t solenoid_state_vent;
+    bool solenoid_state_oxy;
+    bool solenoid_state_fuel;
+    bool solenoid_state_vent;
     bool arm_state;
     bool abort_button;
     uint32_t time_to_start;
