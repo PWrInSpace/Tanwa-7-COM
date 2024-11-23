@@ -208,7 +208,7 @@ void create_porotobuf_data_frame(LoRaFrame *frame) {
    frame->pressure_combustion_chamber = tanwa_data.com_data.pressure_3;
    frame->igniter_cont1 = tanwa_data.com_data.igniter_cont_1;
    frame->igniter_cont2 = tanwa_data.com_data.igniter_cont_2;
-   frame->ststus_oxy= tanwa_data.com_liquid_data.solenoid_state_oxy;
+   frame->status_oxy= tanwa_data.com_liquid_data.solenoid_state_oxy;
    frame->status_fuel = tanwa_data.com_liquid_data.solenoid_state_fuel;
    frame->status_arm = tanwa_data.com_liquid_data.arm_state;
    frame->tanwa_battery = tanwa_data.com_data.vbat;

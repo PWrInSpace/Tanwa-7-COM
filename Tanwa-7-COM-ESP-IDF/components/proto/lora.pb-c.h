@@ -57,7 +57,7 @@ struct  LoRaFrame
   float temp_injector;
   float temp_combustion_chamber;
   float temp_external_tank;
-  protobuf_c_boolean ststus_oxy;
+  protobuf_c_boolean status_oxy;
   protobuf_c_boolean status_fuel;
 };
 #define LO_RA_FRAME__INIT \

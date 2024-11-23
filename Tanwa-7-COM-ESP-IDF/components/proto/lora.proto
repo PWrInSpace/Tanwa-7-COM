@@ -36,7 +36,7 @@ message LoRaFrame {
 
     //TANWA FAC
 
-    bool ststus_oxy = 24;
+    bool status_oxy = 24;
     bool status_fuel = 25;
 
 }

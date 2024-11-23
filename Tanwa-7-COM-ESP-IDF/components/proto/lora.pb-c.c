@@ -421,12 +421,12 @@ static const ProtobufCFieldDescriptor lo_ra_frame__field_descriptors[25] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "ststus_oxy",
+    "status_oxy",
     24,
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, ststus_oxy),
+    offsetof(LoRaFrame, status_oxy),
     NULL,
     NULL,
     0,             /* flags */
@@ -462,8 +462,8 @@ static const unsigned lo_ra_frame__field_indices_by_name[] = {
   11,   /* field[11] = status_depr */
   10,   /* field[10] = status_fill */
   24,   /* field[24] = status_fuel */
+  23,   /* field[23] = status_oxy */
   12,   /* field[12] = status_vent */
-  23,   /* field[23] = ststus_oxy */
   19,   /* field[19] = tank_weight */
   16,   /* field[16] = tanwa_battery */
   0,   /* field[0] = tanwa_state */
