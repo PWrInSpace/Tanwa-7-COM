@@ -97,279 +97,348 @@ void   lo_ra_command__free_unpacked
   assert(message->base.descriptor == &lo_ra_command__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCFieldDescriptor lo_ra_frame__field_descriptors[23] =
+void   lo_ra_settings__init
+                     (LoRaSettings         *message)
+{
+  static const LoRaSettings init_value = LO_RA_SETTINGS__INIT;
+  *message = init_value;
+}
+size_t lo_ra_settings__get_packed_size
+                     (const LoRaSettings *message)
+{
+  assert(message->base.descriptor == &lo_ra_settings__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t lo_ra_settings__pack
+                     (const LoRaSettings *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &lo_ra_settings__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t lo_ra_settings__pack_to_buffer
+                     (const LoRaSettings *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &lo_ra_settings__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+LoRaSettings *
+       lo_ra_settings__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (LoRaSettings *)
+     protobuf_c_message_unpack (&lo_ra_settings__descriptor,
+                                allocator, len, data);
+}
+void   lo_ra_settings__free_unpacked
+                     (LoRaSettings *message,
+                      ProtobufCAllocator *allocator)
+{
+  if(!message)
+    return;
+  assert(message->base.descriptor == &lo_ra_settings__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+static const ProtobufCFieldDescriptor lo_ra_frame__field_descriptors[25] =
 {
   {
-    "tanWaState",
+    "tanwa_state",
     1,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, tanwastate),
+    offsetof(LoRaFrame, tanwa_state),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "pressureSensor",
+    "uptime",
     2,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, pressuresensor),
+    offsetof(LoRaFrame, uptime),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "solenoid_fill",
+    "engine_work_time",
     3,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, solenoid_fill),
+    offsetof(LoRaFrame, engine_work_time),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "solenoid_depr",
+    "pressure_fuel",
     4,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, solenoid_depr),
+    offsetof(LoRaFrame, pressure_fuel),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "abortButton",
+    "pressure_after_fill",
     5,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, abortbutton),
+    offsetof(LoRaFrame, pressure_after_fill),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "igniterContinouity_1",
+    "pressure_before_fill",
     6,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, ignitercontinouity_1),
+    offsetof(LoRaFrame, pressure_before_fill),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "igniterContinouity_2",
+    "pressure_oxy",
     7,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, ignitercontinouity_2),
+    offsetof(LoRaFrame, pressure_oxy),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "hxRequest_RCK",
+    "pressure_injector_fuel",
     8,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, hxrequest_rck),
+    offsetof(LoRaFrame, pressure_injector_fuel),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "hxRequest_TANK",
+    "pressure_injector_oxi",
     9,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, hxrequest_tank),
+    offsetof(LoRaFrame, pressure_injector_oxi),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "vbat",
+    "pressure_combustion_chamber",
     10,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, vbat),
+    offsetof(LoRaFrame, pressure_combustion_chamber),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "motorState_1",
+    "status_fill",
     11,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, motorstate_1),
+    offsetof(LoRaFrame, status_fill),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "motorState_2",
+    "status_depr",
     12,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, motorstate_2),
+    offsetof(LoRaFrame, status_depr),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "motorState_3",
+    "status_vent",
     13,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, motorstate_3),
+    offsetof(LoRaFrame, status_vent),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "motorState_4",
+    "status_arm",
     14,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, motorstate_4),
+    offsetof(LoRaFrame, status_arm),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "rocketWeight_temp",
+    "igniter_cont1",
     15,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_FLOAT,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, rocketweight_temp),
+    offsetof(LoRaFrame, igniter_cont1),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "tankWeight_temp",
+    "igniter_cont2",
     16,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_FLOAT,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, tankweight_temp),
+    offsetof(LoRaFrame, igniter_cont2),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "rocketWeight_val",
+    "tanwa_battery",
     17,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, rocketweight_val),
+    offsetof(LoRaFrame, tanwa_battery),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "tankWeight_val",
+    "engine_thrust",
     18,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, tankweight_val),
+    offsetof(LoRaFrame, engine_thrust),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "rocketWeightRaw_val",
+    "rocket_weight",
     19,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, rocketweightraw_val),
+    offsetof(LoRaFrame, rocket_weight),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "tankWeightRaw_val",
+    "tank_weight",
     20,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, tankweightraw_val),
+    offsetof(LoRaFrame, tank_weight),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "interface_rck",
+    "temp_injector",
     21,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, interface_rck),
+    offsetof(LoRaFrame, temp_injector),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "interface_tank",
+    "temp_combustion_chamber",
     22,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, interface_tank),
+    offsetof(LoRaFrame, temp_combustion_chamber),
     NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "interface_mcu",
+    "temp_external_tank",
     23,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_FLOAT,
+    0,   /* quantifier_offset */
+    offsetof(LoRaFrame, temp_external_tank),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "status_oxy",
+    24,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(LoRaFrame, interface_mcu),
+    offsetof(LoRaFrame, status_oxy),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "status_fuel",
+    25,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_BOOL,
+    0,   /* quantifier_offset */
+    offsetof(LoRaFrame, status_fuel),
     NULL,
     NULL,
     0,             /* flags */
@@ -377,34 +446,36 @@ static const ProtobufCFieldDescriptor lo_ra_frame__field_descriptors[23] =
   },
 };
 static const unsigned lo_ra_frame__field_indices_by_name[] = {
-  4,   /* field[4] = abortButton */
-  7,   /* field[7] = hxRequest_RCK */
-  8,   /* field[8] = hxRequest_TANK */
-  5,   /* field[5] = igniterContinouity_1 */
-  6,   /* field[6] = igniterContinouity_2 */
-  22,   /* field[22] = interface_mcu */
-  20,   /* field[20] = interface_rck */
-  21,   /* field[21] = interface_tank */
-  10,   /* field[10] = motorState_1 */
-  11,   /* field[11] = motorState_2 */
-  12,   /* field[12] = motorState_3 */
-  13,   /* field[13] = motorState_4 */
-  1,   /* field[1] = pressureSensor */
-  18,   /* field[18] = rocketWeightRaw_val */
-  14,   /* field[14] = rocketWeight_temp */
-  16,   /* field[16] = rocketWeight_val */
-  3,   /* field[3] = solenoid_depr */
-  2,   /* field[2] = solenoid_fill */
-  0,   /* field[0] = tanWaState */
-  19,   /* field[19] = tankWeightRaw_val */
-  15,   /* field[15] = tankWeight_temp */
-  17,   /* field[17] = tankWeight_val */
-  9,   /* field[9] = vbat */
+  17,   /* field[17] = engine_thrust */
+  2,   /* field[2] = engine_work_time */
+  14,   /* field[14] = igniter_cont1 */
+  15,   /* field[15] = igniter_cont2 */
+  4,   /* field[4] = pressure_after_fill */
+  5,   /* field[5] = pressure_before_fill */
+  9,   /* field[9] = pressure_combustion_chamber */
+  3,   /* field[3] = pressure_fuel */
+  7,   /* field[7] = pressure_injector_fuel */
+  8,   /* field[8] = pressure_injector_oxi */
+  6,   /* field[6] = pressure_oxy */
+  18,   /* field[18] = rocket_weight */
+  13,   /* field[13] = status_arm */
+  11,   /* field[11] = status_depr */
+  10,   /* field[10] = status_fill */
+  24,   /* field[24] = status_fuel */
+  23,   /* field[23] = status_oxy */
+  12,   /* field[12] = status_vent */
+  19,   /* field[19] = tank_weight */
+  16,   /* field[16] = tanwa_battery */
+  0,   /* field[0] = tanwa_state */
+  21,   /* field[21] = temp_combustion_chamber */
+  22,   /* field[22] = temp_external_tank */
+  20,   /* field[20] = temp_injector */
+  1,   /* field[1] = uptime */
 };
 static const ProtobufCIntRange lo_ra_frame__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 23 }
+  { 0, 25 }
 };
 const ProtobufCMessageDescriptor lo_ra_frame__descriptor =
 {
@@ -414,7 +485,7 @@ const ProtobufCMessageDescriptor lo_ra_frame__descriptor =
   "LoRaFrame",
   "",
   sizeof(LoRaFrame),
-  23,
+  25,
   lo_ra_frame__field_descriptors,
   lo_ra_frame__field_indices_by_name,
   1,  lo_ra_frame__number_ranges,
@@ -426,7 +497,7 @@ static const ProtobufCFieldDescriptor lo_ra_command__field_descriptors[4] =
   {
     "lora_dev_id",
     1,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
     offsetof(LoRaCommand, lora_dev_id),
@@ -438,7 +509,7 @@ static const ProtobufCFieldDescriptor lo_ra_command__field_descriptors[4] =
   {
     "sys_dev_id",
     2,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
     offsetof(LoRaCommand, sys_dev_id),
@@ -450,7 +521,7 @@ static const ProtobufCFieldDescriptor lo_ra_command__field_descriptors[4] =
   {
     "command",
     3,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
     0,   /* quantifier_offset */
     offsetof(LoRaCommand, command),
@@ -462,7 +533,7 @@ static const ProtobufCFieldDescriptor lo_ra_command__field_descriptors[4] =
   {
     "payload",
     4,
-    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
     offsetof(LoRaCommand, payload),
@@ -496,5 +567,108 @@ const ProtobufCMessageDescriptor lo_ra_command__descriptor =
   lo_ra_command__field_indices_by_name,
   1,  lo_ra_command__number_ranges,
   (ProtobufCMessageInit) lo_ra_command__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor lo_ra_settings__field_descriptors[6] =
+{
+  {
+    "lora_freq_khz",
+    1,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(LoRaSettings, lora_freq_khz),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "lora_transmit_ms",
+    2,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(LoRaSettings, lora_transmit_ms),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "countdown_time",
+    3,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(LoRaSettings, countdown_time),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "ingition_time",
+    4,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(LoRaSettings, ingition_time),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "flash_enable",
+    5,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_UINT32,
+    0,   /* quantifier_offset */
+    offsetof(LoRaSettings, flash_enable),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "buzzer_enable",
+    6,
+    PROTOBUF_C_LABEL_NONE,
+    PROTOBUF_C_TYPE_UINT32,
+    0,   /* quantifier_offset */
+    offsetof(LoRaSettings, buzzer_enable),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned lo_ra_settings__field_indices_by_name[] = {
+  5,   /* field[5] = buzzer_enable */
+  2,   /* field[2] = countdown_time */
+  4,   /* field[4] = flash_enable */
+  3,   /* field[3] = ingition_time */
+  0,   /* field[0] = lora_freq_khz */
+  1,   /* field[1] = lora_transmit_ms */
+};
+static const ProtobufCIntRange lo_ra_settings__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 6 }
+};
+const ProtobufCMessageDescriptor lo_ra_settings__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "LoRaSettings",
+  "LoRaSettings",
+  "LoRaSettings",
+  "",
+  sizeof(LoRaSettings),
+  6,
+  lo_ra_settings__field_descriptors,
+  lo_ra_settings__field_indices_by_name,
+  1,  lo_ra_settings__number_ranges,
+  (ProtobufCMessageInit) lo_ra_settings__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
