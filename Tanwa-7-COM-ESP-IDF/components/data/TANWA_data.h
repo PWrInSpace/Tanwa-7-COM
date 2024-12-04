@@ -40,6 +40,7 @@ typedef struct {
     uint8_t state;
     // COM
     com_data_t com_data;
+    com_liquid_data_t com_liquid_data;
     can_connected_slaves_t can_connected_slaves;
     // HX rocket
     can_hx_rocket_status_t can_hx_rocket_status; 
@@ -104,6 +105,8 @@ void tanwa_data_update_now_main_valve_temperature_data(now_main_valve_temperatur
 tanwa_data_t tanwa_data_read(void);
 
 com_data_t tanwa_data_read_com_data(void);
+
+com_liquid_data_t tanwa_data_read_com_liquid_data(void);
 
 can_connected_slaves_t tanwa_data_read_can_connected_slaves(void);
 

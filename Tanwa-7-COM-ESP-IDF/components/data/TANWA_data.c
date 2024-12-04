@@ -198,6 +198,17 @@ com_data_t tanwa_data_read_com_data(void) {
     return data;
 }
 
+com_liquid_data_t tanwa_data_read_com_liquid_data(void) {
+    com_liquid_data_t data = {0};
+    if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
+        data = tanwa_data.com_liquid_data;
+        xSemaphoreGive(tanwa_data_mutex);
+    } else {
+        ESP_LOGE(TAG, "Read COM | Failed mutex");
+    }
+    return data;
+}
+
 can_connected_slaves_t tanwa_data_read_can_connected_slaves(void) {
     can_connected_slaves_t data = {0};
     if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
