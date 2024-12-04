@@ -134,6 +134,6 @@ void tanwa_heating(uint8_t heating_cmd);
 /// LORA message switch
 ///===-----------------------------------------------------------------------------------------===//
 
-void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload);
+bool lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload);
 
 #endif /* PWRINSPACE_TANWA_NOW_COMMANDS_H_ */

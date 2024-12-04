@@ -9,6 +9,11 @@
 #include "mcu_gpio_config.h"
 #include "state_machine_config.h"
 
+#include "can_commands.h"
+#include "can_task.h"
+
+#include "settings_mem.h"
+
 #include "sd_task.h"
 
 #include "esp_log.h"
@@ -50,11 +55,76 @@ void on_abort_button_timer(void *arg){
     gpio_intr_enable(ABORT_GPIO);
 }
 
+void on_disconnect_timer(void* args){
+    // Handle the disconnect event
+    ESP_LOGW(TAG, "DISCONNECT EVENT");
+    // Handle the disconnect event
+    state_machine_force_change_state(ABORT);
+}
+
+void on_after_burnout_timer(void *arg){
+    // Handle the after burnout event
+    ESP_LOGW(TAG, "AFTER BURNOUT EVENT");
+    // Handle the after burnout event
+    state_machine_force_change_state(AFTER_BURNOUT);
+}
+
+void on_ignition_timer(void *arg){
+    // Handle the ignition event
+    ESP_LOGW(TAG, "IGNITION EVENT");
+
+    if(TANWA_hardware.igniter[0].state != IGNITER_STATE_ARMED || TANWA_hardware.igniter[1].state != IGNITER_STATE_ARMED){
+        ESP_LOGE(TAG, "Igniters not armed");
+        return;
+    }
+
+    Settings settings = settings_get_all();
+
+    twai_message_t fac_msg = CAN_FAC_SETTINGS();
+    fac_msg.data[0] = settings.fuel_valve_initial_angle;
+    fac_msg.data[1] = settings.oxidizer_valve_initial_angle;
+    fac_msg.data[2] = settings.fuel_open_time_ms;
+    fac_msg.data[4] = settings.oxidizer_full_open_time_ms;
+    fac_msg.data[6] = settings.fuel_full_open_time_ms;
+    can_task_add_message(&fac_msg);
+
+
+    if(igniter_fire(&TANWA_hardware.igniter[0]) == IGNITER_OK){
+        ESP_LOGI(TAG, "Igniter 1 fired");
+    } else {
+        ESP_LOGE(TAG, "Failed to fire igniter 1");
+    }
+
+    if(igniter_fire(&TANWA_hardware.igniter[1]) == IGNITER_OK){
+        ESP_LOGI(TAG, "Igniter 2 fired");
+    } else {
+        ESP_LOGE(TAG, "Failed to fire igniter 2");
+    }
+
+    return;
+
+}
+
+void on_burn_timer(void *arg){
+    // Handle the burn event
+    ESP_LOGW(TAG, "BURN EVENT");
+
+    twai_message_t fac_msg = CAN_FAC_INIT_BURN();
+    can_task_add_message(&fac_msg);
+
+    // Handle the burn event
+    state_machine_force_change_state(FIRE);
+}
+
 bool initialize_timers(void) {
     sys_timer_t timers[] = {
     {.timer_id = TIMER_SD_DATA, .timer_callback_fnc = on_sd_timer, .timer_arg = NULL},
     {.timer_id = TIMER_BUZZER, .timer_callback_fnc = on_buzzer_timer, .timer_arg = NULL},
-    {.timer_id = TIMER_ABORT_BUTTON, .timer_callback_fnc = on_abort_button_timer, .timer_arg = NULL}
+    {.timer_id = TIMER_ABORT_BUTTON, .timer_callback_fnc = on_abort_button_timer, .timer_arg = NULL},
+    {.timer_id = TIMER_DISCONNECT, .timer_callback_fnc = on_disconnect_timer, .timer_arg = NULL},
+    {.timer_id = TIMER_IGNITION, .timer_callback_fnc = on_ignition_timer, .timer_arg = NULL},
+    {.timer_id = TIMER_BURN, .timer_callback_fnc = on_burn_timer, .timer_arg = NULL},
+    {.timer_id = TIMER_AFTER_BURNOUT, .timer_callback_fnc = on_after_burnout_timer, .timer_arg = NULL},
     };
     return sys_timer_init(timers, sizeof(timers) / sizeof(timers[0]));
 }

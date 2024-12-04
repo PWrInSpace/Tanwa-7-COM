@@ -838,6 +838,63 @@ static int connected_slaves(int argc, char **argv) {
     return 0;
 }
 
+int countdown_start(int argc, char **argv) {
+    if(state_machine_change_state(COUNTDOWN) != STATE_MACHINE_OK) {
+        ESP_LOGE(TAG, "Failed to change state to COUNTDOWN");
+        return -1;
+    }
+
+    return 0;
+}
+
+int open_servo(int argc, char **argv) {
+
+    if (argc < 2) {
+        return -1;
+    }
+
+    int servo_num = atoi(argv[1]);
+
+    if(servo_num < 0 || servo_num > 2) {
+        ESP_LOGE(TAG, "Invalid servo number");
+        return -1;
+    }
+    
+    twai_message_t fac_mess = {
+        .identifier = 0x0C4,
+        .data_length_code = 1,
+        .data = {servo_num, 0, 0, 0, 0, 0, 0, 0}
+    };
+
+    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+
+    return 0;
+}
+
+int close_servo(int argc, char **argv) {
+
+    if (argc < 2) {
+        return -1;
+    }
+
+    int servo_num = atoi(argv[1]);
+
+    if(servo_num < 0 || servo_num > 2) {
+        ESP_LOGE(TAG, "Invalid servo number");
+        return -1;
+    }
+    
+    twai_message_t fac_mess = {
+        .identifier = 0x0C5,
+        .data_length_code = 1,
+        .data = {servo_num, 0, 0, 0, 0, 0, 0, 0}
+    };
+
+    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+
+    return 0;
+}
+
 static esp_console_cmd_t cmd[] = {
     // system commands
     {"reset-dev", "restart device", NULL, reset_device, NULL},
@@ -892,6 +949,9 @@ static esp_console_cmd_t cmd[] = {
     {"flc-data", "get flc data", NULL, get_flc_data, NULL},
     {"termo-data", "get termo data", NULL, get_termo_data, NULL},
     {"connected-slaves", "show connected slaves", NULL, connected_slaves, NULL},
+    {"CONTDOWN_START", "start the timer for liquid test", NULL, countdown_start, NULL},
+    {"servo-open", "open the # servo", NULL, open_servo, NULL},
+    {"close-servo", "close the # servo", NULL, close_servo, NULL}
 };
 
 esp_err_t console_config_init() {

@@ -5,10 +5,18 @@
 #include "system_timer.h"
 #include "stdbool.h"
 
+#define TIMER_SD_DATA_PERIOD_MS 100
+#define TIMER_DISCONNECT_PERIOD_MS 5 * 60 * 1000
+#define ENGINE_BURN_TIME_MS 20 * 1000
+
 typedef enum {
     TIMER_SD_DATA = 0,
     TIMER_BUZZER = 1,
     TIMER_ABORT_BUTTON = 2,
+    TIMER_DISCONNECT = 3,
+    TIMER_IGNITION = 4,
+    TIMER_BURN = 5,
+    TIMER_AFTER_BURNOUT = 6,
 } timers_id_def;
 
 /**

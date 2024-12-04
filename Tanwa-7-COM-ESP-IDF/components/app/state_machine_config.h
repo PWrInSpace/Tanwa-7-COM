@@ -14,15 +14,11 @@
 typedef enum {
     INIT = 0,
     IDLE,
-    RECOVERY_ARM,
-    FUELING,
     ARMED_TO_LAUNCH,
     RDY_TO_LAUNCH,
     COUNTDOWN,
-    FLIGHT,
-    FIRST_STAGE_RECOVERY,
-    SECOND_STAGE_RECOVERY,
-    ON_GROUND,
+    FIRE,
+    AFTER_BURNOUT,
     HOLD,
     ABORT,
 } state_t;

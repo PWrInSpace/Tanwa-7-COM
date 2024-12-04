@@ -153,7 +153,7 @@ void measure_task(void* pvParameters) {
             com_data.pressure_3 = pressure[2];
             com_data.pressure_4 = pressure[3];
 
-            // Measure temperature
+            //Measure temperature
             for (int i = 0; i < 2; ++i) {
                 tmp1075_get_temp_celsius(&(TANWA_hardware.tmp1075[i]), &temp[i]);
             }
@@ -185,6 +185,8 @@ void measure_task(void* pvParameters) {
             twai_message_t filling_arm_stat = CAN_FAC_GET_STATUS();
             can_task_add_message_with_rx(&filling_arm_stat);
             vTaskDelay(pdMS_TO_TICKS(10));
+
+            ESP_LOGI(TAG, "DUPA");
 
             // Filling Control data
             twai_message_t flc_mess1 = CAN_FLC_GET_DATA();
