@@ -89,7 +89,7 @@ static void can_task_add_rx_counter(void) {
 
 bool can_task_add_message(twai_message_t *message) {
     if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to send the message");
+        //ESP_LOGE(TAG, "Failed to send the message");
         return false;
     }
     return true;
@@ -97,7 +97,7 @@ bool can_task_add_message(twai_message_t *message) {
 
 bool can_task_add_message_with_rx(twai_message_t *message) {
     if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to send the message");
+        //ESP_LOGE(TAG, "Failed to send the message");
         return false;
     }
     can_task_add_rx_counter();

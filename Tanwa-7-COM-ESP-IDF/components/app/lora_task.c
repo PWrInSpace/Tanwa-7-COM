@@ -95,6 +95,8 @@ void turn_of_receive_window_timer(void) {
 
 static size_t on_lora_receive(uint8_t *rx_buffer, size_t buffer_len) {
     size_t len = 0;
+    ESP_LOGI(TAG, "**********Received packet");
+    ESP_LOGI(TAG, "CO DO KURWY %d", lora_received(&gb.lora));
     if (lora_received(&gb.lora) == LORA_OK) {
         len = lora_receive_packet(&gb.lora, rx_buffer, buffer_len);
         rx_buffer[len] = '\0';
@@ -203,29 +205,54 @@ void create_porotobuf_data_frame(LoRaFrame *frame) {
     tanwa_data_t tanwa_data = tanwa_data_read();
     lo_ra_frame__init(frame);   // fill struct with 0
     // mcb
-   // frame->obc_state = data.mcb.state;
-   frame->tanwa_state = tanwa_data.state;
-   frame->pressure_injector_fuel = tanwa_data.com_data.pressure_1;
-   frame->pressure_injector_oxi = tanwa_data.com_data.pressure_2;
-   frame->pressure_combustion_chamber = tanwa_data.com_data.pressure_3;
-   frame->igniter_cont1 = tanwa_data.com_data.igniter_cont_1;
-   frame->igniter_cont2 = tanwa_data.com_data.igniter_cont_2;
-   frame->status_oxy= tanwa_data.com_liquid_data.solenoid_state_oxy;
-   frame->status_fuel = tanwa_data.com_liquid_data.solenoid_state_fuel;
-   frame->status_arm = tanwa_data.com_liquid_data.arm_state;
-   frame->tanwa_battery = tanwa_data.com_data.vbat;
-   frame->temp_injector = tanwa_data.can_flc_data.temperature_1;
-   frame->temp_combustion_chamber = tanwa_data.can_flc_data.temperature_2;
+    //frame->obc_state = data.mcb.state;
+    frame->tanwa_state = 1;
+    //frame->uptime = 1;
+    frame->pressure_injector_fuel = tanwa_data.com_data.pressure_1;
+    frame->pressure_injector_oxi = tanwa_data.com_data.pressure_2;
+    frame->pressure_combustion_chamber = tanwa_data.com_data.pressure_3;
+    frame->igniter_cont1 = tanwa_data.com_data.igniter_cont_1;
+    frame->igniter_cont2 = tanwa_data.com_data.igniter_cont_2;
+    frame->status_oxy= 1;
+    frame->status_fuel = 1;
+    frame->status_arm = 1;
+    frame->tanwa_battery = tanwa_data.com_data.vbat;
+    frame->temp_injector = tanwa_data.can_flc_data.temperature_1;
+    frame->temp_combustion_chamber = tanwa_data.can_flc_data.temperature_2;
+    frame->temp_external_tank = tanwa_data.can_flc_data.temperature_3;
+    // hx rck
+    frame->engine_thrust = tanwa_data.can_hx_rocket_data.weight;
+    frame->rocket_weight = tanwa_data.can_hx_rocket_data.weight;
+    frame->tank_weight = tanwa_data.can_hx_oxidizer_data.weight;
+
+    // frame->engine_work_time = 1;
+    //frame->pressure_fuel = tanwa_data.com_data.pressure_1;
+    //frame->pressure_after_fill = tanwa_data.com_data.pressure_2;
+    //frame->pressure_before_fill = tanwa_data.com_data.pressure_3;
+    //frame->pressure_oxy = tanwa_data.com_data.pressure_4;
+    //frame->status_fill = 1;
+    //frame->status_depr = 1;
+    //frame->status_vent = 1;
+
+
 }
 
 static size_t lora_create_data_packet(uint8_t* buffer, size_t size) {
     LoRaFrame frame;
     create_porotobuf_data_frame(&frame);
 
+    // ESP_LOGI(TAG, "FRAME:");
+    // for (int i = 0; i < sizeof(frame); ++i) {
+    //     ESP_LOGI(TAG, "%d: %d", i, ((uint8_t*)&frame)[i]);
+    // }
+
+
     uint8_t data_size = 0;
     uint8_t prefix_size = 0;
     prefix_size = add_prefix(buffer, size);
     data_size = lo_ra_frame__pack(&frame, buffer + prefix_size);
+
+    ESP_LOGI(TAG, "Data_size: %d", data_size);
 
     return prefix_size + data_size;
 }
@@ -336,8 +363,10 @@ void lora_task(void *arg)
                 on_lora_transmit();
             // on receive
             } else {
+                ESP_LOGI(TAG, "ON receive");
                 rx_packet_size = on_lora_receive(rx_buffer, sizeof(rx_buffer));
                 if (rx_packet_size > 0 && gb.process_packet_fnc != NULL) {
+                    ESP_LOGI(TAG, "*****************Processing packet");
                     gb.process_packet_fnc(rx_buffer, rx_packet_size);
                     vTaskDelay(pdMS_TO_TICKS(100));
                 }
