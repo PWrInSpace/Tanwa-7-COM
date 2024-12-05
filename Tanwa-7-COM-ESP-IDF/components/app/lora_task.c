@@ -53,7 +53,7 @@ void IRAM_ATTR lora_task_irq_notify(void *arg) {
 
 static void notify_end_of_rx_window(void) { 
     xTaskNotifyGive(gb.task);
-    ESP_LOGI(TAG, "END OF WINDOW");
+    //ESP_LOGI(TAG, "END OF WINDOW");
 }
 
 static void on_receive_window_timer(TimerHandle_t timer) { notify_end_of_rx_window(); }
@@ -81,7 +81,7 @@ static void lora_change_state_to_transmit() {
 void turn_on_receive_window_timer(void) {
     if (xTimerIsTimerActive(gb.receive_window_timer) == pdTRUE) {
         xTimerReset(gb.receive_window_timer, portMAX_DELAY);
-        ESP_LOGE(TAG, "TIMER IS ACTIVE");
+        //ESP_LOGE(TAG, "TIMER IS ACTIVE");
         return;
     }
     xTimerStart(gb.receive_window_timer, portMAX_DELAY);
@@ -95,14 +95,19 @@ void turn_of_receive_window_timer(void) {
 
 static size_t on_lora_receive(uint8_t *rx_buffer, size_t buffer_len) {
     size_t len = 0;
-    ESP_LOGI(TAG, "**********Received packet");
-    ESP_LOGI(TAG, "CO DO KURWY %d", lora_received(&gb.lora));
-    if (lora_received(&gb.lora) == LORA_OK) {
+    // if (lora_received(&gb.lora) == LORA_OK) {
+    //     len = lora_receive_packet(&gb.lora, rx_buffer, buffer_len);
+    //     rx_buffer[len] = '\0';
+    //     ESP_LOGD(TAG, "Received %s, len %d", rx_buffer, len);
+    //     lora_map_d0_interrupt(&gb.lora, LORA_IRQ_D0_RXDONE);
+    //     lora_set_receive_mode(&gb.lora);
+    // }
+    turn_of_receive_window_timer();
+    lora_map_d0_interrupt(&gb.lora, LORA_IRQ_D0_TXDONE);
+    if(lora_received(&gb.lora) == LORA_OK) {
         len = lora_receive_packet(&gb.lora, rx_buffer, buffer_len);
         rx_buffer[len] = '\0';
         ESP_LOGD(TAG, "Received %s, len %d", rx_buffer, len);
-        lora_map_d0_interrupt(&gb.lora, LORA_IRQ_D0_RXDONE);
-        lora_set_receive_mode(&gb.lora);
     }
     return len;
 }
@@ -208,9 +213,9 @@ void create_porotobuf_data_frame(LoRaFrame *frame) {
     //frame->obc_state = data.mcb.state;
     frame->tanwa_state = 1;
     //frame->uptime = 1;
-    frame->pressure_injector_fuel = tanwa_data.com_data.pressure_1;
-    frame->pressure_injector_oxi = tanwa_data.com_data.pressure_2;
-    frame->pressure_combustion_chamber = tanwa_data.com_data.pressure_3;
+    frame->pressure_injector_fuel = 2.0;
+    frame->pressure_injector_oxi = 1.0;
+    frame->pressure_combustion_chamber = 3.0;
     frame->igniter_cont1 = tanwa_data.com_data.igniter_cont_1;
     frame->igniter_cont2 = tanwa_data.com_data.igniter_cont_2;
     frame->status_oxy= 1;
@@ -221,7 +226,7 @@ void create_porotobuf_data_frame(LoRaFrame *frame) {
     frame->temp_combustion_chamber = tanwa_data.can_flc_data.temperature_2;
     frame->temp_external_tank = tanwa_data.can_flc_data.temperature_3;
     // hx rck
-    frame->engine_thrust = tanwa_data.can_hx_rocket_data.weight;
+    frame->engine_thrust = 7.0;
     frame->rocket_weight = tanwa_data.can_hx_rocket_data.weight;
     frame->tank_weight = tanwa_data.can_hx_oxidizer_data.weight;
 
@@ -252,7 +257,7 @@ static size_t lora_create_data_packet(uint8_t* buffer, size_t size) {
     prefix_size = add_prefix(buffer, size);
     data_size = lo_ra_frame__pack(&frame, buffer + prefix_size);
 
-    ESP_LOGI(TAG, "Data_size: %d", data_size);
+    //ESP_LOGI(TAG, "Data_size: %d", data_size);
 
     return prefix_size + data_size;
 }
@@ -260,7 +265,7 @@ static size_t lora_create_data_packet(uint8_t* buffer, size_t size) {
 static size_t lora_packet(uint8_t* buffer, size_t buffer_size) 
 {   size_t size = 0;
     size = lora_create_data_packet(buffer, buffer_size);
-    ESP_LOGI(TAG, "Sending LoRa frame -> size: %d", size);
+    //ESP_LOGI(TAG, "Sending LoRa frame -> size: %d", size);
 
     return size;
 }
@@ -309,7 +314,7 @@ bool lora_task_init(lora_api_config_t *cfg) {
     lora_set_frequency(&gb.lora, cfg->frequency_khz * 1e3);
     lora_set_bandwidth(&gb.lora, LORA_TASK_BANDWIDTH);
     lora_map_d0_interrupt(&gb.lora, LORA_IRQ_D0_RXDONE);
-    lora_set_receive_mode(&gb.lora);
+    //lora_set_receive_mode(&gb.lora);
 
     if (LORA_TASK_CRC_ENABLE) {
         lora_enable_crc(&gb.lora);
@@ -359,14 +364,14 @@ void lora_task(void *arg)
         if (wait_until_irq() == true) {
             // on transmit
             if (gb.lora_state == LORA_TRANSMIT) {
-                ESP_LOGI(TAG, "ON transmit");
+                //ESP_LOGI(TAG, "ON transmit");
                 on_lora_transmit();
             // on receive
             } else {
-                ESP_LOGI(TAG, "ON receive");
+                //ESP_LOGI(TAG, "ON receive");
                 rx_packet_size = on_lora_receive(rx_buffer, sizeof(rx_buffer));
                 if (rx_packet_size > 0 && gb.process_packet_fnc != NULL) {
-                    ESP_LOGI(TAG, "*****************Processing packet");
+                    //ESP_LOGI(TAG, "*****************Processing packet");
                     gb.process_packet_fnc(rx_buffer, rx_packet_size);
                     vTaskDelay(pdMS_TO_TICKS(100));
                 }
