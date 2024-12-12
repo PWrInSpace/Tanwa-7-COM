@@ -12,8 +12,12 @@
 #include "state_machine_config.h"
 #include "TANWA_config.h"
 
+#include "lora_task.h"
+
 #include "can_commands.h"
 #include "can_task.h"
+
+#include "settings_mem.h"
 
 #define TAG "CMD_COMMANDS"
 
@@ -283,6 +287,8 @@ void tanwa_heating(uint8_t heating_cmd) {
 void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
     if (lora_id == LORA_DEV_ID_ALL || lora_id == LORA_DEV_ID_ALL_SUDO || 
         lora_id == LORA_DEV_ID_TANWA || lora_id == LORA_DEV_ID_TANWA_SUDO) { 
+
+        Settings settings = settings_get_all();
         // Check if the command is for this device
         ESP_LOGI(TAG, "LORA | Command for TANWA");
         switch (command) {
@@ -310,126 +316,24 @@ void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
                 tanwa_hold_out();
                 break;
             }
-            case CMD_SOFT_ARM: {
-                ESP_LOGI(TAG, "LORA | Soft arm");
-                tanwa_soft_arm();
+            case CMD_LORA_TRANSMIT_F: {
+                ESP_LOGI(TAG, "LORA | Transmit F");
+                lora_change_frequency(payload);
                 break;
             }
-            case CMD_SOFT_DISARM: {
-                ESP_LOGI(TAG, "LORA | Soft disarm");
-                tanwa_soft_disarm();
+            case CMD_LORA_TRANSMIT_T: {
+                ESP_LOGI(TAG, "LORA | Transmit P");
+                //lora_change_period(payload);
                 break;
             }
-            case CMD_FIRE: {
-                ESP_LOGI(TAG, "LORA | Fire");
-                tanwa_fire();
-                break;
-            }
-            case CMD_FILL: {
-                if (payload == CMD_VALVE_OPEN) {
-                    ESP_LOGI(TAG, "LORA | Fill open ");
-                } else {
-                    ESP_LOGI(TAG, "LORA | Fill close ");
+            case CMD_COUNTDOWN: {
+                ESP_LOGI(TAG, "LORA | Countdown");
+                state_machine_status_t sm_status = state_machine_change_state(COUNTDOWN);
+                if (sm_status != STATE_MACHINE_OK) {
+                    ESP_LOGE(TAG, "SM | State change error | %d", (uint8_t)sm_status);
                 }
-                tanwa_fill((uint8_t) payload);
                 break;
             }
-            case CMD_FILL_TIME: {
-                ESP_LOGI(TAG, "LORA | Fill time open | %d", payload);
-                tanwa_fill_time((uint8_t) payload);
-                break;
-            }
-            case CMD_DEPR: {
-                if (payload == CMD_VALVE_OPEN) {
-                    ESP_LOGI(TAG, "LORA | Depr open ");
-                } else {
-                    ESP_LOGI(TAG, "LORA | Depr close ");
-                }
-                tanwa_depr((uint8_t) payload);
-                break;
-            }
-            case CMD_QD: {
-                switch ((uint8_t) payload) {
-                    case CMD_QD_PUSH: {
-                        ESP_LOGI(TAG, "LORA | QD push");
-                        break;
-                    }
-                    case CMD_QD_PULL: {
-                        ESP_LOGI(TAG, "LORA | QD pull");
-                        break;
-                    }
-                    case CMD_QD_STOP: {
-                        ESP_LOGI(TAG, "LORA | QD stop");
-                        break;
-                    }
-                    default: {
-                        ESP_LOGW(TAG, "LORA | Unknown QD command");
-                        break;
-                    }
-                }
-                tanwa_qd_1((uint8_t) payload);
-                break;
-            }
-            case CMD_SOFT_RESTART_RCK: {
-                ESP_LOGI(TAG, "LORA | Soft restart RCK");
-                tanwa_soft_restart_rck();
-                break;
-            }
-            case CMD_SOFT_RESTART_OXI: {
-                ESP_LOGI(TAG, "LORA | Soft restart OXI");
-                tanwa_soft_restart_oxi();
-                break;
-            }
-            case CMD_SOFT_RESTART_ESP: {
-                ESP_LOGI(TAG, "LORA | Soft restart ESP");
-                tanwa_soft_restart_esp();
-                break;
-            }
-            case CMD_CALIBRATE_RCK: {
-                ESP_LOGI(TAG, "LORA | Calibrate RCK | Weight: %d", payload);
-                tanwa_calibrate_rck((float) payload);
-                break;
-            }
-            case CMD_TARE_RCK: {
-                ESP_LOGI(TAG, "LORA | Tare RCK");
-                tanwa_tare_rck();
-                break;
-            }
-            case CMD_SET_CAL_FACTOR_RCK: {
-                ESP_LOGI(TAG, "LORA | Set cal factor RCK | %d", payload);
-                tanwa_set_cal_factor_rck((float) payload);
-                break;
-            }
-            case CMD_SET_OFFSET_RCK: {
-                ESP_LOGI(TAG, "LORA | Set offset RCK | %d", payload);
-                tanwa_set_offset_rck((float) payload);
-                break;
-            }
-            case CMD_CALIBRATE_OXI: {
-                ESP_LOGI(TAG, "LORA | Calibrate OXI | Weight: %d", payload);
-                tanwa_calibrate_oxi((float) payload);
-                break;
-            }
-            case CMD_TARE_OXI: {
-                ESP_LOGI(TAG, "LORA | Tare OXI");
-                tanwa_tare_oxi();
-                break;
-            } 
-            case CMD_SET_CAL_FACTOR_OXI: {
-                ESP_LOGI(TAG, "LORA | Set cal factor OXI | %d", payload);
-                tanwa_set_cal_factor_oxi((float) payload);
-                break;
-            }
-            case CMD_SET_OFFSET_OXI: {
-                ESP_LOGI(TAG, "LORA | Set offset OXI | %d", payload);
-                tanwa_set_offset_oxi((float) payload);
-                break;
-            }
-            case CMD_HEATING: {
-                        ESP_LOGI(TAG, "ESP-NOW | Heating | %d", payload);
-                        tanwa_heating((uint8_t) payload);
-                        break;
-                    }
             default: {
                 ESP_LOGI(TAG, "LORA command: %d", command);
                 ESP_LOGW(TAG, "LORA | Unknown command");
