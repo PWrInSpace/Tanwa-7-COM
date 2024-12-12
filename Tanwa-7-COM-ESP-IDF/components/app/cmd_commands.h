@@ -30,36 +30,43 @@ typedef enum {
     CMD_ABORT = 0x01,
     CMD_HOLD_IN = 0x02,
     CMD_HOLD_OUT = 0x03,
-    // Filling process commands
-    CMD_FILL = 0x10,
-    CMD_FILL_TIME = 0x15,
-    CMD_DEPR = 0x20,
-    CMD_QD = 0x30,
-    // Firing commands
-    CMD_SOFT_ARM = 0x04,
-    CMD_SOFT_DISARM = 0x05,
-    CMD_FIRE = 0x88,
-    // Restart commands
-    CMD_SOFT_RESTART_RCK = 0x61,
-    CMD_SOFT_RESTART_OXI = 0x62,
-    CMD_SOFT_RESTART_ESP = 0x06,
-    // Rocket weight calibration commands
-    CMD_CALIBRATE_RCK = 0x40,
-    CMD_TARE_RCK = 0x41,
-    CMD_SET_CAL_FACTOR_RCK = 0x42,
-    CMD_SET_OFFSET_RCK = 0x43,
-    // Oxidizer weight calibration commands
-    CMD_CALIBRATE_OXI = 0x50,
-    CMD_TARE_OXI = 0x51,
-    CMD_SET_CAL_FACTOR_OXI = 0x52,
-    CMD_SET_OFFSET_OXI = 0x53,
-    // PLSS command
-    CMD_PLSS = 0x60,
-    // LoRa config commands
-    CMD_LORA_FREQ = 0x80,
-    CMD_LORA_TIME = 0x81,
-    //Bottle heating commands
-    CMD_HEATING = 0x47,
+    CMD_LORA_TRANSMIT_F = 0x10,
+    CMD_LORA_TRANSMIT_T = 0x11,
+    CMD_COUNTDOWN = 0x12,
+    CMD_IGNITERS_TIME = 0x13,
+    CMD_FLASH = 0x14,
+    CMD_SEND_SETTINGS = 0x15,
+    CMD_RESET_ERRORS = 0x16,
+    CMD_FLASH_FORMAT = 0x17,
+    CMD_FUEL_INIT_TIME = 0x18,
+    CMD_FUEL_FULL_TIME = 0x19,
+    CMD_OXI_FULL_TIME = 0x20,
+    CMD_OXI_INIT_ANGLE = 0x21,
+    CMD_FUEL_INIT_ANGLE = 0x22,
+
+    CMD_RESET = 0x80,
+
+    CMD_DISCONNECT_TIMER = 0xFF,
+
+    CMD_FUEL_CLOSE = 0x23,
+    CMD_FUEL_OPEN = 0x24,
+    CMD_FUEL_OPEN_ANGLE = 0x25,
+    CMD_OXI_CLOSE = 0x26,
+    CMD_OXI_OPEN = 0x27,
+    CMD_OXI_OPEN_ANGLE = 0x28,
+
+    CMD_SOFT_ARM = 0x29,
+    CMD_SOFT_DISARM = 0x30,
+    CMD_RESTART_RCK = 0x31,
+    CMD_RESTART_OXI = 0x32,
+    CMD_CALIBRATE_RCK = 0x34,
+    CMD_TARE_RCK = 0x35,
+    CMD_SET_CAL_FACTOR_RCK = 0x36,
+    CMD_SET_OFFSET_RCK = 0x37,
+    CMD_CALIBRATE_OXI = 0x38,
+    CMD_TARE_OXI = 0x39,
+    CMD_SET_CAL_FACTOR_OXI = 0x40,
+    CMD_SET_OFFSET_OXI = 0x41,
 } cmd_command_t;
 
 typedef enum {
@@ -134,6 +141,6 @@ void tanwa_heating(uint8_t heating_cmd);
 /// LORA message switch
 ///===-----------------------------------------------------------------------------------------===//
 
-void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload);
+bool lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload);
 
 #endif /* PWRINSPACE_TANWA_NOW_COMMANDS_H_ */

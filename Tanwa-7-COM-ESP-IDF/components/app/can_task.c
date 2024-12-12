@@ -24,9 +24,9 @@
 #define TAG "CAN_TASK"
 
 #define CAN_TASK_STACK_SIZE 4096
-#define CAN_TASK_PRIORITY 8
+#define CAN_TASK_PRIORITY 5
 #define CAN_TASK_CORE 1
-#define CAN_TASK_DEFAULT_FREQ 100
+#define CAN_TASK_DEFAULT_FREQ 10
 
 static TaskHandle_t can_task_handle = NULL;
 static SemaphoreHandle_t can_task_freq_mutex = NULL, can_task_rx_counter_mutex = NULL;
@@ -96,12 +96,13 @@ bool can_task_add_message(twai_message_t *message) {
 }
 
 bool can_task_add_message_with_rx(twai_message_t *message) {
+    //if(message->identifier == CAN_FAC_TX_GET_STATUS)
     if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
         ESP_LOGE(TAG, "Failed to send the message");
         return false;
     }
     can_task_add_rx_counter();
-    change_can_task_period(100U);
+    change_can_task_period(10U);
     return true;
 }
 

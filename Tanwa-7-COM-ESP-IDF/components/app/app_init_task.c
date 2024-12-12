@@ -25,6 +25,8 @@
 #include "mcu_misc_config.h"
 #include "state_machine_config.h"
 #include "timers_config.h"
+#include "settings_mem.h"
+#include "mission_timer_config.h"
 
 #include "sd_task.h"
 #include "lora_task.h"
@@ -103,6 +105,29 @@ void app_init_task(void* pvParameters) {
     ESP_LOGE(TAG, "State machine initialization failed");
   } else {
     ESP_LOGI(TAG, "### State machine initialization success ###");
+    
+  }
+
+  ESP_LOGI(TAG, "Initializing settings...");
+
+  ret |= settings_init();
+
+  if (ret != ESP_OK) {
+    ESP_LOGE(TAG, "Settings initialization failed");
+  } else {
+    ESP_LOGI(TAG, "Settings initialized");
+  }
+
+  //settings_init_default();
+
+  Settings settings = settings_get_all();
+
+  ESP_LOGI(TAG, "Initializing mission timer... JEBAC KURWY Z ZARZADU");
+
+  if (!liquid_ignition_test_timer_init(settings.countdownTime)) {
+    ESP_LOGE(TAG, "Mission timer initialization failed");
+  } else {
+    ESP_LOGI(TAG, "### Mission timer initialization success ###");
   }
 
   ESP_LOGI(TAG, "Initializing ESP-NOW...");
@@ -122,6 +147,7 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "### Shared memory initialization success ###");
   }
 
+
   if (!initialize_timers()) {
     ESP_LOGE(TAG, "Timers initialization failed");
   } else {
@@ -129,10 +155,16 @@ void app_init_task(void* pvParameters) {
   }
 
  // SD CARD TIMER
-  if (!sys_timer_start(TIMER_SD_DATA, 50, TIMER_TYPE_PERIODIC)) {
+  if (!sys_timer_start(TIMER_SD_DATA, TIMER_SD_DATA_PERIOD_MS, TIMER_TYPE_PERIODIC)) {
     ESP_LOGE(TAG, "SD CARD | Timer start failed");
   } else {
     ESP_LOGI(TAG, "SD CARD | Timer started");
+  }
+
+  if(!sys_timer_start(TIMER_DISCONNECT, TIMER_DISCONNECT_PERIOD_MS, TIMER_TYPE_ONE_SHOT)) {
+    ESP_LOGE(TAG, "DISCONNECT | Timer start failed");
+  } else {
+    ESP_LOGI(TAG, "DISCONNECT | Timer started");
   }
 
   ESP_LOGI(TAG, "Initializing LoRa...");
@@ -162,13 +194,13 @@ void app_init_task(void* pvParameters) {
   vTaskDelay(pdMS_TO_TICKS(100));
   run_esp_now_task();
 
-  ESP_LOGI(TAG, "Initializating abort button...");
-  ret |= abort_button_init();
-  if (ret != ABORT_BUTTON_OK) {
-    ESP_LOGE(TAG, "Abort button initialization failed");
-  } else {
-    ESP_LOGI(TAG, "Abort button initialized");
-  }
+  // ESP_LOGI(TAG, "Initializating abort button...");
+  // ret |= abort_button_init();
+  // if (ret != ABORT_BUTTON_OK) {
+  //   ESP_LOGE(TAG, "Abort button initialization failed");
+  // } else {
+  //   ESP_LOGI(TAG, "Abort button initialized");
+  // }
 
   vTaskDelete(NULL);
 }

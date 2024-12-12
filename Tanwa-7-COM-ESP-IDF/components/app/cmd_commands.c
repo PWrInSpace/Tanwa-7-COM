@@ -280,7 +280,7 @@ void tanwa_heating(uint8_t heating_cmd) {
     }
 }
 
-void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
+bool lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
     if (lora_id == LORA_DEV_ID_ALL || lora_id == LORA_DEV_ID_ALL_SUDO || 
         lora_id == LORA_DEV_ID_TANWA || lora_id == LORA_DEV_ID_TANWA_SUDO) { 
         // Check if the command is for this device
@@ -426,17 +426,20 @@ void lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
                 break;
             }
             case CMD_HEATING: {
-                        ESP_LOGI(TAG, "ESP-NOW | Heating | %d", payload);
-                        tanwa_heating((uint8_t) payload);
-                        break;
+                ESP_LOGI(TAG, "ESP-NOW | Heating | %d", payload);
+                tanwa_heating((uint8_t) payload);
+                break;
                     }
             default: {
                 ESP_LOGI(TAG, "LORA command: %d", command);
                 ESP_LOGW(TAG, "LORA | Unknown command");
+                return false;
                 break;
             }
         }
+        return true;
     } else {
         ESP_LOGW(TAG, "LORA | Command for other device");
+        return false;
     }
 }

@@ -14,8 +14,10 @@
 #include "mcu_gpio_config.h"
 #include "mcu_spi_config.h"
 #include "mcu_misc_config.h"
+#include "timers_config.h"
 
 #include "cmd_commands.h"
+#include "system_timer.h"
 
 #include "esp_log.h"
 
@@ -171,8 +173,15 @@ static void lora_process(uint8_t* packet, size_t packet_size) {
         ESP_LOGI(TAG, "Received LORA_ID %d, DEV_ID %d, COMMAND %d, PLD %d", received->lora_dev_id,
                  received->sys_dev_id, received->command, received->payload);
         // cmd_message_t received_command = cmd_create_message(received->command, received->payload);
-        lora_command_parsing(received->lora_dev_id, received->command, received->payload);
+        if(lora_command_parsing(received->lora_dev_id, received->command, received->payload) == false) {
+            ESP_LOGE(TAG, "Unable to prcess command :C");
+            return;
+        }
         lo_ra_command__free_unpacked(received, NULL);
+
+        if (sys_timer_restart(TIMER_DISCONNECT, TIMER_DISCONNECT_PERIOD_MS) == false) {
+            ESP_LOGE(TAG, "Unable to restart timer");
+        }
     } else {
         ESP_LOGE(TAG, "Unable to decode received package");
     }
