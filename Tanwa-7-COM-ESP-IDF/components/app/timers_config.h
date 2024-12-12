@@ -17,6 +17,9 @@ typedef enum {
     TIMER_IGNITION = 4,
     TIMER_BURN = 5,
     TIMER_AFTER_BURNOUT = 6,
+    TIMER_FUEL_INITIAL = 7,
+    TIMER_OXIDIZER_FULL = 8,
+    TIMER_FUEL_FULL = 9,
 } timers_id_def;
 
 /**

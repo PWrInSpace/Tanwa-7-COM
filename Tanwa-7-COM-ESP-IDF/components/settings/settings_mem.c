@@ -11,10 +11,10 @@ static nvs_handle_t settings_handle;
 // Function definitions:
 
 void settings_init_default() {
-    settings.countdownTime = -50000;
-    settings.ignitTime = -40000;
+    settings.countdownTime = -20000;
+    settings.ignitTime = -10000;
     settings.lora_transmit_ms = 1800;
-    settings.loraFreq_KHz = 915000;
+    settings.loraFreq_KHz = 868000;
     settings.flash_on = 0;
     settings.fuel_full_open_time_ms = 1500;
     settings.oxidizer_full_open_time_ms = 1000;

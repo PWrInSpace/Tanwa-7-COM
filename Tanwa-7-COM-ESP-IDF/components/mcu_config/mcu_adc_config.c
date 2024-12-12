@@ -9,7 +9,7 @@
 
 #define TAG "MCU_ADC"
 
-static mcu_adc_config_t mcu_adc_config = {                                                        
+mcu_adc_config_t mcu_adc_config = {                                                        
   .adc_cal = {1.0f, 5.742f, 5.180f},                     
   .adc_chan = {VBAT_CHANNEL, IGNITER_1_CHANNEL, IGNITER_2_CHANNEL}, 
   .adc_chan_num = MAX_CHANNEL_INDEX,
@@ -19,7 +19,8 @@ static mcu_adc_config_t mcu_adc_config = {
   .oneshot_chan_cfg = {                                                  
     .bitwidth = ADC_BITWIDTH_12,                   
     .atten = ADC_ATTEN_DB_11,                      
-  },                                               
+  },         
+  .oneshot_unit_handle = NULL,                                     
 };
 
 esp_err_t mcu_adc_init() {

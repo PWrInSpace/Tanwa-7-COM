@@ -37,9 +37,9 @@
 #define TAG "MEASURE_TASK"
 
 #define MEASURE_TASK_STACK_SIZE 4096
-#define MEASURE_TASK_PRIORITY 1
+#define MEASURE_TASK_PRIORITY 3
 #define MEASURE_TASK_CORE 0
-#define MEASURE_TASK_DEFAULT_FREQ 1500
+#define MEASURE_TASK_DEFAULT_FREQ 100
 
 extern TANWA_hardware_t TANWA_hardware;
 extern TANWA_utility_t TANWA_utility;
@@ -174,56 +174,56 @@ void measure_task(void* pvParameters) {
             // Rocket weight measurement
             twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
             can_task_add_message_with_rx(&hx_rck_mess);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Oxidizer weight measurement
+            // // Oxidizer weight measurement
             twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
             can_task_add_message_with_rx(&hx_oxi_mess);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
             // Filling arm status
             twai_message_t filling_arm_stat = CAN_FAC_GET_STATUS();
             can_task_add_message_with_rx(&filling_arm_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
-            ESP_LOGI(TAG, "DUPA");
+            //ESP_LOGI(TAG, "DUPA");
 
             // Filling Control data
             twai_message_t flc_mess1 = CAN_FLC_GET_DATA();
             can_task_add_message_with_rx(&flc_mess1);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Termo control status
-            twai_message_t termo_stat = CAN_TERMO_GET_STATUS();
-            can_task_add_message_with_rx(&termo_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // // Termo control status
+            // twai_message_t termo_stat = CAN_TERMO_GET_STATUS();
+            // can_task_add_message_with_rx(&termo_stat);
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Filling Control temperature data
+            // // Filling Control temperature data
             twai_message_t flc_mess2 = CAN_FLC_GET_PRESSURE_DATA();
             can_task_add_message_with_rx(&flc_mess2);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Oxidizer board status
+            // // // Oxidizer board status
             twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
             can_task_add_message_with_rx(&hx_oxi_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Rocket board status 
+            // // Rocket board status 
             twai_message_t hx_rck_stat = CAN_HX_RCK_GET_STATUS();
             can_task_add_message_with_rx(&hx_rck_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
             //ESP_LOGI(TAG, "DUPA");
 
             // Termo control data
-            twai_message_t termo_mess = CAN_TERMO_GET_DATA();
-            can_task_add_message_with_rx(&termo_mess);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // twai_message_t termo_mess = CAN_TERMO_GET_DATA();
+            // can_task_add_message_with_rx(&termo_mess);
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
             // FLC board status
             twai_message_t flc_stat = CAN_FLC_GET_STATUS();
             can_task_add_message_with_rx(&flc_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
             uint32_t alerts;
 

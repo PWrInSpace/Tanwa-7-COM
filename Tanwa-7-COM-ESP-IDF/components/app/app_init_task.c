@@ -118,11 +118,11 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "Settings initialized");
   }
 
-  settings_init_default();
+  //settings_init_default();
 
   Settings settings = settings_get_all();
 
-  ESP_LOGI(TAG, "Initializing mission timer...");
+  ESP_LOGI(TAG, "Initializing mission timer... JEBAC KURWY Z ZARZADU");
 
   if (!liquid_ignition_test_timer_init(settings.countdownTime)) {
     ESP_LOGE(TAG, "Mission timer initialization failed");
@@ -161,11 +161,11 @@ void app_init_task(void* pvParameters) {
     ESP_LOGI(TAG, "SD CARD | Timer started");
   }
 
-  // if(!sys_timer_start(TIMER_DISCONNECT, TIMER_DISCONNECT_PERIOD_MS, TIMER_TYPE_ONE_SHOT)) {
-  //   ESP_LOGE(TAG, "DISCONNECT | Timer start failed");
-  // } else {
-  //   ESP_LOGI(TAG, "DISCONNECT | Timer started");
-  // }
+  if(!sys_timer_start(TIMER_DISCONNECT, TIMER_DISCONNECT_PERIOD_MS, TIMER_TYPE_ONE_SHOT)) {
+    ESP_LOGE(TAG, "DISCONNECT | Timer start failed");
+  } else {
+    ESP_LOGI(TAG, "DISCONNECT | Timer started");
+  }
 
   ESP_LOGI(TAG, "Initializing LoRa...");
 
@@ -194,13 +194,13 @@ void app_init_task(void* pvParameters) {
   vTaskDelay(pdMS_TO_TICKS(100));
   run_esp_now_task();
 
-  ESP_LOGI(TAG, "Initializating abort button...");
-  ret |= abort_button_init();
-  if (ret != ABORT_BUTTON_OK) {
-    ESP_LOGE(TAG, "Abort button initialization failed");
-  } else {
-    ESP_LOGI(TAG, "Abort button initialized");
-  }
+  // ESP_LOGI(TAG, "Initializating abort button...");
+  // ret |= abort_button_init();
+  // if (ret != ABORT_BUTTON_OK) {
+  //   ESP_LOGE(TAG, "Abort button initialization failed");
+  // } else {
+  //   ESP_LOGI(TAG, "Abort button initialized");
+  // }
 
   vTaskDelete(NULL);
 }

@@ -78,17 +78,6 @@ void on_ignition_timer(void *arg){
         return;
     }
 
-    Settings settings = settings_get_all();
-
-    twai_message_t fac_msg = CAN_FAC_SETTINGS();
-    fac_msg.data[0] = settings.fuel_valve_initial_angle;
-    fac_msg.data[1] = settings.oxidizer_valve_initial_angle;
-    fac_msg.data[2] = settings.fuel_open_time_ms;
-    fac_msg.data[4] = settings.oxidizer_full_open_time_ms;
-    fac_msg.data[6] = settings.fuel_full_open_time_ms;
-    can_task_add_message(&fac_msg);
-
-
     if(igniter_fire(&TANWA_hardware.igniter[0]) == IGNITER_OK){
         ESP_LOGI(TAG, "Igniter 1 fired");
     } else {
@@ -109,11 +98,44 @@ void on_burn_timer(void *arg){
     // Handle the burn event
     ESP_LOGW(TAG, "BURN EVENT");
 
-    twai_message_t fac_msg = CAN_FAC_INIT_BURN();
-    can_task_add_message(&fac_msg);
+    Settings settings = settings_get_all();
+
+    valve_move_angle_servo(&(TANWA_utility.servo_valve[1]), VALVE_CLOSE_POSITION + settings.oxidizer_valve_initial_angle);
+
+    if(!sys_timer_start(TIMER_FUEL_INITIAL, settings.fuel_open_time_ms, TIMER_TYPE_ONE_SHOT)){
+        ESP_LOGE(TAG, "Error starting timer");
+    }
+
+    if(!sys_timer_start(TIMER_OXIDIZER_FULL, settings.oxidizer_full_open_time_ms + settings.fuel_open_time_ms, TIMER_TYPE_ONE_SHOT)){
+        ESP_LOGE(TAG, "Error starting timer");
+    }
+
+    if(!sys_timer_start(TIMER_FUEL_FULL, settings.fuel_full_open_time_ms + settings.oxidizer_full_open_time_ms + settings.fuel_open_time_ms, TIMER_TYPE_ONE_SHOT)){
+        ESP_LOGE(TAG, "Error starting timer");
+    }
 
     // Handle the burn event
     state_machine_force_change_state(FIRE);
+}
+
+static void on_fuel_initial(void *arg) {
+    ESP_LOGI(TAG, "Fuel initial valve open");
+
+    Settings settings = settings_get_all();
+
+    valve_move_angle_servo(&(TANWA_utility.servo_valve[0]), VALVE_CLOSE_POSITION + settings.fuel_valve_initial_angle);
+}
+
+static void on_oxidizer_full(void *arg) {
+    ESP_LOGI(TAG, "Oxidizer full valve open");
+
+    valve_open_servo(&(TANWA_utility.servo_valve[1]));
+}
+
+static void on_fuel_full(void *arg) {
+    ESP_LOGI(TAG, "Fuel full valve open");
+
+    valve_open_servo(&(TANWA_utility.servo_valve[0]));
 }
 
 bool initialize_timers(void) {
@@ -125,6 +147,9 @@ bool initialize_timers(void) {
     {.timer_id = TIMER_IGNITION, .timer_callback_fnc = on_ignition_timer, .timer_arg = NULL},
     {.timer_id = TIMER_BURN, .timer_callback_fnc = on_burn_timer, .timer_arg = NULL},
     {.timer_id = TIMER_AFTER_BURNOUT, .timer_callback_fnc = on_after_burnout_timer, .timer_arg = NULL},
+    {.timer_id = TIMER_FUEL_INITIAL, .timer_callback_fnc = on_fuel_initial, .timer_arg = NULL},
+    {.timer_id = TIMER_OXIDIZER_FULL, .timer_callback_fnc = on_oxidizer_full, .timer_arg = NULL},
+    {.timer_id = TIMER_FUEL_FULL, .timer_callback_fnc = on_fuel_full, .timer_arg = NULL},
     };
     return sys_timer_init(timers, sizeof(timers) / sizeof(timers[0]));
 }

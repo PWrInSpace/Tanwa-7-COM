@@ -15,12 +15,81 @@
 #include "mcu_spi_config.h"
 #include "mcu_twai_config.h"
 #include "mcu_misc_config.h"
+#include "valve_control.h"
 
 #include "now.h"
 
 #define TAG "TANWA_CONFIG"
 
 #define IOEXP_MODE (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
+
+#define SERVO_VALVE_CONFIG_INIT(X, Y, Z)                                   \
+  {                                                                        \
+    .limit_switch_pin_1 = X, .limit_switch_pin_2 = Y, .limit_time_1 = 0,   \
+    .limit_time_2 = 0, .pot_adc_channel = 0, .pot_adc_handle = 0,          \
+    .pot_adc_cali_handle = 0, .pot_cali_enable = 0,                        \
+    .close_angle = VALVE_CLOSE_POSITION, .open_angle = VALVE_OPEN_POSITION \
+  }
+
+#define SERVO_VALVE_INIT(X, Y, Z, K)                                     \
+  {                                                                      \
+    .Initialized = 0, .servo = SERVO_INIT(X),                            \
+    .config = SERVO_VALVE_CONFIG_INIT(Y, Z, K), .angle_value = 0,        \
+    .pot_angle_value = 0, .pot_adc_raw = 0, .pot_voltage = 0,            \
+    .limit_state_1 = 0, .limit_state_2 = 0, .valve_state = BETWEEN_STATE \
+  }
+
+#define POT1_ADC_CHANNEL 4U
+#define POT2_ADC_CHANNEL 2U
+
+extern mcu_adc_config_t mcu_adc_config;
+
+static bool adc_calibration_init(adc_cali_handle_t *cali_handle) {
+  adc_cali_handle_t handle = NULL;
+  esp_err_t ret = ESP_FAIL;
+  bool calibrated = false;
+
+#if ADC_CALI_SCHEME_CURVE_FITTING_SUPPORTED
+  if (!calibrated) {
+    ESP_LOGI(TAG, "calibration scheme version is %s", "Curve Fitting");
+    adc_cali_curve_fitting_config_t cali_config = {
+        .unit_id = ADC_UNIT_1,
+        .atten = ADC_ATTEN_DB_11,
+        .bitwidth = ADC_BITWIDTH_DEFAULT,
+    };
+    ret = adc_cali_create_scheme_curve_fitting(&cali_config, &handle);
+    if (ret == ESP_OK) {
+      calibrated = true;
+    }
+  }
+#endif
+
+#if ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
+  if (!calibrated) {
+    ESP_LOGI(TAG, "calibration scheme version is %s", "Line Fitting");
+    adc_cali_line_fitting_config_t cali_config = {
+        .unit_id = ADC_UNIT_1,
+        .atten = ADC_ATTEN_DB_11,
+        .bitwidth = ADC_BITWIDTH_DEFAULT,
+    };
+    ret = adc_cali_create_scheme_line_fitting(&cali_config, &handle);
+    if (ret == ESP_OK) {
+      calibrated = true;
+    }
+  }
+#endif
+
+  memcpy(cali_handle, &handle, sizeof(adc_cali_handle_t));
+  if (ret == ESP_OK) {
+    ESP_LOGI(TAG, "Calibration Success");
+  } else if (ret == ESP_ERR_NOT_SUPPORTED || !calibrated) {
+    ESP_LOGW(TAG, "eFuse not burnt, skip software calibration");
+  } else {
+    ESP_LOGE(TAG, "Invalid arg or no memory");
+  }
+
+  return calibrated;
+}
 
 TANWA_hardware_t TANWA_hardware = {
     .esp_led = {
@@ -101,6 +170,12 @@ TANWA_utility_t TANWA_utility = {
     },
     .pressure_driver = PRESSURE_DRIVER_TANWA_CONFIG(&TANWA_hardware.ads1115),
     .solenoid_driver = SOLENOID_DRIVER_TANWA_CONFIG(&TANWA_hardware.pca9574),
+    .servo_valve = {
+        SERVO_VALVE_INIT(CONFIG_VALVE1_PWM_PIN, 0,
+                      0, POT1_ADC_CHANNEL),
+        SERVO_VALVE_INIT(CONFIG_VALVE2_PWM_PIN, 0,
+                        0, POT2_ADC_CHANNEL)
+    },
 };
 
 esp_err_t TANWA_mcu_config_init() {
@@ -206,6 +281,42 @@ esp_err_t TANWA_utility_init() {
     } else {
         ESP_LOGI(TAG, "Solenoid driver initialized");
     }
+
+    // adc_oneshot_unit_init_cfg_t adc_config = {
+    //     .unit_id = ADC_UNIT_1,
+    // };
+
+    //adc_oneshot_unit_handle_t adc_handle;
+
+    // if(adc_oneshot_new_unit(&adc_config, &adc_handle) != ESP_OK){
+    //     ESP_LOGE(TAG, "Error initializing ADC unit");
+    //     //set_board_status(BOARD_SERVO_ERROR);
+    // }
+
+    adc_cali_handle_t adc_cali_handle;
+
+    bool cali = adc_calibration_init(&adc_cali_handle);
+
+    gpio_config_t io_conf3;
+    io_conf3.intr_type = GPIO_INTR_DISABLE;
+    io_conf3.mode = GPIO_MODE_OUTPUT;
+    io_conf3.pin_bit_mask = 1ULL << CONFIG_VALVE1_PWM_PIN | 1ULL << CONFIG_VALVE2_PWM_PIN;
+    io_conf3.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    io_conf3.pull_up_en = GPIO_PULLUP_DISABLE;
+    if(gpio_config(&io_conf3) != ESP_OK){
+        return ESP_FAIL;
+    }
+
+    if(valve_init_servo(&(mcu_adc_config.oneshot_unit_handle), &adc_cali_handle, cali, &(TANWA_utility.servo_valve[0])) != RET_SUCCESS){
+        ESP_LOGE(TAG, "Error initializing servo valve 1");
+        //set_board_status(BOARD_SERVO_ERROR);
+    }
+
+    if(valve_init_servo(&(mcu_adc_config.oneshot_unit_handle), &adc_cali_handle, cali, &(TANWA_utility.servo_valve[1])) != RET_SUCCESS){
+        ESP_LOGE(TAG, "Error initializing servo valve 2");
+        //set_board_status(BOARD_SERVO_ERROR);
+    }
+
     return ESP_OK;
 }
 

@@ -34,9 +34,8 @@ static void on_idle(void *arg) {
 
     sys_timer_stop(TIMER_BUZZER);
 
-    twai_message_t fac_msg = CAN_FAC_SERVO_CLOSE();
-    fac_msg.data[0] = 2;
-    can_task_add_message(&fac_msg);
+    valve_close_servo(&TANWA_utility.servo_valve[0]);
+    valve_close_servo(&TANWA_utility.servo_valve[1]);
 
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
     ESP_LOGI(TAG, "ON IDLE");
@@ -69,10 +68,10 @@ static void on_ready_to_lauch(void *arg) {
 static void on_countdown(void *arg) {
     led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_COUTDOWN);
     buzzer_timer_change_period(500);
-    // if (sys_timer_stop(TIMER_DISCONNECT) == false) {
-    //     ESP_LOGE(TAG, "Unable to stop disconnect timer");
-    //     goto abort_countdown;
-    // }
+    if (sys_timer_stop(TIMER_DISCONNECT) == false) {
+        ESP_LOGE(TAG, "Unable to stop disconnect timer");
+        goto abort_countdown;
+    }
     ESP_LOGI(TAG, "ON COUNTDOWN");
 
     Settings settings = settings_get_all();
@@ -134,6 +133,8 @@ static void on_abort(void *arg) {
     igniter_disarm(&TANWA_hardware.igniter[1]);
     solenoid_driver_valve_close(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
     solenoid_driver_valve_open(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
+    valve_close_servo(&TANWA_utility.servo_valve[1]);
+    valve_close_servo(&TANWA_utility.servo_valve[0]);
 }
 
 static state_config_t states_cfg[] = {

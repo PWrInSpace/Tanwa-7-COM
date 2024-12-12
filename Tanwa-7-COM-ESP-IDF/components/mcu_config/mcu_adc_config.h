@@ -62,6 +62,8 @@ typedef struct {
   adc_oneshot_chan_cfg_t oneshot_chan_cfg;
 } mcu_adc_config_t;
 
+extern mcu_adc_config_t mcu_adc_config;
+
 /*!
   \brief Init for a voltage measure.
   \param v_mes - pointer to voltage_measure_config_t struct

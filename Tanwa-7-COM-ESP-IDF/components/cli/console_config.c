@@ -16,6 +16,8 @@
 #include "mcu_adc_config.h"
 #include "mcu_twai_config.h"
 #include "state_machine_config.h"
+#include "valve_control.h"
+#include "settings_mem.h"
 
 #include "measure_task.h"
 
@@ -547,6 +549,7 @@ static int qd_stop(int argc, char **argv) {
 }
 
 static int qd_push(int argc, char **argv) {
+    
     const twai_message_t fac_mess = {
         .identifier = 0x0C3,
         .data_length_code = 0,                  
@@ -860,13 +863,13 @@ int open_servo(int argc, char **argv) {
         return -1;
     }
     
-    twai_message_t fac_mess = {
-        .identifier = 0x0C4,
-        .data_length_code = 1,
-        .data = {servo_num, 0, 0, 0, 0, 0, 0, 0}
-    };
-
-    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+    if(servo_num == 2){
+        valve_open_servo(&TANWA_utility.servo_valve[0]);
+        valve_open_servo(&TANWA_utility.servo_valve[1]);
+    }
+    else{
+        valve_open_servo(&TANWA_utility.servo_valve[servo_num]);
+    }
 
     return 0;
 }
@@ -884,13 +887,58 @@ int close_servo(int argc, char **argv) {
         return -1;
     }
     
-    twai_message_t fac_mess = {
-        .identifier = 0x0C5,
-        .data_length_code = 1,
-        .data = {servo_num, 0, 0, 0, 0, 0, 0, 0}
-    };
+    if(servo_num == 2){
+        valve_close_servo(&TANWA_utility.servo_valve[0]);
+        valve_close_servo(&TANWA_utility.servo_valve[1]);
+    }
+    else{
+        valve_close_servo(&TANWA_utility.servo_valve[servo_num]);
+    }
 
-    twai_transmit(&fac_mess, pdMS_TO_TICKS(100));
+    return 0;
+}
+
+int move_servo_angle(int argc, char **argv) {
+
+    if (argc < 3) {
+        return -1;
+    }
+
+    int servo_num = atoi(argv[1]);
+    int angle = atoi(argv[2]);
+
+    if(servo_num < 0 || servo_num > 2) {
+        ESP_LOGE(TAG, "Invalid servo number");
+        return -1;
+    }
+
+    if(angle < 0 || angle > 360) {
+        ESP_LOGE(TAG, "Invalid angle");
+        return -1;
+    }
+
+    if(servo_num == 2){
+        valve_move_angle_servo(&TANWA_utility.servo_valve[0], angle);
+        valve_move_angle_servo(&TANWA_utility.servo_valve[1], angle);
+    }
+    else{
+        valve_move_angle_servo(&TANWA_utility.servo_valve[servo_num], angle);
+    }
+
+    return 0;
+}
+
+int print_settings(int argc, char **argv) {
+
+    Settings settings = settings_get_all();
+    CONSOLE_WRITE("Settings:");
+    CONSOLE_WRITE("  Countdown: %d", settings.countdownTime);
+    CONSOLE_WRITE("  Ignition Time: %d", settings.ignitTime);
+    CONSOLE_WRITE("  Fuel initial delay: %d", settings.fuel_open_time_ms);
+    CONSOLE_WRITE("  Oxidizer full delay: %d", settings.oxidizer_full_open_time_ms);
+    CONSOLE_WRITE("  Fuel full delay: %d", settings.fuel_full_open_time_ms);
+    CONSOLE_WRITE("  Fuel initial angle: %d", settings.fuel_valve_initial_angle);
+    CONSOLE_WRITE("  Oxidizer initial angle: %d", settings.oxidizer_valve_initial_angle);
 
     return 0;
 }
@@ -951,7 +999,9 @@ static esp_console_cmd_t cmd[] = {
     {"connected-slaves", "show connected slaves", NULL, connected_slaves, NULL},
     {"CONTDOWN_START", "start the timer for liquid test", NULL, countdown_start, NULL},
     {"servo-open", "open the # servo", NULL, open_servo, NULL},
-    {"close-servo", "close the # servo", NULL, close_servo, NULL}
+    {"close-servo", "close the # servo", NULL, close_servo, NULL},
+    {"settings", "print settings", NULL, print_settings, NULL},
+    {"move-servo", "move the # servo to the angle", NULL, move_servo_angle, NULL},
 };
 
 esp_err_t console_config_init() {

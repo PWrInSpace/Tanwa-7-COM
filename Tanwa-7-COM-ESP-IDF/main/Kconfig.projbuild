@@ -127,6 +127,18 @@ menu "TANWA +7 COM board config ESP32"
             default 39
             help
                 GPIO pin number for LORA D0
+        
+        config VALVE1_PWM_PIN
+            int "Valve1 pwm pin number"
+            default 13
+            help
+                GPIO pin number for pwm for valve
+        
+        config VALVE2_PWM_PIN
+            int "Valve2 pwm pin number"
+            default 14
+            help
+                GPIO pin number for pwm for valve
 
     endmenu
 

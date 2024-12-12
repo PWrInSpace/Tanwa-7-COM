@@ -24,9 +24,9 @@
 #define TAG "CAN_TASK"
 
 #define CAN_TASK_STACK_SIZE 4096
-#define CAN_TASK_PRIORITY 8
+#define CAN_TASK_PRIORITY 5
 #define CAN_TASK_CORE 1
-#define CAN_TASK_DEFAULT_FREQ 100
+#define CAN_TASK_DEFAULT_FREQ 10
 
 static TaskHandle_t can_task_handle = NULL;
 static SemaphoreHandle_t can_task_freq_mutex = NULL, can_task_rx_counter_mutex = NULL;
@@ -88,21 +88,21 @@ static void can_task_add_rx_counter(void) {
 }
 
 bool can_task_add_message(twai_message_t *message) {
-    // if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
-    //     ESP_LOGE(TAG, "Failed to send the message");
-    //     return false;
-    // }
+    if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to send the message");
+        return false;
+    }
     return true;
 }
 
 bool can_task_add_message_with_rx(twai_message_t *message) {
-    if(message->identifier == CAN_FAC_TX_GET_STATUS)
-    // if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
-    //     ESP_LOGE(TAG, "Failed to send the message");
-    //     return false;
-    // }
+    //if(message->identifier == CAN_FAC_TX_GET_STATUS)
+    if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to send the message");
+        return false;
+    }
     can_task_add_rx_counter();
-    change_can_task_period(100U);
+    change_can_task_period(10U);
     return true;
 }
 
@@ -184,102 +184,102 @@ void can_task(void* pvParameters) {
             can_check_conection();
 
             // Receive the CAN message from the queue
-            // twai_message_t rx_message;
-            // if (twai_receive(&rx_message, pdMS_TO_TICKS(100)) == ESP_OK) {
-            //     // Parse the received message
-            //     switch (rx_message.identifier) {
-            //         case CAN_HX_RCK_RX_STATUS: {
-            //             // ESP_LOGI(TAG, "Received HX RCK status");
-            //             can_task_sub_rx_counter();
-            //             parse_can_hx_rck_status(rx_message);
-            //             break;
-            //         }
-            //         case CAN_HX_RCK_RX_DATA: {
-            //             // ESP_LOGI(TAG, "Received HX RCK data");
-            //             can_task_sub_rx_counter();
-            //             parse_can_hx_rck_data(rx_message);
-            //             break;
-            //         }
-            //         case CAN_HX_RCK_RX_UPDATE: {
-            //             // ESP_LOGI(TAG, "Received HX RCK update");
-            //             can_update_rck_timer();
-            //             break;
-            //         }
-            //         case CAN_HX_OXI_RX_STATUS: {
-            //             // ESP_LOGI(TAG, "Received HX OXI status");
-            //             can_task_sub_rx_counter();
-            //             parse_can_hx_oxi_status(rx_message);
-            //             break;
-            //         }
-            //         case CAN_HX_OXI_RX_DATA: {
-            //             // ESP_LOGI(TAG, "Received HX OXI data");
-            //             can_task_sub_rx_counter();
-            //             parse_can_hx_oxi_data(rx_message);
-            //             break;
-            //         }
-            //         case CAN_HX_OXI_RX_UPDATE: {
-            //             // ESP_LOGI(TAG, "Received HX RCK update");
-            //             can_update_oxi_timer();
-            //             break;
-            //         }
-            //         case CAN_FAC_RX_STATUS: {
-            //             // ESP_LOGI(TAG, "Received FAC status");
-            //             can_task_sub_rx_counter();
-            //             parse_can_fac_status(rx_message);
-            //             break;
-            //         }
-            //         case CAN_FAC_RX_UPDATE: {
-            //             // ESP_LOGI(TAG, "Received HX RCK update");
-            //             can_update_fac_timer();
-            //             break;
-            //         }
-            //         case CAN_FLC_RX_STATUS: {
-            //             //ESP_LOGI(TAG, "Received FLC status");
-            //             can_task_sub_rx_counter();
-            //             parse_can_flc_status(rx_message);
-            //             break;
-            //         }
-            //         case CAN_FLC_RX_DATA: {
-            //             //ESP_LOGI(TAG, "Received FLC data");
-            //             can_task_sub_rx_counter();
-            //             parse_can_flc_data(rx_message);
-            //             break;
-            //         }
-            //         case CAN_FLC_RX_PRESSURE_DATA: {
-            //             //ESP_LOGI(TAG, "Received FLC pressure data");
-            //             can_task_sub_rx_counter();
-            //             parse_can_flc_pressure_data(rx_message);
-            //             break;
-            //         }
-            //         case CAN_FLC_RX_UPDATE: {
-            //             // ESP_LOGI(TAG, "Received HX RCK update");
-            //             can_update_flc_timer();
-            //             break;
-            //         }
-            //         case CAN_TERMO_RX_STATUS: {
-            //             //ESP_LOGI(TAG, "Received TERMO status");
-            //             can_task_sub_rx_counter();
-            //             parse_can_termo_status(rx_message);
-            //             break;
-            //         }
-            //         case CAN_TERMO_RX_DATA: {
-            //             //ESP_LOGI(TAG, "Received TERMO data");
-            //             can_task_sub_rx_counter();
-            //             parse_can_termo_data(rx_message);
-            //             break;
-            //         }
-            //         case CAN_TERMO_RX_UPDATE: {
-            //             // ESP_LOGI(TAG, "Received HX RCK update");
-            //             can_update_termo_timer();
-            //             break;
-            //         }
-            //         default: {
-            //             ESP_LOGW(TAG, "Unknown message ID: %d", rx_message.identifier);
-            //             can_task_sub_rx_counter();
-            //             break;
-            //         }
-                //}
-            //}
+            twai_message_t rx_message;
+            if (twai_receive(&rx_message, pdMS_TO_TICKS(100)) == ESP_OK) {
+                // Parse the received message
+                switch (rx_message.identifier) {
+                    case CAN_HX_RCK_RX_STATUS: {
+                        // ESP_LOGI(TAG, "Received HX RCK status");
+                        can_task_sub_rx_counter();
+                        parse_can_hx_rck_status(rx_message);
+                        break;
+                    }
+                    case CAN_HX_RCK_RX_DATA: {
+                        // ESP_LOGI(TAG, "Received HX RCK data");
+                        can_task_sub_rx_counter();
+                        parse_can_hx_rck_data(rx_message);
+                        break;
+                    }
+                    case CAN_HX_RCK_RX_UPDATE: {
+                        // ESP_LOGI(TAG, "Received HX RCK update");
+                        can_update_rck_timer();
+                        break;
+                    }
+                    case CAN_HX_OXI_RX_STATUS: {
+                        // ESP_LOGI(TAG, "Received HX OXI status");
+                        can_task_sub_rx_counter();
+                        parse_can_hx_oxi_status(rx_message);
+                        break;
+                    }
+                    case CAN_HX_OXI_RX_DATA: {
+                        // ESP_LOGI(TAG, "Received HX OXI data");
+                        can_task_sub_rx_counter();
+                        parse_can_hx_oxi_data(rx_message);
+                        break;
+                    }
+                    case CAN_HX_OXI_RX_UPDATE: {
+                        // ESP_LOGI(TAG, "Received HX RCK update");
+                        can_update_oxi_timer();
+                        break;
+                    }
+                    case CAN_FAC_RX_STATUS: {
+                        // ESP_LOGI(TAG, "Received FAC status");
+                        can_task_sub_rx_counter();
+                        parse_can_fac_status(rx_message);
+                        break;
+                    }
+                    case CAN_FAC_RX_UPDATE: {
+                        // ESP_LOGI(TAG, "Received HX RCK update");
+                        can_update_fac_timer();
+                        break;
+                    }
+                    case CAN_FLC_RX_STATUS: {
+                        //ESP_LOGI(TAG, "Received FLC status");
+                        can_task_sub_rx_counter();
+                        parse_can_flc_status(rx_message);
+                        break;
+                    }
+                    case CAN_FLC_RX_DATA: {
+                        //ESP_LOGI(TAG, "Received FLC data");
+                        can_task_sub_rx_counter();
+                        parse_can_flc_data(rx_message);
+                        break;
+                    }
+                    case CAN_FLC_RX_PRESSURE_DATA: {
+                        //ESP_LOGI(TAG, "Received FLC pressure data");
+                        can_task_sub_rx_counter();
+                        parse_can_flc_pressure_data(rx_message);
+                        break;
+                    }
+                    case CAN_FLC_RX_UPDATE: {
+                        // ESP_LOGI(TAG, "Received HX RCK update");
+                        can_update_flc_timer();
+                        break;
+                    }
+                    case CAN_TERMO_RX_STATUS: {
+                        //ESP_LOGI(TAG, "Received TERMO status");
+                        can_task_sub_rx_counter();
+                        parse_can_termo_status(rx_message);
+                        break;
+                    }
+                    case CAN_TERMO_RX_DATA: {
+                        //ESP_LOGI(TAG, "Received TERMO data");
+                        can_task_sub_rx_counter();
+                        parse_can_termo_data(rx_message);
+                        break;
+                    }
+                    case CAN_TERMO_RX_UPDATE: {
+                        // ESP_LOGI(TAG, "Received HX RCK update");
+                        can_update_termo_timer();
+                        break;
+                    }
+                    default: {
+                        ESP_LOGW(TAG, "Unknown message ID: %d", rx_message.identifier);
+                        can_task_sub_rx_counter();
+                        break;
+                    }
+                }
+            }
 
             // If counter is zero -> change the period back to the default
             if (is_rx_counter_zero()) {
