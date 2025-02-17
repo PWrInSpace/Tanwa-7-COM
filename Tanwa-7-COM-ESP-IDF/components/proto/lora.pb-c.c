@@ -24,6 +24,7 @@ size_t lo_ra_frame__pack
                       uint8_t       *out)
 {
   assert(message->base.descriptor == &lo_ra_frame__descriptor);
+  //ESP_LOGI("LORA PROTOBUF", "ARM STATE: %d", message->descriptor->fields[0].name);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
 size_t lo_ra_frame__pack_to_buffer

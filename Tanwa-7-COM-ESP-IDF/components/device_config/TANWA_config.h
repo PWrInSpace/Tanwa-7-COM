@@ -25,8 +25,17 @@
 #include "pressure_driver.h"
 #include "solenoid_driver.h"
 
+#include "valve_control.h"
+
 #include "esp_now.h"
 #include "lora.h"
+
+#define POT_SERVO_OPEN_VALUE 0U
+#define POT_SERVO_CLOSE_VALUE 860U
+
+#define CLOSE_STATE 0U
+#define OPEN_STATE 1U
+#define BETWEEN_STATE 2U
 
 // TANWA hardware
 typedef struct {
@@ -44,6 +53,7 @@ typedef struct {
     led_state_display_struct_t led_state_display;
     pressure_driver_struct_t pressure_driver;
     solenoid_driver_struct_t solenoid_driver;
+    Valve_Servo_t servo_valve[2];
 } TANWA_utility_t;
 
 // LoRa communication

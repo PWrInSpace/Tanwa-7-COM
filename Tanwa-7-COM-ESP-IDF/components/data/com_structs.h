@@ -36,7 +36,7 @@ typedef struct {
     bool solenoid_state_vent;
     bool arm_state;
     bool abort_button;
-    uint32_t time_to_start;
+    uint64_t uptime;
 } com_liquid_data_t;
 
 #endif // PWRINSPACE_TANWA_COM_STRUCTS_H_

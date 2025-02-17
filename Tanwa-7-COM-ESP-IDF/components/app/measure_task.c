@@ -22,6 +22,7 @@
 
 #include "mcu_gpio_config.h"
 #include "state_machine_config.h"
+#include "timers_config.h"
 
 #include "can_commands.h"
 #include "can_task.h"
@@ -37,9 +38,9 @@
 #define TAG "MEASURE_TASK"
 
 #define MEASURE_TASK_STACK_SIZE 4096
-#define MEASURE_TASK_PRIORITY 1
+#define MEASURE_TASK_PRIORITY 3
 #define MEASURE_TASK_CORE 0
-#define MEASURE_TASK_DEFAULT_FREQ 1500
+#define MEASURE_TASK_DEFAULT_FREQ 100
 
 extern TANWA_hardware_t TANWA_hardware;
 extern TANWA_utility_t TANWA_utility;
@@ -47,6 +48,7 @@ extern TANWA_utility_t TANWA_utility;
 static TaskHandle_t measure_task_handle = NULL;
 static SemaphoreHandle_t measure_task_freq_mutex = NULL;
 static volatile TickType_t measure_task_freq = MEASURE_TASK_DEFAULT_FREQ;
+
 
 void run_measure_task(void) {
     measure_task_freq_mutex = xSemaphoreCreateMutex();
@@ -120,6 +122,8 @@ void measure_task(void* pvParameters) {
             tanwa_data_update_state((uint8_t) state_machine_get_current_state());
 
             com_data_t com_data;
+            can_fac_status_t can_fac_status = tanwa_data_read_can_fac_status();
+            com_liquid_data_t com_liquid_data = tanwa_data_read_com_liquid_data();
 
             // Measure battery voltage
             TANWA_get_vbat(&vbat);
@@ -135,12 +139,24 @@ void measure_task(void* pvParameters) {
                 com_data.abort_button = false;
             }
 
+            uint64_t dc_timer_expire = 0;
+            if (sys_timer_get_expiry_time(TIMER_DISCONNECT, &dc_timer_expire) == false) {
+                com_liquid_data.uptime = TIMER_DISCONNECT_PERIOD_MS;
+            } else {
+                com_liquid_data.uptime = ((dc_timer_expire / 1000) - esp_timer_get_time() / 1000.0) / 1000.0;
+            }
+
             // Check solenoid states
             solenoid_driver_valve_get_state(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FILL, &sol_fill);
             solenoid_driver_valve_get_state(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR, &sol_depr);
             com_data.solenoid_state_fill = sol_fill;
             com_data.solenoid_state_depr = sol_depr;
 
+            can_fac_status.servo_state_1 = TANWA_utility.servo_valve[0].valve_state;
+            can_fac_status.servo_state_2 = TANWA_utility.servo_valve[1].valve_state;
+
+            // Update FAC data
+            tanwa_data_update_can_fac_status(&can_fac_status);
 
             //Measure pressure
             pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_1, &pressure[0]);
@@ -153,7 +169,7 @@ void measure_task(void* pvParameters) {
             com_data.pressure_3 = pressure[2];
             com_data.pressure_4 = pressure[3];
 
-            // Measure temperature
+            //Measure temperature
             for (int i = 0; i < 2; ++i) {
                 tmp1075_get_temp_celsius(&(TANWA_hardware.tmp1075[i]), &temp[i]);
             }
@@ -169,59 +185,62 @@ void measure_task(void* pvParameters) {
 
             // Update COM data
             tanwa_data_update_com_data(&com_data);
+            tanwa_data_update_com_liquid_data(&com_liquid_data);
 
 
             // Rocket weight measurement
             twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
             can_task_add_message_with_rx(&hx_rck_mess);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Oxidizer weight measurement
+            // // Oxidizer weight measurement
             twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
             can_task_add_message_with_rx(&hx_oxi_mess);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
             // Filling arm status
             twai_message_t filling_arm_stat = CAN_FAC_GET_STATUS();
             can_task_add_message_with_rx(&filling_arm_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            //vTaskDelay(pdMS_TO_TICKS(10));
+
+            //ESP_LOGI(TAG, "DUPA");
 
             // Filling Control data
             twai_message_t flc_mess1 = CAN_FLC_GET_DATA();
             can_task_add_message_with_rx(&flc_mess1);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Termo control status
-            twai_message_t termo_stat = CAN_TERMO_GET_STATUS();
-            can_task_add_message_with_rx(&termo_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // // Termo control status
+            // twai_message_t termo_stat = CAN_TERMO_GET_STATUS();
+            // can_task_add_message_with_rx(&termo_stat);
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Filling Control temperature data
+            // // Filling Control temperature data
             twai_message_t flc_mess2 = CAN_FLC_GET_PRESSURE_DATA();
             can_task_add_message_with_rx(&flc_mess2);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Oxidizer board status
+            // // // Oxidizer board status
             twai_message_t hx_oxi_stat = CAN_HX_OXI_GET_STATUS();
             can_task_add_message_with_rx(&hx_oxi_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // //vTaskDelay(pdMS_TO_TICKS(10));
 
-            // Rocket board status 
+            // // Rocket board status 
             twai_message_t hx_rck_stat = CAN_HX_RCK_GET_STATUS();
             can_task_add_message_with_rx(&hx_rck_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
             //ESP_LOGI(TAG, "DUPA");
 
             // Termo control data
-            twai_message_t termo_mess = CAN_TERMO_GET_DATA();
-            can_task_add_message_with_rx(&termo_mess);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            // twai_message_t termo_mess = CAN_TERMO_GET_DATA();
+            // can_task_add_message_with_rx(&termo_mess);
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
             // FLC board status
             twai_message_t flc_stat = CAN_FLC_GET_STATUS();
             can_task_add_message_with_rx(&flc_stat);
-            vTaskDelay(pdMS_TO_TICKS(10));
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
             uint32_t alerts;
 

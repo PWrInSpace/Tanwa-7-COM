@@ -14,8 +14,14 @@
 #include "mcu_gpio_config.h"
 #include "mcu_spi_config.h"
 #include "mcu_misc_config.h"
+#include "timers_config.h"
+#include "settings_mem.h"
+#include "state_machine_config.h"
+#include "state_machine.h"
+#include "mission_timer_config.h"
 
 #include "cmd_commands.h"
+#include "system_timer.h"
 
 #include "esp_log.h"
 
@@ -178,8 +184,15 @@ static void lora_process(uint8_t* packet, size_t packet_size) {
         ESP_LOGI(TAG, "Received LORA_ID %d, DEV_ID %d, COMMAND %d, PLD %d", received->lora_dev_id,
                  received->sys_dev_id, received->command, received->payload);
         // cmd_message_t received_command = cmd_create_message(received->command, received->payload);
-        lora_command_parsing(received->lora_dev_id, received->command, received->payload);
+        if(lora_command_parsing(received->lora_dev_id, received->command, received->payload) == false) {
+            ESP_LOGE(TAG, "Unable to prcess command :C");
+            return;
+        }
         lo_ra_command__free_unpacked(received, NULL);
+
+        if (!sys_timer_restart(TIMER_DISCONNECT, TIMER_DISCONNECT_PERIOD_MS) == false) {
+            ESP_LOGE(TAG, "Unable to restart timer");
+        }
     } else {
         ESP_LOGE(TAG, "Unable to decode received package");
     }
@@ -211,34 +224,38 @@ void create_porotobuf_data_frame(LoRaFrame *frame) {
     lo_ra_frame__init(frame);   // fill struct with 0
     // mcb
     //frame->obc_state = data.mcb.state;
-    frame->tanwa_state = 1;
-    //frame->uptime = 1;
-    frame->pressure_injector_fuel = 2.0;
-    frame->pressure_injector_oxi = 1.0;
-    frame->pressure_combustion_chamber = 3.0;
+    frame->tanwa_state = tanwa_data.state;
+    frame->uptime = tanwa_data.com_liquid_data.uptime;
+    frame->pressure_injector_fuel = tanwa_data.com_data.pressure_1;
+    frame->pressure_injector_oxi = tanwa_data.com_data.pressure_2;
+    frame->pressure_combustion_chamber = tanwa_data.com_data.pressure_3;
     frame->igniter_cont1 = tanwa_data.com_data.igniter_cont_1;
     frame->igniter_cont2 = tanwa_data.com_data.igniter_cont_2;
-    frame->status_oxy= 1;
-    frame->status_fuel = 1;
-    frame->status_arm = 1;
+
+    //ESP_LOGI(TAG, "IGNITER CONT 1: %d", tanwa_data.com_data.igniter_cont_1);
+    //ESP_LOGI(TAG, "IGNITER CONT 2: %d", tanwa_data.com_data.igniter_cont_2);
+    frame->status_oxy= tanwa_data.can_fac_status.servo_state_2;
+    frame->status_fuel = tanwa_data.can_fac_status.servo_state_1;
+    frame->status_arm = tanwa_data.com_liquid_data.arm_state;
+
+    //ESP_LOGI(TAG, "ARM STATE: %d", tanwa_data.com_liquid_data.arm_state);
     frame->tanwa_battery = tanwa_data.com_data.vbat;
     frame->temp_injector = tanwa_data.can_flc_data.temperature_1;
     frame->temp_combustion_chamber = tanwa_data.can_flc_data.temperature_2;
     frame->temp_external_tank = tanwa_data.can_flc_data.temperature_3;
     // hx rck
-    frame->engine_thrust = 7.0;
+    frame->engine_thrust = tanwa_data.can_hx_rocket_data.weight;
     frame->rocket_weight = tanwa_data.can_hx_rocket_data.weight;
     frame->tank_weight = tanwa_data.can_hx_oxidizer_data.weight;
 
-    // frame->engine_work_time = 1;
-    //frame->pressure_fuel = tanwa_data.com_data.pressure_1;
-    //frame->pressure_after_fill = tanwa_data.com_data.pressure_2;
-    //frame->pressure_before_fill = tanwa_data.com_data.pressure_3;
-    //frame->pressure_oxy = tanwa_data.com_data.pressure_4;
-    //frame->status_fill = 1;
-    //frame->status_depr = 1;
-    //frame->status_vent = 1;
-
+    frame->engine_work_time = liquid_ignition_test_timer_get_time();
+    frame->pressure_fuel = tanwa_data.can_flc_pressure_data.pressure_1;
+    frame->pressure_after_fill = tanwa_data.can_flc_pressure_data.pressure_2;
+    frame->pressure_before_fill = tanwa_data.can_flc_pressure_data.pressure_3;
+    frame->pressure_oxy = tanwa_data.can_flc_pressure_data.pressure_4;
+    frame->status_fill = tanwa_data.com_data.solenoid_state_fill;
+    frame->status_depr = tanwa_data.com_data.solenoid_state_depr;
+    //frame->status_vent = tanwa_data.com_data.solenoid_add_state;
 
 }
 
@@ -258,6 +275,11 @@ static size_t lora_create_data_packet(uint8_t* buffer, size_t size) {
     data_size = lo_ra_frame__pack(&frame, buffer + prefix_size);
 
     //ESP_LOGI(TAG, "Data_size: %d", data_size);
+
+    //LoRaFrame* fram = lo_ra_frame__unpack(NULL, data_size, buffer + prefix_size);
+
+    //ESP_LOGI(TAG, "FRAME:");
+    //ESP_LOGI(TAG, "ARM STATE: %d", fram->status_arm);
 
     return prefix_size + data_size;
 }

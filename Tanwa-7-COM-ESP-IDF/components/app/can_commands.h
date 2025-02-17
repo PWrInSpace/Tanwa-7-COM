@@ -59,6 +59,11 @@ typedef enum {
     CAN_FAC_TX_QD_PULL = 0x0C1,
     CAN_FAC_TX_QD_STOP = 0x0C2,
     CAN_FAC_TX_QD_PUSH = 0x0C3,
+    CAN_FAC_SERVO_OPEN = 0x0C4,
+    CAN_FAC_SERVO_CLOSE = 0x0C5,
+    CAN_FAC_SERVO_OPEN_ANGLE = 0x0C6,
+    CAN_FAC_TX_SETTINGS = 0x0C7,
+    CAN_FAC_TX_BURN_INIT = 0x0C8,
     // place for new commands
     CAN_FAC_TX_SOFT_RESET = 0x0C9,
     CAN_FAC_TX_NOTHING = 0x0CF,
@@ -224,10 +229,40 @@ typedef enum {
     .data = {0, 0, 0, 0, 0, 0, 0, 0}      \
 }
 
+#define CAN_FAC_SERVO_OPEN() {            \
+    .identifier = CAN_FAC_SERVO_OPEN,     \
+    .data_length_code = 1,                \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}      \
+}
+
+#define CAN_FAC_SERVO_CLOSE() {           \
+    .identifier = CAN_FAC_SERVO_CLOSE,    \
+    .data_length_code = 1,                \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}      \
+}
+
+#define CAN_FAC_SERVO_OPEN_ANGLE() {        \
+    .identifier = CAN_FAC_SERVO_OPEN_ANGLE, \
+    .data_length_code = 3,                  \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}        \
+}
+
+#define CAN_FAC_SETTINGS() {          \
+    .identifier = CAN_FAC_TX_SETTINGS, \
+    .data_length_code = 8,                 \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}       \
+}
+
 #define CAN_FAC_SOFT_RESET() {            \
     .identifier = CAN_FAC_TX_SOFT_RESET,  \
     .data_length_code = 0,                \
     .data = {0, 0, 0, 0, 0, 0, 0, 0}      \
+}
+
+#define CAN_FAC_INIT_BURN() {            \
+    .identifier = CAN_FAC_TX_BURN_INIT,  \
+    .data_length_code = 0,               \
+    .data = {0, 0, 0, 0, 0, 0, 0, 0}     \
 }
 
 // FLC submodule

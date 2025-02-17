@@ -72,6 +72,8 @@ void tanwa_data_update_state(uint8_t state);
 
 void tanwa_data_update_com_data(com_data_t *data);
 
+void tanwa_data_update_com_liquid_data(com_liquid_data_t *data);
+
 void tanwa_data_update_can_connected_slaves(can_connected_slaves_t *data);
 
 void tanwa_data_update_can_hx_rocket_status(can_hx_rocket_status_t *data);

@@ -53,6 +53,15 @@ void tanwa_data_update_com_data(com_data_t *data) {
     }
 }
 
+void tanwa_data_update_com_liquid_data(com_liquid_data_t *data) {
+    if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
+        memcpy(&tanwa_data.com_liquid_data, data, sizeof(com_liquid_data_t));
+        xSemaphoreGive(tanwa_data_mutex);
+    } else {
+        ESP_LOGE(TAG, "Update COM Liquid | Failed mutex");
+    }
+}
+
 void tanwa_data_update_can_connected_slaves(can_connected_slaves_t *data) {
     if (xSemaphoreTake(tanwa_data_mutex, 1000) == pdTRUE) {
         memcpy(&tanwa_data.can_connected_slaves, data, sizeof(can_connected_slaves_t));

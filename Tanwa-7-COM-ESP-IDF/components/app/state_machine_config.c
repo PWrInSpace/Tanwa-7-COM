@@ -15,6 +15,14 @@
 #include "TANWA_config.h"
 
 #include "timers_config.h"
+#include "can_commands.h"
+#include "settings_mem.h"
+
+#include "TANWA_data.h"
+
+#include "can_task.h"
+
+#include "mission_timer_config.h"
 
 #define TAG "SMC"
 
@@ -25,48 +33,77 @@ static void on_init(void *arg) {
 }
 
 static void on_idle(void *arg) {
+
     sys_timer_stop(TIMER_BUZZER);
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
+
+    valve_close_servo(&TANWA_utility.servo_valve[0]);
+    valve_close_servo(&TANWA_utility.servo_valve[1]);
+
+    igniter_disarm(&TANWA_hardware.igniter[0]);
+    igniter_disarm(&TANWA_hardware.igniter[1]);
+
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_IDLE);
     ESP_LOGI(TAG, "ON IDLE");
 }
 
 static void on_recovery_arm(void *arg) {
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ARMED);
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ARMED);
     ESP_LOGI(TAG, "ON ARM");
 }
 
 static void on_fueling(void *arg) {
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_FUELING);
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_FUELING);
     buzzer_timer_start(5000);
     ESP_LOGI(TAG, "ON FUELING");
 }
 
 static void on_armed_to_launch(void *arg) {
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ARMED_TO_LAUNCH);
-    buzzer_timer_change_period(3000);
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ARMED_TO_LAUNCH);
+    buzzer_timer_start(3000);
+    //buzzer_timer_change_period(3000);
     ESP_LOGI(TAG, "ON ARMED TO LAUNCH");
 }
 
 static void on_ready_to_lauch(void *arg) {
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_RDY_TO_LAUNCH);
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_RDY_TO_LAUNCH);
     buzzer_timer_change_period(2000);
     ESP_LOGI(TAG, "ON READY_TO_LAUNCH");
 }
 
 static void on_countdown(void *arg) {
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_COUTDOWN);
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_COUTDOWN);
     buzzer_timer_change_period(500);
+    if (sys_timer_stop(TIMER_DISCONNECT) == false) {
+        ESP_LOGE(TAG, "Unable to stop disconnect timer");
+        goto abort_countdown;
+    }
     ESP_LOGI(TAG, "ON COUNTDOWN");
+
+    Settings settings = settings_get_all();
+    if (liquid_ignition_test_timer_start(settings.countdownTime, settings.ignitTime) == false) {
+        ESP_LOGE(TAG, "Mission timer error");
+        goto abort_countdown;
+    }
+
+    return;
+
+abort_countdown:
+    state_machine_change_to_previous_state(true);
+    sys_timer_start(TIMER_DISCONNECT, TIMER_DISCONNECT_PERIOD_MS, TIMER_TYPE_ONE_SHOT);
 }
 
-static void on_flight(void *arg) {
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_FLIGHT);
+static void on_fire(void *arg) {
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_FLIGHT);
     sys_timer_stop(TIMER_BUZZER);
     ESP_LOGI(TAG, "----> ON FLIGHT <----");
+
+    if(sys_timer_start(TIMER_AFTER_BURNOUT, ENGINE_BURN_TIME_MS, TIMER_TYPE_ONE_SHOT) == false){
+        ESP_LOGE(TAG, "Failed to start after burnout timer");
+    }
 }
 
 static void on_first_stage_recovery(void *arg) {
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_FIRST_STAGE);
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_FIRST_STAGE);
     ESP_LOGI(TAG, "ON FIRST STAGE RECOVERY");
 }
 
@@ -80,31 +117,45 @@ static void on_ground(void *arg) {
     ESP_LOGI(TAG, "ON GROUND");
 }
 
+static void on_after_burnout(void *arg) {
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_AFTER_BURNOUT);
+    buzzer_timer_change_period(1000);
+    ESP_LOGI(TAG, "ON AFTER BURNOUT");
+    igniter_disarm(&TANWA_hardware.igniter[0]);
+    igniter_disarm(&TANWA_hardware.igniter[1]);
+
+    valve_close_servo(&TANWA_utility.servo_valve[1]);
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+    valve_close_servo(&TANWA_utility.servo_valve[0]);
+
+    liquid_ignition_test_timer_stop();
+}
+
 static void on_hold(void *arg) {
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_HOLD);
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_HOLD);
     ESP_LOGI(TAG, "ON HOLD");
 }
 
 static void on_abort(void *arg) {
-    led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ABORT);
+    //led_state_display_state_update(&TANWA_utility.led_state_display, LED_STATE_DISPLAY_STATE_ABORT);
     buzzer_timer_change_period(1000);
     ESP_LOGI(TAG, "ON ABORT");
+    igniter_disarm(&TANWA_hardware.igniter[0]);
+    igniter_disarm(&TANWA_hardware.igniter[1]);
     solenoid_driver_valve_close(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
     solenoid_driver_valve_open(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
+    valve_close_servo(&TANWA_utility.servo_valve[1]);
+    valve_close_servo(&TANWA_utility.servo_valve[0]);
 }
 
 static state_config_t states_cfg[] = {
     {INIT, on_init, NULL},
     {IDLE, on_idle, NULL},
-    {RECOVERY_ARM, on_recovery_arm, NULL},
-    {FUELING, on_fueling, NULL},
     {ARMED_TO_LAUNCH, on_armed_to_launch, NULL},
     {RDY_TO_LAUNCH, on_ready_to_lauch, NULL},
     {COUNTDOWN, on_countdown, NULL},
-    {FLIGHT, on_flight, NULL},
-    {FIRST_STAGE_RECOVERY, on_first_stage_recovery, NULL},
-    {SECOND_STAGE_RECOVERY, on_second_stage_recovery, NULL},
-    {ON_GROUND, on_ground, NULL},
+    {FIRE, on_fire, NULL},
+    {AFTER_BURNOUT, on_after_burnout, NULL},
     {HOLD, on_hold, NULL},
     {ABORT, on_abort, NULL},
 };
@@ -132,12 +183,12 @@ void get_state_text(int32_t state, char *text) {
         case IDLE:
             strcpy(text, "IDLE");
             break;
-        case RECOVERY_ARM:
-            strcpy(text, "RECOVERY_ARM");
-            break;
-        case FUELING:
-            strcpy(text, "FUELING");
-            break;
+        // case RECOVERY_ARM:
+        //     strcpy(text, "RECOVERY_ARM");
+        //     break;
+        // case FUELING:
+        //     strcpy(text, "FUELING");
+        //     break;
         case ARMED_TO_LAUNCH:
             strcpy(text, "ARMED_TO_LAUNCH");
             break;
@@ -147,17 +198,17 @@ void get_state_text(int32_t state, char *text) {
         case COUNTDOWN:
             strcpy(text, "COUNTDOWN");
             break;
-        case FLIGHT:
-            strcpy(text, "FLIGHT");
+        case FIRE:
+            strcpy(text, "FIRE");
             break;
-        case FIRST_STAGE_RECOVERY:
-            strcpy(text, "FIRST_STAGE_RECOVERY");
-            break;
-        case SECOND_STAGE_RECOVERY:
-            strcpy(text, "SECOND_STAGE_RECOVERY");
-            break;
-        case ON_GROUND:
-            strcpy(text, "ON_GROUND");
+        // case FIRST_STAGE_RECOVERY:
+        //     strcpy(text, "FIRST_STAGE_RECOVERY");
+        //     break;
+        // case SECOND_STAGE_RECOVERY:
+        //     strcpy(text, "SECOND_STAGE_RECOVERY");
+        //     break;
+        case AFTER_BURNOUT:
+            strcpy(text, "AFTER_BURNOUT");
             break;
         case HOLD:
             strcpy(text, "HOLD");
