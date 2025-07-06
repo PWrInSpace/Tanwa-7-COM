@@ -32,15 +32,16 @@
 #include "solenoid_driver.h"
 
 #include "esp_log.h"
+#include "esp_timer.h"
 
 #include "driver/twai.h"
 
 #define TAG "MEASURE_TASK"
 
 #define MEASURE_TASK_STACK_SIZE 4096
-#define MEASURE_TASK_PRIORITY 3
+#define MEASURE_TASK_PRIORITY 5
 #define MEASURE_TASK_CORE 0
-#define MEASURE_TASK_DEFAULT_FREQ 100
+#define MEASURE_TASK_DEFAULT_FREQ 10
 
 extern TANWA_hardware_t TANWA_hardware;
 extern TANWA_utility_t TANWA_utility;
@@ -110,13 +111,23 @@ void measure_task(void* pvParameters) {
     // Initialise the xLastWakeTime variable with the current time.
     last_wake_time = xTaskGetTickCount();
 
+    int64_t timer = esp_timer_get_time();
+
+    uint8_t counter = 0;
+
     while (1) {
-        // Wait for the next cycle.
+
         if (xSemaphoreTake(measure_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
             local_freq = measure_task_freq;
             xSemaphoreGive(measure_task_freq_mutex);
-        
+
+            // ESP_LOGI(TAG, "time diff: %lld ms", (esp_timer_get_time() - timer)/1000);
+            // timer = esp_timer_get_time();
+    
             vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(local_freq));
+
+            // if(counter++ % 10 == 0) {
+            // // Wait for the next cycle.
 
             // Update state from state machine
             tanwa_data_update_state((uint8_t) state_machine_get_current_state());
@@ -152,22 +163,39 @@ void measure_task(void* pvParameters) {
             com_data.solenoid_state_fill = sol_fill;
             com_data.solenoid_state_depr = sol_depr;
 
-            can_fac_status.servo_state_1 = TANWA_utility.servo_valve[0].valve_state;
-            can_fac_status.servo_state_2 = TANWA_utility.servo_valve[1].valve_state;
-
-            // Update FAC data
-            tanwa_data_update_can_fac_status(&can_fac_status);
-
             //Measure pressure
-            pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_1, &pressure[0]);
-            pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_2, &pressure[1]);
-            pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_3, &pressure[2]);
-            pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_4, &pressure[3]);
-            // ESP_LOGI(TAG, "Pressure: %.2f", pressure);
-            com_data.pressure_1 = pressure[0];
-            com_data.pressure_2 = pressure[1];
-            com_data.pressure_3 = pressure[2];
-            com_data.pressure_4 = pressure[3];
+            // pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_1, &pressure[0]);
+            // pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_2, &pressure[1]);
+            // pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_3, &pressure[2]);
+            // pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_4, &pressure[3]);
+            // // ESP_LOGI(TAG, "Pressure: %.2f", pressure);
+            // com_data.pressure_1 = pressure[0];
+            // com_data.pressure_2 = pressure[1];
+            // com_data.pressure_3 = pressure[2];
+            // com_data.pressure_4 = pressure[3];
+
+            switch (counter)
+            {
+            case 0:
+                pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_1, &com_data.pressure_1);
+                break;
+            case 1:
+                pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_2, &com_data.pressure_2);
+                break;
+            case 2:
+                pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_3, &com_data.pressure_3);
+                break;
+            case 3:
+                pressure_driver_read_pressure(&(TANWA_utility.pressure_driver), PRESSURE_DRIVER_SENSOR_4, &com_data.pressure_4);
+                break;
+            default:
+                break;
+            }
+
+            counter = (counter + 1) % 4;
+
+            //ESP_LOGI(TAG, "Pressure 1: %.2f, Pressure 2: %.2f, Pressure 3: %.2f, Pressure 4: %.2f",
+            //         com_data.pressure_1, com_data.pressure_2, com_data.pressure_3, com_data.pressure_4);
 
             //Measure temperature
             for (int i = 0; i < 2; ++i) {
@@ -187,17 +215,6 @@ void measure_task(void* pvParameters) {
             tanwa_data_update_com_data(&com_data);
             tanwa_data_update_com_liquid_data(&com_liquid_data);
 
-
-            // Rocket weight measurement
-            twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
-            can_task_add_message_with_rx(&hx_rck_mess);
-            // //vTaskDelay(pdMS_TO_TICKS(10));
-
-            // // Oxidizer weight measurement
-            twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
-            can_task_add_message_with_rx(&hx_oxi_mess);
-            //vTaskDelay(pdMS_TO_TICKS(10));
-
             // Filling arm status
             twai_message_t filling_arm_stat = CAN_FAC_GET_STATUS();
             can_task_add_message_with_rx(&filling_arm_stat);
@@ -209,6 +226,15 @@ void measure_task(void* pvParameters) {
             twai_message_t flc_mess1 = CAN_FLC_GET_DATA();
             can_task_add_message_with_rx(&flc_mess1);
             // //vTaskDelay(pdMS_TO_TICKS(10));
+
+            twai_message_t hx_rck_mess = CAN_HX_RCK_GET_DATA();
+            can_task_add_message_with_rx(&hx_rck_mess);
+            // //vTaskDelay(pdMS_TO_TICKS(10));
+
+            // // Oxidizer weight measurement
+            twai_message_t hx_oxi_mess = CAN_HX_OXI_GET_DATA();
+            can_task_add_message_with_rx(&hx_oxi_mess);
+            //vTaskDelay(pdMS_TO_TICKS(10));
 
             // // Termo control status
             // twai_message_t termo_stat = CAN_TERMO_GET_STATUS();
@@ -244,7 +270,7 @@ void measure_task(void* pvParameters) {
 
             uint32_t alerts;
 
-            twai_read_alerts(&alerts, pdMS_TO_TICKS(100));
+            twai_read_alerts(&alerts, pdMS_TO_TICKS(10));
 
             if(alerts & TWAI_ALERT_TX_FAILED) {
                 ESP_LOGI(TAG, "TX fault");
@@ -258,6 +284,7 @@ void measure_task(void* pvParameters) {
 
             //get_tanwa_data(0, NULL);
         }
+        //}
     }
     vTaskDelete(NULL);
 }

@@ -100,12 +100,28 @@ void on_burn_timer(void *arg){
     // Handle the burn event
     ESP_LOGW(TAG, "BURN EVENT");
 
+    sd_timer_change_period(20);
+
     Settings settings = settings_get_all();
 
-    valve_move_angle_servo(&(TANWA_utility.servo_valve[1]), settings.oxidizer_valve_initial_angle);
+    // valve_move_angle_servo(&(TANWA_utility.servo_valve[1]), settings.oxidizer_valve_initial_angle);
+
+    twai_message_t servo_mess = {
+        .identifier = CAN_FAC_SERVO_OPEN_ANGLE,
+        .data_length_code = 3,                  
+        .data = {(uint8_t)(settings.oxidizer_valve_initial_angle & 0xFF), (uint8_t)((settings.oxidizer_valve_initial_angle >> 8) & 0xFF), 1, 0, 0, 0, 0, 0}
+    };
+    twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
 
     if(settings.fuel_open_time_ms == 0){
-        valve_move_angle_servo(&(TANWA_utility.servo_valve[0]), settings.fuel_valve_initial_angle);
+        // valve_move_angle_servo(&(TANWA_utility.servo_valve[0]), settings.fuel_valve_initial_angle);
+        twai_message_t servo_mess = {
+            .identifier = CAN_FAC_SERVO_OPEN_ANGLE,
+            .data_length_code = 3,                  
+            .data = {(uint8_t)(settings.fuel_valve_initial_angle & 0xFF), (uint8_t)((settings.fuel_valve_initial_angle >> 8) & 0xFF), 0, 0, 0, 0, 0, 0}
+        };
+        twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
+
     }
     else{
         if(!sys_timer_start(TIMER_FUEL_INITIAL, settings.fuel_open_time_ms, TIMER_TYPE_ONE_SHOT)){
@@ -113,7 +129,15 @@ void on_burn_timer(void *arg){
         }
     }
     if(settings.oxidizer_full_open_time_ms + settings.fuel_open_time_ms == 0){
-        valve_open_servo(&(TANWA_utility.servo_valve[1]));
+        // valve_open_servo(&(TANWA_utility.servo_valve[1]));
+
+        twai_message_t servo_mess = {
+            .identifier = CAN_FAC_SERVO_OPEN,
+            .data_length_code = 1,                  
+            .data = {1, 0, 0, 0, 0, 0, 0, 0} 
+        };
+        twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
+        //ESP_LOGI(TAG, "OXI OPEN FULL");
     }
     else{
         if(!sys_timer_start(TIMER_OXIDIZER_FULL, settings.oxidizer_full_open_time_ms + settings.fuel_open_time_ms, TIMER_TYPE_ONE_SHOT)){
@@ -121,7 +145,13 @@ void on_burn_timer(void *arg){
         }
     }
     if(settings.fuel_full_open_time_ms + settings.oxidizer_full_open_time_ms + settings.fuel_open_time_ms == 0){
-        valve_open_servo(&(TANWA_utility.servo_valve[0]));
+        // valve_open_servo(&(TANWA_utility.servo_valve[0]));
+        twai_message_t servo_mess = {
+            .identifier = CAN_FAC_SERVO_OPEN,
+            .data_length_code = 1,                  
+            .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+        };
+        twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
     }
     else{
         if(!sys_timer_start(TIMER_FUEL_FULL, settings.fuel_full_open_time_ms + settings.oxidizer_full_open_time_ms + settings.fuel_open_time_ms, TIMER_TYPE_ONE_SHOT)){
@@ -138,19 +168,40 @@ static void on_fuel_initial(void *arg) {
 
     Settings settings = settings_get_all();
 
-    valve_move_angle_servo(&(TANWA_utility.servo_valve[0]), settings.fuel_valve_initial_angle);
+    //valve_move_angle_servo(&(TANWA_utility.servo_valve[0]), settings.fuel_valve_initial_angle);
+
+    twai_message_t servo_mess = {
+        .identifier = CAN_FAC_SERVO_OPEN_ANGLE,
+        .data_length_code = 3,                  
+        .data = {(uint8_t)(settings.fuel_valve_initial_angle & 0xFF), (uint8_t)((settings.fuel_valve_initial_angle >> 8) & 0xFF), 0, 0, 0, 0, 0, 0}
+    };
+    twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
 }
 
 static void on_oxidizer_full(void *arg) {
     ESP_LOGI(TAG, "Oxidizer full valve open");
 
-    valve_open_servo(&(TANWA_utility.servo_valve[1]));
+    // valve_open_servo(&(TANWA_utility.servo_valve[1]));
+
+    twai_message_t servo_mess = {
+        .identifier = CAN_FAC_SERVO_OPEN,
+        .data_length_code = 1,                  
+        .data = {1, 0, 0, 0, 0, 0, 0, 0}    
+    };
+    twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
 }
 
 static void on_fuel_full(void *arg) {
     ESP_LOGI(TAG, "Fuel full valve open");
 
-    valve_open_servo(&(TANWA_utility.servo_valve[0]));
+    //valve_open_servo(&(TANWA_utility.servo_valve[0]));
+
+    twai_message_t servo_mess = {
+        .identifier = CAN_FAC_SERVO_OPEN,
+        .data_length_code = 1,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0}
+    };
+    twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
 }
 
 static void on_ignition_off(void *arg){
@@ -198,4 +249,12 @@ bool buzzer_timer_change_period(uint32_t period_ms) {
 
 bool abort_button_timer_start_once(uint32_t period_ms) {
     return sys_timer_start(TIMER_ABORT_BUTTON, period_ms, TIMER_TYPE_ONE_SHOT);
+}
+
+bool sd_timer_change_period(uint32_t period_ms) {
+    if (!sys_timer_stop(TIMER_SD_DATA)) {
+        ESP_LOGE(TAG, "Failed to stop SD timer");
+        return false;
+    }
+    return sys_timer_start(TIMER_SD_DATA, period_ms, TIMER_TYPE_PERIODIC);
 }

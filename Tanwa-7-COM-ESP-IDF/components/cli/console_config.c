@@ -18,6 +18,7 @@
 #include "state_machine_config.h"
 #include "valve_control.h"
 #include "settings_mem.h"
+#include "can_commands.h"
 
 #include "measure_task.h"
 
@@ -763,13 +764,13 @@ int get_tanwa_data(int argc, char **argv) {
     CONSOLE_WRITE("FAC: ");
     CONSOLE_WRITE("  Motor: [0] %d, [1] %d", tanwa_data.can_fac_status.motor_state_1, tanwa_data.can_fac_status.motor_state_2);
     CONSOLE_WRITE("  Limit: [0] %d, [1] %d", tanwa_data.can_fac_status.limit_switch_1, tanwa_data.can_fac_status.limit_switch_2);
+    CONSOLE_WRITE("  Servo: [0] %d, [1] %d", tanwa_data.can_fac_status.servo_state_1, tanwa_data.can_fac_status.servo_state_2);
     CONSOLE_WRITE("FLC: ");
     CONSOLE_WRITE("  Temperatures: [0] %d, [1] %d, [2] %d, [3] %d", tanwa_data.can_flc_data.temperature_1,
                   tanwa_data.can_flc_data.temperature_2, tanwa_data.can_flc_data.temperature_3,
                   tanwa_data.can_flc_data.temperature_4);
-    CONSOLE_WRITE(" Pressures: [0] %d, [1] %d, [2] %d, [3] %d", tanwa_data.can_flc_pressure_data.pressure_1,
-                  tanwa_data.can_flc_pressure_data.pressure_2, tanwa_data.can_flc_pressure_data.pressure_3,
-                  tanwa_data.can_flc_pressure_data.pressure_4);
+    CONSOLE_WRITE("  Pressures: [0] %.2f, [1] %.2f", tanwa_data.can_flc_pressure_data.pressure_1,
+                  tanwa_data.can_flc_pressure_data.pressure_2);
     CONSOLE_WRITE("TERMO: ");
     CONSOLE_WRITE("  Status: %d", tanwa_data.can_termo_status.status);
     CONSOLE_WRITE("  Heat: %d", tanwa_data.can_termo_status.heating_status);
@@ -829,6 +830,18 @@ static int get_termo_data(int argc, char **argv) {
     return 0;
 }
 
+static int get_fac_data(int argc, char **argv) {
+    can_fac_status_t fac_status = tanwa_data_read_can_fac_status();
+    CONSOLE_WRITE("FAC Data:");
+    CONSOLE_WRITE("Motor State 1: %d", fac_status.motor_state_1);
+    CONSOLE_WRITE("Motor State 2: %d", fac_status.motor_state_2);
+    CONSOLE_WRITE("Limit Switch 1: %d", fac_status.limit_switch_1);
+    CONSOLE_WRITE("Limit Switch 2: %d", fac_status.limit_switch_2);
+    CONSOLE_WRITE("Oxidizer Servo State: %d", fac_status.servo_state_2);
+    CONSOLE_WRITE("Fuel Servo State: %d", fac_status.servo_state_1);
+    return 0;
+}
+
 static int connected_slaves(int argc, char **argv) {
 
     can_connected_slaves_t slaves = tanwa_data_read_can_connected_slaves();
@@ -873,11 +886,20 @@ int open_servo(int argc, char **argv) {
     }
     
     if(servo_num == 2){
-        valve_open_servo(&TANWA_utility.servo_valve[0]);
-        valve_open_servo(&TANWA_utility.servo_valve[1]);
+        twai_message_t servo_mess = {
+            .identifier = CAN_FAC_SERVO_OPEN,
+            .data_length_code = 1,                  
+            .data = {2, 0, 0, 0, 0, 0, 0, 0} 
+        };
+        twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
     }
     else{
-        valve_open_servo(&TANWA_utility.servo_valve[servo_num]);
+        twai_message_t servo_mess = {
+            .identifier = CAN_FAC_SERVO_OPEN, 
+            .data_length_code = 1,                  
+            .data = {servo_num, 0, 0, 0, 0, 0, 0, 0}
+        };
+        twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
     }
 
     return 0;
@@ -897,11 +919,20 @@ int close_servo(int argc, char **argv) {
     }
     
     if(servo_num == 2){
-        valve_close_servo(&TANWA_utility.servo_valve[0]);
-        valve_close_servo(&TANWA_utility.servo_valve[1]);
+        twai_message_t servo_mess = {
+            .identifier = CAN_FAC_SERVO_CLOSE, 
+            .data_length_code = 1,                  
+            .data = {2, 0, 0, 0, 0, 0, 0, 0} 
+        };
+        twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
     }
     else{
-        valve_close_servo(&TANWA_utility.servo_valve[servo_num]);
+        twai_message_t servo_mess = {
+            .identifier = CAN_FAC_SERVO_CLOSE, 
+            .data_length_code = 1,                  
+            .data = {servo_num, 0, 0, 0, 0, 0, 0, 0}
+        };
+        twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
     }
 
     return 0;
@@ -927,11 +958,20 @@ int move_servo_angle(int argc, char **argv) {
     }
 
     if(servo_num == 2){
-        valve_move_angle_servo(&TANWA_utility.servo_valve[0], angle);
-        valve_move_angle_servo(&TANWA_utility.servo_valve[1], angle);
+        twai_message_t servo_mess = {
+            .identifier = CAN_FAC_SERVO_OPEN_ANGLE, 
+            .data_length_code = 3,                  
+            .data = {(uint8_t)(angle & 0xFF), (uint8_t)((angle >> 8) & 0xFF), 2, 0, 0, 0, 0, 0} 
+        };
+        twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
     }
     else{
-        valve_move_angle_servo(&TANWA_utility.servo_valve[servo_num], angle);
+        twai_message_t servo_mess = {
+            .identifier = CAN_FAC_SERVO_OPEN_ANGLE, 
+            .data_length_code = 3,                  
+            .data = {(uint8_t)(angle & 0xFF), (uint8_t)((angle >> 8) & 0xFF), (uint8_t)servo_num, 0, 0, 0, 0, 0} 
+        };
+        twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
     }
 
     return 0;
@@ -1005,6 +1045,7 @@ static esp_console_cmd_t cmd[] = {
     {"oxi-data", "get hx oxi data", NULL, get_hx_oxi_data, NULL},
     {"rck-data", "get hx rck data", NULL, get_hx_rck_data, NULL},
     {"flc-data", "get flc data", NULL, get_flc_data, NULL},
+    {"fac-data", "get fac data", NULL, get_fac_data, NULL},
     {"termo-data", "get termo data", NULL, get_termo_data, NULL},
     {"connected-slaves", "show connected slaves", NULL, connected_slaves, NULL},
     {"CONTDOWN_START", "start the timer for liquid test", NULL, countdown_start, NULL},

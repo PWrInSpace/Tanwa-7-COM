@@ -249,11 +249,12 @@ void create_porotobuf_data_frame(LoRaFrame *frame) {
     frame->tank_weight = tanwa_data.can_hx_oxidizer_data.weight;
 
     frame->engine_work_time = liquid_ignition_test_timer_get_time();
-    frame->pressure_fuel = tanwa_data.can_flc_pressure_data.pressure_1;
-    frame->pressure_after_fill = tanwa_data.can_flc_pressure_data.pressure_2;
-    frame->pressure_before_fill = tanwa_data.can_flc_pressure_data.pressure_3;
-    frame->pressure_oxy = tanwa_data.can_flc_pressure_data.pressure_4;
+    frame->pressure_fuel = tanwa_data.com_data.pressure_4;
+    frame->pressure_after_fill = 0;
+    frame->pressure_before_fill = 0;
+    frame->pressure_oxy = tanwa_data.can_flc_pressure_data.pressure_1;
     frame->status_fill = tanwa_data.com_data.solenoid_state_fill;
+
     frame->status_depr = tanwa_data.com_data.solenoid_state_depr;
     //frame->status_vent = tanwa_data.com_data.solenoid_add_state;
 
@@ -273,13 +274,6 @@ static size_t lora_create_data_packet(uint8_t* buffer, size_t size) {
     uint8_t prefix_size = 0;
     prefix_size = add_prefix(buffer, size);
     data_size = lo_ra_frame__pack(&frame, buffer + prefix_size);
-
-    //ESP_LOGI(TAG, "Data_size: %d", data_size);
-
-    //LoRaFrame* fram = lo_ra_frame__unpack(NULL, data_size, buffer + prefix_size);
-
-    //ESP_LOGI(TAG, "FRAME:");
-    //ESP_LOGI(TAG, "ARM STATE: %d", fram->status_arm);
 
     return prefix_size + data_size;
 }

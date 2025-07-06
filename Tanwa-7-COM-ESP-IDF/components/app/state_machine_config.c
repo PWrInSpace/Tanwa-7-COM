@@ -36,8 +36,15 @@ static void on_idle(void *arg) {
 
     sys_timer_stop(TIMER_BUZZER);
 
-    valve_close_servo(&TANWA_utility.servo_valve[0]);
-    valve_close_servo(&TANWA_utility.servo_valve[1]);
+    // valve_close_servo(&TANWA_utility.servo_valve[0]);
+    // valve_close_servo(&TANWA_utility.servo_valve[1]);
+
+    twai_message_t servo_mess = {
+        .identifier = CAN_FAC_SERVO_CLOSE,
+        .data_length_code = 1,                  
+        .data = {2, 0, 0, 0, 0, 0, 0, 0}\
+    };
+    twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
 
     igniter_disarm(&TANWA_hardware.igniter[0]);
     igniter_disarm(&TANWA_hardware.igniter[1]);
@@ -124,9 +131,25 @@ static void on_after_burnout(void *arg) {
     igniter_disarm(&TANWA_hardware.igniter[0]);
     igniter_disarm(&TANWA_hardware.igniter[1]);
 
-    valve_close_servo(&TANWA_utility.servo_valve[1]);
-    vTaskDelay(2000 / portTICK_PERIOD_MS);
-    valve_close_servo(&TANWA_utility.servo_valve[0]);
+    // valve_close_servo(&TANWA_utility.servo_valve[1]);
+
+    twai_message_t servo_mess = {
+        .identifier = CAN_FAC_SERVO_CLOSE,
+        .data_length_code = 1,                  
+        .data = {1, 0, 0, 0, 0, 0, 0, 0}
+    };
+    twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
+    ESP_LOGI(TAG, "OXI CLOSE");
+    vTaskDelay(80 / portTICK_PERIOD_MS);
+    // valve_close_servo(&TANWA_utility.servo_valve[0]);
+    twai_message_t servo_mess_fuel = {
+        .identifier = CAN_FAC_SERVO_CLOSE,
+        .data_length_code = 1,                  
+        .data = {0, 0, 0, 0, 0, 0, 0, 0}
+    };
+    twai_transmit(&servo_mess_fuel, pdMS_TO_TICKS(100));
+
+    sd_timer_change_period(TIMER_SD_DATA_PERIOD_MS);
 
     liquid_ignition_test_timer_stop();
 }
@@ -142,10 +165,16 @@ static void on_abort(void *arg) {
     ESP_LOGI(TAG, "ON ABORT");
     igniter_disarm(&TANWA_hardware.igniter[0]);
     igniter_disarm(&TANWA_hardware.igniter[1]);
-    solenoid_driver_valve_close(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
-    solenoid_driver_valve_open(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
-    valve_close_servo(&TANWA_utility.servo_valve[1]);
-    valve_close_servo(&TANWA_utility.servo_valve[0]);
+    // solenoid_driver_valve_close(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_FILL);
+    // solenoid_driver_valve_open(&TANWA_utility.solenoid_driver, SOLENOID_DRIVER_VALVE_DEPR);
+    // valve_close_servo(&TANWA_utility.servo_valve[1]);
+    // valve_close_servo(&TANWA_utility.servo_valve[0]);
+    // twai_message_t servo_mess = {
+    //     .identifier = CAN_FAC_SERVO_CLOSE,
+    //     .data_length_code = 1,                  
+    //     .data = {2, 0, 0, 0, 0, 0, 0, 0}
+    // };
+    // twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
 }
 
 static state_config_t states_cfg[] = {

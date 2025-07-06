@@ -49,7 +49,7 @@ bool is_rx_counter_zero(void) {
 
 void run_can_task(void) {
     if (twai_start() != ESP_OK) {
-      ESP_LOGE(TAG, "TWAI start error");
+     ESP_LOGE(TAG, "TWAI start error");
     } else {
         can_task_freq_mutex = xSemaphoreCreateMutex();
         can_task_rx_counter_mutex = xSemaphoreCreateMutex();
@@ -96,9 +96,9 @@ bool can_task_add_message(twai_message_t *message) {
 }
 
 bool can_task_add_message_with_rx(twai_message_t *message) {
-    //if(message->identifier == CAN_FAC_TX_GET_STATUS)
+    //if(message->identifier == CAN_FLC_TX_GET_PRESSURE_DATA) ESP_LOGI(TAG, "Sending FLC pressure data request");
     if (twai_transmit(message, pdMS_TO_TICKS(100)) != ESP_OK) {
-        //ESP_LOGE(TAG, "Failed to send the message");
+        ESP_LOGE(TAG, "Failed to send the message");
         return false;
     }
     can_task_add_rx_counter();
@@ -173,6 +173,13 @@ void can_task(void* pvParameters) {
     // Initialise the xLastWakeTime variable with the current time.
     last_wake_time = xTaskGetTickCount();
 
+    int64_t time = esp_timer_get_time();
+
+    // vTaskDelay(pdMS_TO_TICKS(10000)); // Wait for other tasks to initialize
+
+    // twai_start();
+
+
     while (1) {
         // Wait for the next cycle.
         if (xSemaphoreTake(can_task_freq_mutex, (TickType_t) 10) == pdTRUE) {
@@ -183,9 +190,18 @@ void can_task(void* pvParameters) {
 
             can_check_conection();
 
+            //ESP_LOGI(TAG, "CAN task running at %d ms", local_freq);
+            //mcu_twai_check_alerts();
+
             // Receive the CAN message from the queue
             twai_message_t rx_message;
-            if (twai_receive(&rx_message, pdMS_TO_TICKS(100)) == ESP_OK) {
+            if (twai_receive(&rx_message, pdMS_TO_TICKS(40)) == ESP_OK) {
+
+                // ESP_LOGI(TAG, "Received CAN message: ID = %d, DLC = %d, Data = %02X %02X %02X %02X %02X %02X %02X %02X",
+                //          rx_message.identifier, rx_message.data_length_code,
+                //          rx_message.data[0], rx_message.data[1], rx_message.data[2],
+                //          rx_message.data[3], rx_message.data[4], rx_message.data[5],
+                //          rx_message.data[6], rx_message.data[7]);
                 // Parse the received message
                 switch (rx_message.identifier) {
                     case CAN_HX_RCK_RX_STATUS: {
@@ -196,6 +212,9 @@ void can_task(void* pvParameters) {
                     }
                     case CAN_HX_RCK_RX_DATA: {
                         // ESP_LOGI(TAG, "Received HX RCK data");
+                        // ESP_LOGI(TAG, "Time since last RCK data: %lld ms", (esp_timer_get_time() - time) / 1000);
+                        // time = esp_timer_get_time();
+
                         can_task_sub_rx_counter();
                         parse_can_hx_rck_data(rx_message);
                         break;
@@ -223,13 +242,13 @@ void can_task(void* pvParameters) {
                         break;
                     }
                     case CAN_FAC_RX_STATUS: {
-                        // ESP_LOGI(TAG, "Received FAC status");
+                        //ESP_LOGI(TAG, "Received FAC status");
                         can_task_sub_rx_counter();
                         parse_can_fac_status(rx_message);
                         break;
                     }
                     case CAN_FAC_RX_UPDATE: {
-                        // ESP_LOGI(TAG, "Received HX RCK update");
+                        //ESP_LOGI(TAG, "Received FAC update");
                         can_update_fac_timer();
                         break;
                     }

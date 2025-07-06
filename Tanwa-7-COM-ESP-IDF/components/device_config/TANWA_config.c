@@ -42,11 +42,11 @@
 #define POT1_ADC_CHANNEL 4U
 #define POT2_ADC_CHANNEL 2U
 
-#define VALVE1_CLOSE_POSITION 100U
-#define VALVE1_OPEN_POSITION 10U
+#define VALVE1_CLOSE_POSITION 0U
+#define VALVE1_OPEN_POSITION 110U
 
-#define VALVE2_CLOSE_POSITION 95U
-#define VALVE2_OPEN_POSITION 10U
+#define VALVE2_CLOSE_POSITION 155U
+#define VALVE2_OPEN_POSITION 60U
 
 extern mcu_adc_config_t mcu_adc_config;
 
@@ -186,13 +186,13 @@ TANWA_utility_t TANWA_utility = {
 
 esp_err_t TANWA_mcu_config_init() {
     esp_err_t ret = ESP_OK;
-    ret |= mcu_spi_init();
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to initialize SPI");
-        return ret;
-    } else {
-        ESP_LOGI(TAG, "SPI initialized");
-    }
+    // ret |= mcu_spi_init();
+    // if (ret != ESP_OK) {
+    //     ESP_LOGE(TAG, "Failed to initialize SPI");
+    //     return ret;
+    // } else {
+    //     ESP_LOGI(TAG, "SPI initialized");
+    // }
     ret |= mcu_gpio_init();
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize GPIO");
@@ -288,16 +288,16 @@ esp_err_t TANWA_utility_init() {
         ESP_LOGI(TAG, "Solenoid driver initialized");
     }
 
-    // adc_oneshot_unit_init_cfg_t adc_config = {
-    //     .unit_id = ADC_UNIT_1,
-    // };
+    adc_oneshot_unit_init_cfg_t adc_config = {
+        .unit_id = ADC_UNIT_1,
+    };
 
-    //adc_oneshot_unit_handle_t adc_handle;
+    adc_oneshot_unit_handle_t adc_handle;
 
-    // if(adc_oneshot_new_unit(&adc_config, &adc_handle) != ESP_OK){
-    //     ESP_LOGE(TAG, "Error initializing ADC unit");
-    //     //set_board_status(BOARD_SERVO_ERROR);
-    // }
+    if(adc_oneshot_new_unit(&adc_config, &adc_handle) != ESP_OK){
+        ESP_LOGE(TAG, "Error initializing ADC unit");
+        //set_board_status(BOARD_SERVO_ERROR);
+    }
 
     adc_cali_handle_t adc_cali_handle;
 

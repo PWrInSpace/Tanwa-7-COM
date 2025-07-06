@@ -11,6 +11,7 @@
 #include "esp_timer.h"
 
 #include "esp_log.h"
+#include "esp_timer.h"
 
 #define TAG "SD_TASK"
 
@@ -19,6 +20,7 @@
 #define SD_TASK_CORE_ID 0
 
 extern SemaphoreHandle_t mutex_spi;
+int64_t timer = 0;
 
 static struct {
     sd_card_t sd_card;
@@ -186,8 +188,11 @@ static void check_terminate_condition(void) {
 
 static void sdTask(void *args) {
     ESP_LOGI(TAG, "RUNNING SD TASK");
+    timer = esp_timer_get_time();
     while (1) {
+        //ESP_LOGI(TAG, "Checking SD card status");
         if (xSemaphoreTake(mem.data_write_mutex, 10) == pdTRUE) {
+            //ESP_LOGI(TAG, "Checking SD card status");
             data_check_and_save();
             xSemaphoreGive(mem.data_write_mutex);
         } else {
@@ -315,7 +320,8 @@ static size_t convert_data_to_frame(char *buf, size_t buf_size, void* data, size
     // Create a char buffer from the data with newline ending
     size_t frame_size = 0;
     frame_size = snprintf(buf, buf_size, 
-    "%u;%f;%u;%u;%f;%f;%f;%f;%f;%f;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%f;%lu;%u;%u;%u;%f;%lu;%u;%u;%u;%u;%u;%u;%u;%u;%u;%d;%d;%d;%d;%u;%u;%f;%f;\n",
+    "%lld,%u;%f;%u;%u;%f;%f;%f;%f;%f;%f;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%f;%lu;%u;%u;%u;%f;%lu;%u;%u;%u;%u;%u;%u;%u;%u;%u;%d;%d;%d;%d;%f;%f;%u;%u;%f;%f;\n",
+    /* time */          esp_timer_get_time() - timer,
     /* com data */      tanwa_data->state, tanwa_data->com_data.vbat, tanwa_data->com_data.solenoid_state_fill, tanwa_data->com_data.solenoid_state_depr,
     /* com data */      tanwa_data->com_data.pressure_1, tanwa_data->com_data.pressure_2, tanwa_data->com_data.pressure_3, tanwa_data->com_data.pressure_4,
     /* com data */      tanwa_data->com_data.temperature_1, tanwa_data->com_data.temperature_2, tanwa_data->com_data.igniter_cont_1, tanwa_data->com_data.igniter_cont_2,
@@ -327,6 +333,7 @@ static size_t convert_data_to_frame(char *buf, size_t buf_size, void* data, size
     /* fac status */    tanwa_data->can_fac_status.status, tanwa_data->can_fac_status.request, tanwa_data->can_fac_status.motor_state_1, tanwa_data->can_fac_status.motor_state_2, tanwa_data->can_fac_status.limit_switch_1, tanwa_data->can_fac_status.limit_switch_2,
     /* flc status */    tanwa_data->can_flc_status.status, tanwa_data->can_flc_status.request, tanwa_data->can_flc_status.temperature,
     /* flc data */      tanwa_data->can_flc_data.temperature_1, tanwa_data->can_flc_data.temperature_2, tanwa_data->can_flc_data.temperature_3, tanwa_data->can_flc_data.temperature_4,
+    /* flc pressure */  tanwa_data->can_flc_pressure_data.pressure_1, tanwa_data->can_flc_pressure_data.pressure_2,
     /* termo status */  tanwa_data->can_termo_status.status, tanwa_data->can_termo_status.request,
     /* termo data */    tanwa_data->can_termo_data.pressure, tanwa_data->can_termo_data.temperature);
     return frame_size;
@@ -347,7 +354,7 @@ bool init_sd_card(void) {
         .cs_pin = CONFIG_SD_CS,
         .data_path = "data",
         .data_path_size = 9,
-        .spi_host = VSPI_HOST,
+        .spi_host = SPI3_HOST,
         .log_path = "log",
         .log_path_size = 5,
         .stack_depth = SD_TASK_STACK_SIZE,
@@ -380,6 +387,7 @@ bool SDT_init(sd_task_cfg_t *task_cfg) {
 
 bool SDT_send_data(void *data, size_t data_size) {
     if (mem.data_queue == NULL) {
+        //ESP_LOGE(TAG, "Data queue is not initialized");
         return false;
     }
 
@@ -388,11 +396,12 @@ bool SDT_send_data(void *data, size_t data_size) {
     }
 
     if (mem.sd_card.mounted == false) {
+        ESP_LOGE(TAG, "SD card is not mounted");
         return false;
     }
 
     if (xQueueSend(mem.data_queue, data, 0) == pdFALSE) {
-        ESP_LOGW(TAG, "Unable to add data to sd mem.queue");
+        ESP_LOGE(TAG, "Unable to add data to sd mem.queue");
         return false;
     }
 

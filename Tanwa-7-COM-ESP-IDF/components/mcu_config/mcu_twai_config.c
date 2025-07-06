@@ -25,7 +25,7 @@ mcu_twai_config_t mcu_twai_config = {
         .clkout_divider = 0,
         .intr_flags = ESP_INTR_FLAG_LEVEL1,
     },
-    .t_config = TWAI_TIMING_CONFIG_250KBITS(),
+    .t_config = TWAI_TIMING_CONFIG_500KBITS(),
     .f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL(),
 };
 
@@ -44,6 +44,7 @@ esp_err_t mcu_twai_init() {
 void mcu_twai_check_alerts() {
     // while (true) {
     uint32_t alerts;
+    ESP_LOGI(TAG, "Checking TWAI alerts");
     twai_read_alerts(&alerts, portMAX_DELAY);
     printf("%08x", alerts);
     if (alerts & TWAI_ALERT_ABOVE_ERR_WARN) {
@@ -55,7 +56,7 @@ void mcu_twai_check_alerts() {
     if (alerts & TWAI_ALERT_BUS_OFF) {
         ESP_LOGI(TAG, "Bus Off state");
         // Prepare to initiate bus recovery, reconfigure alerts to detect bus recovery completion
-        twai_reconfigure_alerts(TWAI_ALERT_BUS_RECOVERED, NULL);
+        //twai_reconfigure_alerts(TWAI_ALERT_BUS_RECOVERED, NULL);
         for (int i = 3; i > 0; i--) {
             ESP_LOGW(TAG, "Initiate bus recovery in %d", i);
             vTaskDelay(pdMS_TO_TICKS(1000));
@@ -66,7 +67,7 @@ void mcu_twai_check_alerts() {
     if (alerts & TWAI_ALERT_BUS_ERROR) {
         ESP_LOGI(TAG, "Bus Error state");
         // Prepare to initiate bus recovery, reconfigure alerts to detect bus recovery completion
-        twai_reconfigure_alerts(TWAI_ALERT_BUS_RECOVERED, NULL);
+        //twai_reconfigure_alerts(TWAI_ALERT_BUS_RECOVERED, mcu_twai_config.g_config.alerts_enabled);
         for (int i = 3; i > 0; i--) {
             ESP_LOGW(TAG, "Initiate bus recovery in %d", i);
             vTaskDelay(pdMS_TO_TICKS(1000));
@@ -77,6 +78,7 @@ void mcu_twai_check_alerts() {
     if (alerts & TWAI_ALERT_BUS_RECOVERED) {
       //Bus recovery was successful, exit control task to uninstall driver
       ESP_LOGI(TAG, "Bus Recovered");
+      twai_start();
       // break;
     }
 }

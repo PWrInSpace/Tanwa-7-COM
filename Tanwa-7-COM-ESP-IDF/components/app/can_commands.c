@@ -162,10 +162,10 @@ void parse_can_flc_data(twai_message_t rx_message) {
 void parse_can_flc_pressure_data(twai_message_t rx_message) {
     // update flc pressure data
     can_flc_pressure_data_t flc_pressure_data = {
-        .pressure_1 = *((int16_t*)rx_message.data + CAN_FLC_DATA_PRESSURE_1_POS),
-        .pressure_2 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_2_POS)),
-        .pressure_3 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_3_POS)),
-        .pressure_4 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_4_POS)),
+        .pressure_1 = *((float*)rx_message.data + CAN_FLC_DATA_PRESSURE_1_POS),
+        // .pressure_2 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_2_POS)),
+        .pressure_2 = *((float*)(rx_message.data + CAN_FLC_DATA_PRESSURE_3_POS)),
+        // .pressure_4 = *((int16_t*)(rx_message.data + CAN_FLC_DATA_PRESSURE_4_POS)),
     };
     //ESP_LOGI(TAG, "FLC pressure data: pressure 1: %.2f, pressure 2: %.2f", flc_pressure_data.pressure_1, flc_pressure_data.pressure_2);
     tanwa_data_update_can_flc_pressure_data(&flc_pressure_data);

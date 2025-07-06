@@ -67,6 +67,12 @@ typedef enum {
     CMD_TARE_OXI = 0x39,
     CMD_SET_CAL_FACTOR_OXI = 0x40,
     CMD_SET_OFFSET_OXI = 0x41,
+    CMD_FILL_OPEN = 0x42,
+    CMD_FILL_CLOSE = 0x43,
+    CMD_FILL_OPEN_TIME = 0x44,
+    CMD_DEPR_OPEN = 0x45,
+    CMD_DEPR_CLOSE = 0x46,
+    CMD_DEPR_OPEN_TIME = 0x47
 } cmd_command_t;
 
 typedef enum {
@@ -98,8 +104,6 @@ void tanwa_hold_in(void);
 void tanwa_hold_out(void);
 
 void tanwa_fill(uint8_t valve_cmd);
-
-void tanwa_fill_time(uint16_t open_time);
 
 void tanwa_depr(uint8_t valve_cmd);
 
@@ -136,6 +140,14 @@ void tanwa_set_cal_factor_oxi(float weight);
 void tanwa_set_offset_oxi(float offset);
 
 void tanwa_heating(uint8_t heating_cmd);
+
+void tanwa_fill(uint8_t valve_cmd);
+
+void tanwa_fill_time(uint32_t open_time);
+
+void tanwa_depr(uint8_t valve_cmd);
+
+void tanwa_depr_time(uint32_t open_time);
 
 ///===-----------------------------------------------------------------------------------------===//
 /// LORA message switch

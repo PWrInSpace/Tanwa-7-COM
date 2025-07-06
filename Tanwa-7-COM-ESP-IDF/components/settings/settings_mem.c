@@ -11,16 +11,16 @@ static nvs_handle_t settings_handle;
 // Function definitions:
 
 void settings_init_default() {
-    settings.countdownTime = -60000;
-    settings.ignitTime = -1980;
+    settings.countdownTime = -45000;
+    settings.ignitTime = -9000;
     settings.lora_transmit_ms = 1800;
     settings.loraFreq_KHz = 868000;
     settings.flash_on = 0;
-    settings.fuel_full_open_time_ms = 20;
-    settings.oxidizer_full_open_time_ms = 730;
-    settings.fuel_valve_initial_angle = 18;
-    settings.oxidizer_valve_initial_angle = 22;
-    settings.fuel_open_time_ms = 20;
+    settings.fuel_full_open_time_ms = 80;
+    settings.oxidizer_full_open_time_ms = 0;
+    settings.fuel_valve_initial_angle = 0;  //18 - chilly
+    settings.oxidizer_valve_initial_angle = 90; //22 - chilly
+    settings.fuel_open_time_ms = 0;
 
     settings_save_all();
 }

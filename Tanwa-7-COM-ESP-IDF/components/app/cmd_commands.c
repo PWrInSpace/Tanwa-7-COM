@@ -112,7 +112,7 @@ void tanwa_fill(uint8_t valve_cmd) {
     }
 }
 
-void tanwa_fill_time(uint16_t open_time) {
+void tanwa_fill_time(uint32_t open_time) {
     solenoid_driver_status_t sol_status = SOLENOID_DRIVER_OK;
     sol_status = solenoid_driver_valve_open(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_FILL);
     if (sol_status != SOLENOID_DRIVER_OK) {
@@ -134,6 +134,19 @@ void tanwa_depr(uint8_t valve_cmd) {
     } else {
         ESP_LOGE(TAG, "SOL | Invalid depr valve command | %d", valve_cmd);
     }
+    if (sol_status != SOLENOID_DRIVER_OK) {
+        ESP_LOGE(TAG, "SOL | Solenoid driver depr error | %d", (uint8_t)sol_status);
+    }
+}
+
+void tanwa_depr_time(uint32_t open_time) {
+    solenoid_driver_status_t sol_status = SOLENOID_DRIVER_OK;
+    sol_status = solenoid_driver_valve_open(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR);
+    if (sol_status != SOLENOID_DRIVER_OK) {
+        ESP_LOGE(TAG, "SOL | Solenoid driver depr error | %d", sol_status);
+    }
+    vTaskDelay(pdMS_TO_TICKS(open_time));
+    sol_status = solenoid_driver_valve_close(&(TANWA_utility.solenoid_driver), SOLENOID_DRIVER_VALVE_DEPR);
     if (sol_status != SOLENOID_DRIVER_OK) {
         ESP_LOGE(TAG, "SOL | Solenoid driver depr error | %d", (uint8_t)sol_status);
     }
@@ -426,44 +439,88 @@ bool lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
             }
             case CMD_FUEL_CLOSE: {
                 ESP_LOGI(TAG, "LORA | Fuel close");
-                if(!valve_close_servo(&(TANWA_utility.servo_valve[0]))) {
-                    ESP_LOGE(TAG, "LORA | Unable to close fuel valve");
-                }
+                // if(!valve_close_servo(&(TANWA_utility.servo_valve[0]))) {
+                //     ESP_LOGE(TAG, "LORA | Unable to close fuel valve");
+                // }
+
+                twai_message_t servo_mess = {
+                    .identifier = CAN_FAC_SERVO_CLOSE,
+                    .data_length_code = 1,                  
+                    .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+                };
+                twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
                 break;
             }
             case CMD_OXI_CLOSE: {
                 ESP_LOGI(TAG, "LORA | Oxidizer close");
-                if(valve_close_servo(&(TANWA_utility.servo_valve[1]))) {
-                    ESP_LOGE(TAG, "LORA | Unable to close oxidizer valve");
-                }
+                // if(valve_close_servo(&(TANWA_utility.servo_valve[1]))) {
+                //     ESP_LOGE(TAG, "LORA | Unable to close oxidizer valve");
+                // }
+
+                twai_message_t servo_mess = {
+                    .identifier = CAN_FAC_SERVO_CLOSE,
+                    .data_length_code = 1,                  
+                    .data = {1, 0, 0, 0, 0, 0, 0, 0} 
+                };
+                twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
                 break;
             }
             case CMD_FUEL_OPEN: {
                 ESP_LOGI(TAG, "LORA | Fuel open");
-                if(valve_open_servo(&(TANWA_utility.servo_valve[0]))) {
-                    ESP_LOGE(TAG, "LORA | Unable to open fuel valve");
-                }
+                // if(valve_open_servo(&(TANWA_utility.servo_valve[0]))) {
+                //     ESP_LOGE(TAG, "LORA | Unable to open fuel valve");
+                // }
+
+                twai_message_t servo_mess = {
+                    .identifier = CAN_FAC_SERVO_OPEN,
+                    .data_length_code = 1,                  
+                    .data = {0, 0, 0, 0, 0, 0, 0, 0} 
+                };
+                twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
+
                 break;
             }
             case CMD_OXI_OPEN: {
                 ESP_LOGI(TAG, "LORA | Oxidizer open");
-                if(valve_open_servo(&(TANWA_utility.servo_valve[1]))) {
-                    ESP_LOGE(TAG, "LORA | Unable to open oxidizer valve");
-                }
+                // if(valve_open_servo(&(TANWA_utility.servo_valve[1]))) {
+                //     ESP_LOGE(TAG, "LORA | Unable to open oxidizer valve");
+                // }
+                // break;
+
+                twai_message_t servo_mess = {
+                    .identifier = CAN_FAC_SERVO_OPEN,
+                    .data_length_code = 1,                  
+                    .data = {1, 0, 0, 0, 0, 0, 0, 0} 
+                };
+                twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
                 break;
             }
             case CMD_FUEL_OPEN_ANGLE: {
                 ESP_LOGI(TAG, "LORA | Fuel open angle");
-                if(valve_move_angle_servo(&(TANWA_utility.servo_valve[0]), payload)) {
-                    ESP_LOGE(TAG, "LORA | Unable to move fuel valve");
-                }
+                // if(valve_move_angle_servo(&(TANWA_utility.servo_valve[0]), payload)) {
+                //     ESP_LOGE(TAG, "LORA | Unable to move fuel valve");
+                // }
+
+                twai_message_t servo_mess = {
+                    .identifier = CAN_FAC_SERVO_OPEN_ANGLE,
+                    .data_length_code = 3,                  
+                    .data = {(uint8_t)(payload & 0xFF), (uint8_t)((payload >> 8) & 0xFF), 0, 0, 0, 0, 0, 0} 
+                };
+                twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
                 break;
             }
             case CMD_OXI_OPEN_ANGLE: {
                 ESP_LOGI(TAG, "LORA | Oxidizer open angle");
-                if(valve_move_angle_servo(&(TANWA_utility.servo_valve[1]), payload)) {
-                    ESP_LOGE(TAG, "LORA | Unable to move oxidizer valve");
-                }
+                // if(valve_move_angle_servo(&(TANWA_utility.servo_valve[1]), payload)) {
+                //     ESP_LOGE(TAG, "LORA | Unable to move oxidizer valve");
+                // }
+
+                twai_message_t servo_mess = {
+                    .identifier = CAN_FAC_SERVO_OPEN_ANGLE,
+                    .data_length_code = 3,                  
+                    .data = {(uint8_t)(payload & 0xFF), (uint8_t)((payload >> 8) & 0xFF), 1, 0, 0, 0, 0, 0} 
+                };
+                twai_transmit(&servo_mess, pdMS_TO_TICKS(100));
                 break;
             }
             case CMD_SOFT_ARM: {
@@ -524,6 +581,36 @@ bool lora_command_parsing(uint32_t lora_id, uint32_t command, int32_t payload) {
             case CMD_SET_OFFSET_OXI: {
                 ESP_LOGI(TAG, "LORA | Set offset OXI");
                 tanwa_set_offset_oxi((float)payload);
+                break;
+            }
+            case CMD_FILL_OPEN: {
+                ESP_LOGI(TAG, "LORA | Fill open");
+                tanwa_fill(CMD_VALVE_OPEN);
+                break;
+            }
+            case CMD_FILL_CLOSE: {
+                ESP_LOGI(TAG, "LORA | Fill close");
+                tanwa_fill(CMD_VALVE_CLOSE);
+                break;
+            }
+            case CMD_FILL_OPEN_TIME: {
+                ESP_LOGI(TAG, "LORA | Fill open time");
+                tanwa_fill_time((uint32_t)payload);
+                break;
+            }
+            case CMD_DEPR_OPEN: {
+                ESP_LOGI(TAG, "LORA | Depr open");
+                tanwa_depr(CMD_VALVE_OPEN);
+                break;
+            }
+            case CMD_DEPR_CLOSE: {
+                ESP_LOGI(TAG, "LORA | Depr close");
+                tanwa_depr(CMD_VALVE_CLOSE);
+                break;
+            }
+            case CMD_DEPR_OPEN_TIME: {
+                ESP_LOGI(TAG, "LORA | Depr open time");
+                tanwa_depr_time((uint32_t)payload);
                 break;
             }
             default: {
